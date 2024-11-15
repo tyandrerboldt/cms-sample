@@ -1,10 +1,13 @@
+import { prisma } from "@/lib/prisma";
 import { PackageForm } from "@/components/admin/package-form";
 
-export default function NewPackage() {
+export default async function NewPackage() {
+  const packageTypes = await prisma.packageType.findMany();
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Create New Package</h1>
-      <PackageForm />
+      <PackageForm packageTypes={packageTypes} />
     </div>
   );
 }

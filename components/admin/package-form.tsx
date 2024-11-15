@@ -7,35 +7,42 @@ import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { TravelPackage } from "@prisma/client";
+import { PackageImage, TravelPackage, PackageType } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { ImageUpload } from "@/components/admin/image-upload";
+import { useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const packageSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   location: z.string().min(1, "Location is required"),
-  imageUrl: z.string().url("Must be a valid URL"),
   price: z.string().min(1, "Price is required"),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   maxGuests: z.string().min(1, "Max guests is required"),
+  typeId: z.string().min(1, "Package type is required"),
 });
 
 type PackageFormData = z.infer<typeof packageSchema>;
 
 interface PackageFormProps {
-  packageToEdit?: TravelPackage;
+  packageToEdit?: TravelPackage & { images?: PackageImage[] };
+  packageTypes?: PackageType[];
 }
 
-export function PackageForm({ packageToEdit }: PackageFormProps) {
+export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [images, setImages] = useState<{ file?: File; url: string; isMain: boolean }[]>([]);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<PackageFormData>({
     resolver: zodResolver(packageSchema),
     defaultValues: packageToEdit
@@ -53,16 +60,26 @@ export function PackageForm({ packageToEdit }: PackageFormProps) {
 
   const onSubmit = async (data: PackageFormData) => {
     try {
+      const formData = new FormData();
+      images.forEach((image, index) => {
+        if (image.file) {
+          formData.append(`images`, image.file);
+          formData.append(`imageIsMain${index}`, image.isMain.toString());
+        } else {
+          formData.append(`existingImages`, image.url);
+          formData.append(`existingImageIsMain${image.url}`, image.isMain.toString());
+        }
+      });
+
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
       const response = await fetch(
         packageToEdit ? `/api/packages/${packageToEdit.id}` : "/api/packages",
         {
           method: packageToEdit ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...data,
-            price: parseFloat(data.price),
-            maxGuests: parseInt(data.maxGuests),
-          }),
+          body: formData,
         }
       );
 
@@ -87,36 +104,57 @@ export function PackageForm({ packageToEdit }: PackageFormProps) {
   return (
     <Card>
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-2xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" {...register("title")} />
+              {errors.title && (
+                <p className="text-sm text-red-500">{errors.title.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="location">Location</Label>
+              <Input id="location" {...register("location")} />
+              {errors.location && (
+                <p className="text-sm text-red-500">{errors.location.message}</p>
+              )}
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input id="title" {...register("title")} />
-            {errors.title && (
-              <p className="text-sm text-red-500">{errors.title.message}</p>
+            <Label htmlFor="packageType">Package Type</Label>
+            <Select
+              defaultValue={packageToEdit?.typeId}
+              onValueChange={(value) => setValue("typeId", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a package type" />
+              </SelectTrigger>
+              <SelectContent>
+                {packageTypes.map((type) => (
+                  <SelectItem key={type.id} value={type.id}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.typeId && (
+              <p className="text-sm text-red-500">{errors.typeId.message}</p>
             )}
           </div>
+
+          <ImageUpload
+            existingImages={packageToEdit?.images}
+            onImagesChange={setImages}
+          />
 
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="location">Location</Label>
-            <Input id="location" {...register("location")} />
-            {errors.location && (
-              <p className="text-sm text-red-500">{errors.location.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl">Image URL</Label>
-            <Input id="imageUrl" {...register("imageUrl")} />
-            {errors.imageUrl && (
-              <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
             )}
           </div>
 

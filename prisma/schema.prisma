@@ -54,19 +54,32 @@ model VerificationToken {
 }
 
 model TravelPackage {
-  id          String      @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
   description String
   location    String
   imageUrl    String
-  price       Decimal     @db.Decimal(10, 2)
+  price       Decimal        @db.Decimal(10, 2)
   startDate   DateTime
   endDate     DateTime
   maxGuests   Int
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  packageType PackageType @relation(fields: [typeId], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  packageType PackageType    @relation(fields: [typeId], references: [id])
   typeId      String
+  images      PackageImage[]
+}
+
+model PackageImage {
+  id        String        @id @default(cuid())
+  url       String
+  isMain    Boolean       @default(false)
+  package   TravelPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  packageId String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([packageId])
 }
 
 model PackageType {
@@ -79,17 +92,17 @@ model PackageType {
 }
 
 model Article {
-  id          String         @id @default(cuid())
-  title       String
-  content     String         @db.Text
-  imageUrl    String
-  excerpt     String
-  slug        String         @unique
-  published   Boolean        @default(false)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  category    ArticleCategory @relation(fields: [categoryId], references: [id])
-  categoryId  String
+  id         String          @id @default(cuid())
+  title      String
+  content    String          @db.Text
+  imageUrl   String
+  excerpt    String
+  slug       String          @unique
+  published  Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  category   ArticleCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
 }
 
 model ArticleCategory {

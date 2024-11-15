@@ -7,9 +7,13 @@ export default async function EditPackage({
 }: {
   params: { id: string };
 }) {
-  const packageData = await prisma.travelPackage.findUnique({
-    where: { id: params.id },
-  });
+  const [packageData, packageTypes] = await Promise.all([
+    prisma.travelPackage.findUnique({
+      where: { id: params.id },
+      include: { images: true }
+    }),
+    prisma.packageType.findMany()
+  ]);
 
   if (!packageData) {
     notFound();
@@ -18,7 +22,7 @@ export default async function EditPackage({
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Edit Package</h1>
-      <PackageForm packageToEdit={packageData} />
+      <PackageForm packageToEdit={packageData} packageTypes={packageTypes} />
     </div>
   );
 }
