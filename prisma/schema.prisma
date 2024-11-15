@@ -132,3 +132,23 @@ enum PackageStatus {
   INACTIVE
   UNAVAILABLE
 }
+
+model SiteSettings {
+  id            String   @id @default("default") // Single record
+  name          String
+  description   String
+  logo          String?
+  status        Boolean  @default(true)
+  smtpHost      String?
+  smtpPort      Int?
+  smtpUser      String?
+  smtpPass      String?
+  smtpFrom      String?
+  facebookUrl   String?
+  instagramUrl  String?
+  twitterUrl    String?
+  linkedinUrl   String?
+  youtubeUrl    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}

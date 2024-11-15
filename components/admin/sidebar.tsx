@@ -1,17 +1,24 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, Users, LogOut, BookOpen, Tags, FileText, FolderTree } from "lucide-react";
+import { LayoutDashboard, Package, Users, LogOut, BookOpen, Tags, FileText, FolderTree, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface AdminSidebarProps {
   isOpen: boolean;
   onClose?: () => void;
   isMobile: boolean;
+}
+
+interface SiteSettings {
+  name: string;
+  logo: string | null;
 }
 
 const menuItems = [
@@ -45,14 +52,29 @@ const menuItems = [
     href: "/admin/users",
     icon: Users,
   },
+  {
+    title: "Settings",
+    href: "/admin/settings",
+    icon: Settings,
+  },
 ];
 
-const SidebarContent = ({ pathname }: { pathname: string }) => (
+const SidebarContent = ({ pathname, settings }: { pathname: string; settings: SiteSettings | null }) => (
   <>
     <div className="h-16 border-b flex items-center px-6">
       <Link href="/" className="flex items-center space-x-2">
-        <Package className="h-6 w-6" />
-        <span className="font-bold text-xl">TravelPortal</span>
+        {settings?.logo ? (
+          <Image
+            src={settings.logo}
+            alt={settings.name}
+            width={32}
+            height={32}
+            className="object-contain"
+          />
+        ) : (
+          <Package className="h-6 w-6" />
+        )}
+        <span className="font-bold text-lg">{settings?.name || "TravelPortal"}</span>
       </Link>
     </div>
     <nav className="flex-1 p-4">
@@ -92,12 +114,20 @@ const SidebarContent = ({ pathname }: { pathname: string }) => (
 
 export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   const pathname = usePathname();
+  const [settings, setSettings] = useState<SiteSettings | null>(null);
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => setSettings(data))
+      .catch(console.error);
+  }, []);
 
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent side="left" className="w-[300px] p-0">
-          <SidebarContent pathname={pathname} />
+          <SidebarContent pathname={pathname} settings={settings} />
         </SheetContent>
       </Sheet>
     );
@@ -109,7 +139,7 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
         "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300 w-64",
       )}
     >
-      <SidebarContent pathname={pathname} />
+      <SidebarContent pathname={pathname} settings={settings} />
     </div>
   );
 }

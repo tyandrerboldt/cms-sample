@@ -2,17 +2,17 @@ import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
-export async function saveImage(file: File): Promise<string> {
+export async function saveImage(file: File, folder: string = 'packages'): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
   // Create a unique filename
   const uniqueFilename = `${uuidv4()}-${file.name}`;
-  const relativePath = `/uploads/packages/${uniqueFilename}`;
+  const relativePath = `/uploads/${folder}/${uniqueFilename}`;
   const fullPath = join(process.cwd(), 'public', relativePath);
 
   // Ensure the directory exists
-  const dir = join(process.cwd(), 'public', 'uploads', 'packages');
+  const dir = join(process.cwd(), 'public', 'uploads', folder);
   await createDirIfNotExists(dir);
 
   // Save the file
