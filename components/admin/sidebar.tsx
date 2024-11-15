@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Users, LogOut, BookOpen, Tags, FileText, FolderTree } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -17,6 +17,21 @@ const menuItems = [
     title: "Packages",
     href: "/admin/packages",
     icon: Package,
+  },
+  {
+    title: "Package Types",
+    href: "/admin/package-types",
+    icon: Tags,
+  },
+  {
+    title: "Articles",
+    href: "/admin/articles",
+    icon: FileText,
+  },
+  {
+    title: "Article Categories",
+    href: "/admin/article-categories",
+    icon: FolderTree,
   },
   {
     title: "Users",
