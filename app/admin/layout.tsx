@@ -26,19 +26,19 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <AdminSidebar 
-        isOpen={isSidebarOpen} 
+      <AdminSidebar
+        isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         isMobile={isMobile}
       />
-      <div className={cn(
-        "transition-all duration-300",
-        isSidebarOpen && !isMobile ? "ml-64" : "ml-0"
-      )}>
-        <AdminHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-        <main className="p-8">
-          {children}
-        </main>
+      <div
+        className={cn(
+          "transition-all duration-300",
+          !isMobile ? "ml-64" : "ml-0"
+        )}
+      >
+        <AdminHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isMobile={isMobile} />
+        <main className="p-8">{children}</main>
       </div>
     </div>
   );

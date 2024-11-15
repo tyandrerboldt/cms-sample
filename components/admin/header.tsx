@@ -13,16 +13,17 @@ import {
 
 interface AdminHeaderProps {
   onToggleSidebar: () => void;
+  isMobile: boolean;
 }
 
-export function AdminHeader({ onToggleSidebar }: AdminHeaderProps) {
+export function AdminHeader({ onToggleSidebar, isMobile }: AdminHeaderProps) {
   const { data: session } = useSession();
 
   return (
     <header className="sticky top-0 z-10 h-16 border-b bg-white dark:bg-gray-800 flex items-center px-4">
-      <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-4">
+      {isMobile && <Button variant="ghost" size="icon" onClick={onToggleSidebar} className="mr-4">
         <Menu className="h-5 w-5" />
-      </Button>
+      </Button>}
       
       <div className="flex-1" />
       

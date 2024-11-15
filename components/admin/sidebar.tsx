@@ -106,8 +106,7 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300",
-        isOpen ? "w-64" : "w-0 overflow-hidden"
+        "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300 w-64",
       )}
     >
       <SidebarContent pathname={pathname} />
