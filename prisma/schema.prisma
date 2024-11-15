@@ -55,6 +55,8 @@ model VerificationToken {
 
 model TravelPackage {
   id          String         @id @default(cuid())
+  code        String         @unique
+  slug        String         @unique
   title       String
   description String
   location    String
@@ -63,9 +65,14 @@ model TravelPackage {
   startDate   DateTime
   endDate     DateTime
   maxGuests   Int
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  packageType PackageType    @relation(fields: [typeId], references: [id])
+  dormitories Int           @default(0)
+  suites      Int           @default(0)
+  bathrooms   Int           @default(0)
+  numberOfDays Int
+  status      PackageStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  packageType PackageType   @relation(fields: [typeId], references: [id])
   typeId      String
   images      PackageImage[]
 }
@@ -117,4 +124,11 @@ model ArticleCategory {
 enum UserRole {
   USER
   ADMIN
+}
+
+enum PackageStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  UNAVAILABLE
 }
