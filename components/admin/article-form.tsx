@@ -81,9 +81,9 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
   };
 
   return (
-    <Card>
+    <Card className="w-full md:w-1/2">
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-4xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="title">Título</Label>

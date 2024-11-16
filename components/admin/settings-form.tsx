@@ -122,7 +122,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   };
 
   return (
-    <Card>
+    <Card className="w-full md:w-1/2">
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="general">

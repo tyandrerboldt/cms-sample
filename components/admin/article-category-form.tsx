@@ -67,9 +67,9 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
   };
 
   return (
-    <Card>
+    <Card className="w-full md:w-1/3">
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-2xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nome</Label>
             <Input id="name" {...register("name")} />

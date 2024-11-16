@@ -125,9 +125,9 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
   };
 
   return (
-    <Card>
+    <Card className="w-full md:w-2/3">
       <CardContent className="pt-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="code">Código do Pacote</Label>
