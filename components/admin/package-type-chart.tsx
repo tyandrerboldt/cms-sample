@@ -29,7 +29,7 @@ export function PackageTypeChart({ packageStats }: PackageTypeChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Packages by Type</CardTitle>
+        <CardTitle>Pacotes por Tipo</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">

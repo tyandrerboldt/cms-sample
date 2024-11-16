@@ -17,8 +17,8 @@ import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 
 const settingsSchema = z.object({
-  name: z.string().min(1, "Site name is required"),
-  description: z.string().min(1, "Site description is required"),
+  name: z.string().min(1, "Nome do site é obrigatório"),
+  description: z.string().min(1, "Descrição do site é obrigatória"),
   logo: z.string().nullable().optional(),
   status: z.boolean(),
   smtpHost: z.string().nullable().optional(),
@@ -99,16 +99,16 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Failed to save settings");
+      if (!response.ok) throw new Error("Falha ao salvar as configurações");
 
       toast({
-        title: "Settings Updated",
-        description: "The site settings have been saved successfully.",
+        title: "Configurações Atualizadas",
+        description: "As configurações do site foram salvas com sucesso.",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save the settings.",
+        title: "Erro",
+        description: "Falha ao salvar as configurações.",
         variant: "destructive",
       });
     }
@@ -120,15 +120,15 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Tabs defaultValue="general">
             <TabsList>
-              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="general">Geral</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="social">Social Media</TabsTrigger>
+              <TabsTrigger value="social">Mídias Sociais</TabsTrigger>
             </TabsList>
 
             <TabsContent value="general" className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Site Name</Label>
+                  <Label htmlFor="name">Nome do Site</Label>
                   <Input id="name" {...register("name")} />
                   {errors.name && (
                     <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -146,13 +146,13 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                         setValue("status", checked);
                       }}
                     />
-                    <Label htmlFor="status">Site is {isActive ? 'active' : 'inactive'}</Label>
+                    <Label htmlFor="status">{isActive ? 'Ativo' : 'Inativo'}</Label>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Site Description</Label>
+                <Label htmlFor="description">Descrição do Site</Label>
                 <Textarea id="description" {...register("description")} />
                 {errors.description && (
                   <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -192,7 +192,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                     >
                       <div className="flex flex-col items-center">
                         <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                        <span className="mt-2 text-sm text-muted-foreground">Upload Logo</span>
+                        <span className="mt-2 text-sm text-muted-foreground">Carregar Logo</span>
                       </div>
                     </Label>
                   </div>
@@ -215,18 +215,18 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="smtpUser">SMTP Username</Label>
+                  <Label htmlFor="smtpUser">SMTP Usuário</Label>
                   <Input id="smtpUser" {...register("smtpUser")} />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="smtpPass">SMTP Password</Label>
+                  <Label htmlFor="smtpPass">SMTP Senha</Label>
                   <Input id="smtpPass" type="password" {...register("smtpPass")} />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="smtpFrom">From Email Address</Label>
+                <Label htmlFor="smtpFrom">Endereço de Email do Remetente</Label>
                 <Input id="smtpFrom" type="email" {...register("smtpFrom")} />
                 {errors.smtpFrom && (
                   <p className="text-sm text-red-500">{errors.smtpFrom.message}</p>
@@ -237,7 +237,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             <TabsContent value="social" className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="facebookUrl">Facebook URL</Label>
+                  <Label htmlFor="facebookUrl">URL do Facebook</Label>
                   <Input id="facebookUrl" {...register("facebookUrl")} />
                   {errors.facebookUrl && (
                     <p className="text-sm text-red-500">{errors.facebookUrl.message}</p>
@@ -245,7 +245,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="instagramUrl">Instagram URL</Label>
+                  <Label htmlFor="instagramUrl">URL do Instagram</Label>
                   <Input id="instagramUrl" {...register("instagramUrl")} />
                   {errors.instagramUrl && (
                     <p className="text-sm text-red-500">{errors.instagramUrl.message}</p>
@@ -255,7 +255,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="twitterUrl">Twitter URL</Label>
+                  <Label htmlFor="twitterUrl">URL do Twitter</Label>
                   <Input id="twitterUrl" {...register("twitterUrl")} />
                   {errors.twitterUrl && (
                     <p className="text-sm text-red-500">{errors.twitterUrl.message}</p>
@@ -263,7 +263,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
+                  <Label htmlFor="linkedinUrl">URL do LinkedIn</Label>
                   <Input id="linkedinUrl" {...register("linkedinUrl")} />
                   {errors.linkedinUrl && (
                     <p className="text-sm text-red-500">{errors.linkedinUrl.message}</p>
@@ -272,7 +272,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="youtubeUrl">YouTube URL</Label>
+                <Label htmlFor="youtubeUrl">URL do YouTube</Label>
                 <Input id="youtubeUrl" {...register("youtubeUrl")} />
                 {errors.youtubeUrl && (
                   <p className="text-sm text-red-500">{errors.youtubeUrl.message}</p>
@@ -282,7 +282,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           </Tabs>
 
           <div className="flex justify-end">
-            <Button type="submit">Save Settings</Button>
+            <Button type="submit">Salvar Configurações</Button>
           </div>
         </form>
       </CardContent>

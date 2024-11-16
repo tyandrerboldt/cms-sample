@@ -28,18 +28,18 @@ export function PackageList({ packages }: PackageListProps) {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/packages/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete package");
+      if (!response.ok) throw new Error("Falha ao deletar o pacote");
 
       toast({
-        title: "Package Deleted",
-        description: "The travel package has been deleted successfully.",
+        title: "Pacote Deletado",
+        description: "O pacote de viagem foi deletado com sucesso.",
       });
       
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete the package.",
+        title: "Erro",
+        description: "Falha ao deletar o pacote.",
         variant: "destructive",
       });
     }
@@ -50,11 +50,11 @@ export function PackageList({ packages }: PackageListProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Dates</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Título</TableHead>
+            <TableHead>Localização</TableHead>
+            <TableHead>Preço</TableHead>
+            <TableHead>Datas</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -62,10 +62,10 @@ export function PackageList({ packages }: PackageListProps) {
             <TableRow key={pkg.id}>
               <TableCell>{pkg.title}</TableCell>
               <TableCell>{pkg.location}</TableCell>
-              <TableCell>${pkg.price.toString()}</TableCell>
+              <TableCell>R${pkg.price.toString()}</TableCell>
               <TableCell>
-                {format(new Date(pkg.startDate), "MMM d, yyyy")} -{" "}
-                {format(new Date(pkg.endDate), "MMM d, yyyy")}
+                {format(new Date(pkg.startDate), "d 'de' MMM 'de' yyyy")} -{" "}
+                {format(new Date(pkg.endDate), "d 'de' MMM 'de' yyyy")}
               </TableCell>
               <TableCell>
                 <div className="flex justify-end space-x-2">
@@ -82,15 +82,15 @@ export function PackageList({ packages }: PackageListProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Package</AlertDialogTitle>
+                        <AlertDialogTitle>Deletar Pacote</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete this package? This action cannot be undone.
+                          Tem certeza de que deseja deletar este pacote? Esta ação não pode ser desfeita.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleDelete(pkg.id)}>
-                          Delete
+                          Deletar
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

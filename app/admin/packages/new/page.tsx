@@ -6,7 +6,7 @@ export default async function NewPackage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Create New Package</h1>
+      <h1 className="text-3xl font-bold mb-6">Criar Novo Pacote</h1>
       <PackageForm packageTypes={packageTypes} />
     </div>
   );

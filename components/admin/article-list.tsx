@@ -31,18 +31,18 @@ export function ArticleList({ articles }: ArticleListProps) {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/articles/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete article");
+      if (!response.ok) throw new Error("Falha ao deletar o artigo");
 
       toast({
-        title: "Article Deleted",
-        description: "The article has been deleted successfully.",
+        title: "Artigo Deletado",
+        description: "O artigo foi deletado com sucesso.",
       });
       
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete the article.",
+        title: "Erro",
+        description: "Falha ao deletar o artigo.",
         variant: "destructive",
       });
     }
@@ -53,11 +53,11 @@ export function ArticleList({ articles }: ArticleListProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Category</TableHead>
+            <TableHead>Título</TableHead>
+            <TableHead>Categoria</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Criado</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -67,7 +67,7 @@ export function ArticleList({ articles }: ArticleListProps) {
               <TableCell>{article.category.name}</TableCell>
               <TableCell>
                 <Badge variant={article.published ? "default" : "secondary"}>
-                  {article.published ? "Published" : "Draft"}
+                  {article.published ? "Publicado" : "Rascunho"}
                 </Badge>
               </TableCell>
               <TableCell>{format(new Date(article.createdAt), "MMM d, yyyy")}</TableCell>
@@ -91,15 +91,15 @@ export function ArticleList({ articles }: ArticleListProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Article</AlertDialogTitle>
+                        <AlertDialogTitle>Deletar Artigo</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete this article? This action cannot be undone.
+                          Tem certeza de que deseja deletar este artigo? Esta ação não pode ser desfeita.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleDelete(article.id)}>
-                          Delete
+                          Deletar
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

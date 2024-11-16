@@ -32,18 +32,18 @@ export function PackageTypeList({ packageTypes }: PackageTypeListProps) {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/package-types/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete package type");
+      if (!response.ok) throw new Error("Falha ao deletar o tipo de pacote");
 
       toast({
-        title: "Package Type Deleted",
-        description: "The package type has been deleted successfully.",
+        title: "Tipo de Pacote Deletado",
+        description: "O tipo de pacote foi deletado com sucesso.",
       });
       
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete the package type.",
+        title: "Erro",
+        description: "Falha ao deletar o tipo de pacote.",
         variant: "destructive",
       });
     }
@@ -54,11 +54,11 @@ export function PackageTypeList({ packageTypes }: PackageTypeListProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Packages</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Nome</TableHead>
+            <TableHead>Descrição</TableHead>
+            <TableHead>Pacotes</TableHead>
+            <TableHead>Criado</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -67,7 +67,7 @@ export function PackageTypeList({ packageTypes }: PackageTypeListProps) {
               <TableCell className="font-medium">{type.name}</TableCell>
               <TableCell>{type.description}</TableCell>
               <TableCell>{type._count.packages}</TableCell>
-              <TableCell>{format(new Date(type.createdAt), "MMM d, yyyy")}</TableCell>
+              <TableCell>{format(new Date(type.createdAt), "d 'de' MMM 'de' yyyy")}</TableCell>
               <TableCell>
                 <div className="flex justify-end space-x-2">
                   <Link href={`/admin/package-types/${type.id}`}>
@@ -83,15 +83,15 @@ export function PackageTypeList({ packageTypes }: PackageTypeListProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Package Type</AlertDialogTitle>
+                        <AlertDialogTitle>Deletar Tipo de Pacote</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete this package type? This will also affect all packages associated with this type.
+                          Tem certeza de que deseja deletar este tipo de pacote? Isso também afetará todos os pacotes associados a este tipo.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleDelete(type.id)}>
-                          Delete
+                          Deletar
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

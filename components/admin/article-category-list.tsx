@@ -32,18 +32,18 @@ export function ArticleCategoryList({ categories }: ArticleCategoryListProps) {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/article-categories/${id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("Failed to delete category");
+      if (!response.ok) throw new Error("Falha ao deletar categoria");
 
       toast({
-        title: "Category Deleted",
-        description: "The category has been deleted successfully.",
+        title: "Categoria Deletada",
+        description: "A categoria foi deletada com sucesso.",
       });
       
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete the category.",
+        title: "Erro",
+        description: "Falha ao deletar a categoria.",
         variant: "destructive",
       });
     }
@@ -54,11 +54,11 @@ export function ArticleCategoryList({ categories }: ArticleCategoryListProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Articles</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>Nome</TableHead>
+            <TableHead>Descrição</TableHead>
+            <TableHead>Artigos</TableHead>
+            <TableHead>Criado</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -83,15 +83,15 @@ export function ArticleCategoryList({ categories }: ArticleCategoryListProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                        <AlertDialogTitle>Deletar Categoria</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete this category? This will also affect all articles in this category.
+                          Tem certeza de que deseja deletar esta categoria? Isso também afetará todos os artigos nesta categoria.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleDelete(category.id)}>
-                          Delete
+                          Deletar
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

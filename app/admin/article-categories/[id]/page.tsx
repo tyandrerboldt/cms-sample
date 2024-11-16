@@ -17,7 +17,7 @@ export default async function EditArticleCategory({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Edit Article Category</h1>
+      <h1 className="text-3xl font-bold mb-6">Editar Categoria</h1>
       <ArticleCategoryForm categoryToEdit={category} />
     </div>
   );

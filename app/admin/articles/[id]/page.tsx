@@ -20,7 +20,7 @@ export default async function EditArticle({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Edit Article</h1>
+      <h1 className="text-3xl font-bold mb-6">Editar Artigo</h1>
       <ArticleForm articleToEdit={article} categories={categories} />
     </div>
   );

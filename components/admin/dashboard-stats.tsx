@@ -16,7 +16,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
     <div className="grid gap-4 md:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Packages</CardTitle>
+          <CardTitle className="text-sm font-medium">Total de Pacotes</CardTitle>
           <Package className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -25,7 +25,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Articles</CardTitle>
+          <CardTitle className="text-sm font-medium">Total de Artigos</CardTitle>
           <FileText className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -34,7 +34,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Contacts</CardTitle>
+          <CardTitle className="text-sm font-medium">Total de Contatos</CardTitle>
           <Phone className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>

@@ -16,11 +16,11 @@ import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 
 const articleSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
-  excerpt: z.string().min(1, "Excerpt is required"),
-  imageUrl: z.string().url("Must be a valid URL"),
-  categoryId: z.string().min(1, "Category is required"),
+  title: z.string().min(1, "Título é obrigatório"),
+  content: z.string().min(1, "Conteúdo é obrigatório"),
+  excerpt: z.string().min(1, "Resumo é obrigatório"),
+  imageUrl: z.string().url("Deve ser uma URL válida"),
+  categoryId: z.string().min(1, "Categoria é obrigatória"),
   published: z.boolean().default(false),
 });
 
@@ -62,19 +62,19 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save article");
+      if (!response.ok) throw new Error("Falha ao salvar o artigo");
 
       toast({
-        title: articleToEdit ? "Article Updated" : "Article Created",
-        description: "The article has been saved successfully.",
+        title: articleToEdit ? "Artigo Atualizado" : "Artigo Criado",
+        description: "O artigo foi salvo com sucesso.",
       });
 
       router.push("/admin/articles");
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save the article.",
+        title: "Erro",
+        description: "Falha ao salvar o artigo.",
         variant: "destructive",
       });
     }
@@ -86,7 +86,7 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-4xl">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Título</Label>
               <Input id="title" {...register("title")} />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -94,13 +94,13 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category">Categoria</Label>
               <Select
                 defaultValue={articleToEdit?.categoryId}
                 onValueChange={(value) => setValue("categoryId", value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
+                  <SelectValue placeholder="Selecione uma categoria" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -117,7 +117,7 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="imageUrl">Featured Image URL</Label>
+            <Label htmlFor="imageUrl">URL da Imagem Destacada</Label>
             <Input id="imageUrl" {...register("imageUrl")} />
             {errors.imageUrl && (
               <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
@@ -125,12 +125,12 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="excerpt">Excerpt</Label>
+            <Label htmlFor="excerpt">Resumo</Label>
             <Textarea
               id="excerpt"
               {...register("excerpt")}
               rows={3}
-              placeholder="Write a brief summary of the article..."
+              placeholder="Escreva um breve resumo do artigo..."
             />
             {errors.excerpt && (
               <p className="text-sm text-red-500">{errors.excerpt.message}</p>
@@ -138,13 +138,13 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor="content">Conteúdo</Label>
             <Textarea
               id="content"
               {...register("content")}
               rows={15}
               className="font-mono"
-              placeholder="Write your article content here..."
+              placeholder="Escreva o conteúdo do seu artigo aqui..."
             />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
@@ -160,7 +160,7 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
                 setValue("published", checked);
               }}
             />
-            <Label htmlFor="published">Publish article</Label>
+            <Label htmlFor="published">Publicar artigo</Label>
           </div>
 
           <div className="flex justify-end space-x-4">
@@ -169,10 +169,10 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
               variant="outline"
               onClick={() => router.push("/admin/articles")}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit">
-              {articleToEdit ? "Update Article" : "Create Article"}
+              {articleToEdit ? "Atualizar" : "Criar Artigo"}
             </Button>
           </div>
         </form>

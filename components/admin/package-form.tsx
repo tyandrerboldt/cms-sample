@@ -17,15 +17,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import slugify from "slugify";
 
 const packageSchema = z.object({
-  code: z.string().min(1, "Code is required"),
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  location: z.string().min(1, "Location is required"),
-  price: z.string().min(1, "Price is required"),
-  startDate: z.string().min(1, "Start date is required"),
-  endDate: z.string().min(1, "End date is required"),
-  maxGuests: z.string().min(1, "Max guests is required"),
-  typeId: z.string().min(1, "Package type is required"),
+  code: z.string().min(1, "Código é obrigatório"),
+  title: z.string().min(1, "Título é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
+  location: z.string().min(1, "Localização é obrigatória"),
+  price: z.string().min(1, "Preço é obrigatório"),
+  startDate: z.string().min(1, "Data de início é obrigatória"),
+  endDate: z.string().min(1, "Data de término é obrigatória"),
+  maxGuests: z.string().min(1, "Máximo de hóspedes é obrigatório"),
+  typeId: z.string().min(1, "Tipo de pacote é obrigatório"),
   dormitories: z.string().transform(val => parseInt(val)),
   suites: z.string().transform(val => parseInt(val)),
   bathrooms: z.string().transform(val => parseInt(val)),
@@ -106,19 +106,19 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save package");
+      if (!response.ok) throw new Error("Falha ao salvar o pacote");
 
       toast({
-        title: packageToEdit ? "Package Updated" : "Package Created",
-        description: "The travel package has been saved successfully.",
+        title: packageToEdit ? "Pacote Atualizado" : "Pacote Criado",
+        description: "O pacote de viagem foi salvo com sucesso.",
       });
 
       router.push("/admin/packages");
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save the travel package.",
+        title: "Erro",
+        description: "Falha ao salvar o pacote de viagem.",
         variant: "destructive",
       });
     }
@@ -130,7 +130,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Package Code</Label>
+              <Label htmlFor="code">Código do Pacote</Label>
               <Input id="code" {...register("code")} />
               {errors.code && (
                 <p className="text-sm text-red-500">{errors.code.message}</p>
@@ -144,13 +144,13 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
                 onValueChange={(value) => setValue("status", value as any)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="DRAFT">Draft</SelectItem>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="INACTIVE">Inactive</SelectItem>
-                  <SelectItem value="UNAVAILABLE">Unavailable</SelectItem>
+                  <SelectItem value="DRAFT">Rascunho</SelectItem>
+                  <SelectItem value="ACTIVE">Ativo</SelectItem>
+                  <SelectItem value="INACTIVE">Inativo</SelectItem>
+                  <SelectItem value="UNAVAILABLE">Indisponível</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -158,7 +158,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">Título</Label>
               <Input id="title" {...register("title")} />
               {errors.title && (
                 <p className="text-sm text-red-500">{errors.title.message}</p>
@@ -166,7 +166,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
+              <Label htmlFor="location">Localização</Label>
               <Input id="location" {...register("location")} />
               {errors.location && (
                 <p className="text-sm text-red-500">{errors.location.message}</p>
@@ -175,13 +175,13 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="packageType">Package Type</Label>
+            <Label htmlFor="packageType">Tipo de Pacote</Label>
             <Select
               defaultValue={packageToEdit?.typeId}
               onValueChange={(value) => setValue("typeId", value)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a package type" />
+                <SelectValue placeholder="Selecione um tipo de pacote" />
               </SelectTrigger>
               <SelectContent>
                 {packageTypes.map((type) => (
@@ -202,7 +202,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
           />
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Descrição</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -211,7 +211,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="price">Preço</Label>
               <Input
                 id="price"
                 type="number"
@@ -224,7 +224,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="numberOfDays">Number of Days</Label>
+              <Label htmlFor="numberOfDays">Diárias</Label>
               <Input
                 id="numberOfDays"
                 type="number"
@@ -239,7 +239,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
 
           <div className="grid grid-cols-4 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="dormitories">Dormitories</Label>
+              <Label htmlFor="dormitories">Dormitórios</Label>
               <Input
                 id="dormitories"
                 type="number"
@@ -249,7 +249,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="suites">Suites</Label>
+              <Label htmlFor="suites">Suítes</Label>
               <Input
                 id="suites"
                 type="number"
@@ -259,7 +259,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bathrooms">Bathrooms</Label>
+              <Label htmlFor="bathrooms">Banheiros</Label>
               <Input
                 id="bathrooms"
                 type="number"
@@ -269,7 +269,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="maxGuests">Max Guests</Label>
+              <Label htmlFor="maxGuests">Máximo de Hóspedes</Label>
               <Input
                 id="maxGuests"
                 type="number"
@@ -280,7 +280,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="startDate">Data de Início</Label>
               <Input
                 id="startDate"
                 type="date"
@@ -292,7 +292,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
+              <Label htmlFor="endDate">Data de Término</Label>
               <Input
                 id="endDate"
                 type="date"
@@ -310,10 +310,10 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
               variant="outline"
               onClick={() => router.push("/admin/packages")}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit">
-              {packageToEdit ? "Update Package" : "Create Package"}
+              {packageToEdit ? "Atualizar Pacote" : "Criar Pacote"}
             </Button>
           </div>
         </form>

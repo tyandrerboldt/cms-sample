@@ -17,11 +17,11 @@ export default async function AdminArticleCategories() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Article Categories</h1>
+        <h1 className="text-3xl font-bold">Categorias de Artigos</h1>
         <Link href="/admin/article-categories/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Category
+            Adicionar Categoria
           </Button>
         </Link>
       </div>

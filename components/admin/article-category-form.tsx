@@ -13,8 +13,8 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
 const categorySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
+  name: z.string().min(1, "Nome é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
 });
 
 type CategoryFormData = z.infer<typeof categorySchema>;
@@ -48,19 +48,19 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save category");
+      if (!response.ok) throw new Error("Falha ao salvar a categoria");
 
       toast({
-        title: categoryToEdit ? "Category Updated" : "Category Created",
-        description: "The article category has been saved successfully.",
+        title: categoryToEdit ? "Categoria Atualizada" : "Categoria Criada",
+        description: "A categoria do artigo foi salva com sucesso.",
       });
 
       router.push("/admin/article-categories");
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save the article category.",
+        title: "Erro",
+        description: "Falha ao salvar a categoria do artigo.",
         variant: "destructive",
       });
     }
@@ -71,7 +71,7 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-2xl">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nome</Label>
             <Input id="name" {...register("name")} />
             {errors.name && (
               <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -79,7 +79,7 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Descrição</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -92,10 +92,10 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
               variant="outline"
               onClick={() => router.push("/admin/article-categories")}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit">
-              {categoryToEdit ? "Update Category" : "Create Category"}
+              {categoryToEdit ? "Atualizar Categoria" : "Criar Categoria"}
             </Button>
           </div>
         </form>

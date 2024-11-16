@@ -15,7 +15,7 @@ export function TrendingPackages({ packages }: TrendingPackagesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Trending Packages</CardTitle>
+        <CardTitle>Pacotes em Alta</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
@@ -31,12 +31,12 @@ export function TrendingPackages({ packages }: TrendingPackagesProps) {
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Badge variant="secondary">{pkg.packageType.name}</Badge>
                   <span className="mx-2">•</span>
-                  <span>${pkg.price.toLocaleString()}</span>
+                  <span>R${pkg.price.toLocaleString()}</span>
                 </div>
               </div>
               <div className="ml-4">
                 <Badge variant="default" className="bg-green-500">
-                  {pkg.contactCount} contacts
+                  {pkg.contactCount} contatos
                 </Badge>
               </div>
             </div>

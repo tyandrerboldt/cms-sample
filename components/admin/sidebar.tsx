@@ -28,32 +28,32 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Packages",
+    title: "Pacotes",
     href: "/admin/packages",
     icon: Package,
   },
   {
-    title: "Package Types",
+    title: "Tipos de Pacotes",
     href: "/admin/package-types",
     icon: Tags,
   },
   {
-    title: "Articles",
+    title: "Artigos",
     href: "/admin/articles",
     icon: FileText,
   },
   {
-    title: "Article Categories",
+    title: "Categorias de Artigos",
     href: "/admin/article-categories",
     icon: FolderTree,
   },
   {
-    title: "Users",
+    title: "Usuários",
     href: "/admin/users",
     icon: Users,
   },
   {
-    title: "Settings",
+    title: "Configurações",
     href: "/admin/settings",
     icon: Settings,
   },
@@ -106,7 +106,7 @@ const SidebarContent = ({ pathname, settings }: { pathname: string; settings: Si
         onClick={() => signOut()}
       >
         <LogOut className="mr-2 h-4 w-4" />
-        Sign Out
+        Sair
       </Button>
     </div>
   </>

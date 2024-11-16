@@ -17,11 +17,11 @@ export default async function AdminPackageTypes() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Package Types</h1>
+        <h1 className="text-3xl font-bold">Tipos de Pacotes</h1>
         <Link href="/admin/package-types/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Package Type
+            Adicionar Tipo
           </Button>
         </Link>
       </div>

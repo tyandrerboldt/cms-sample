@@ -16,7 +16,7 @@ export function RecentPackages({ packages }: RecentPackagesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Packages</CardTitle>
+        <CardTitle>Pacotes Recentes</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
@@ -30,7 +30,7 @@ export function RecentPackages({ packages }: RecentPackagesProps) {
                   {pkg.title}
                 </Link>
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <span>{format(new Date(pkg.createdAt), "MMM d, yyyy")}</span>
+                  <span>{format(new Date(pkg.createdAt), "d 'de' MMM 'de' yyyy")}</span>
                   <span className="mx-2">•</span>
                   <Badge variant="secondary">{pkg.packageType.name}</Badge>
                 </div>

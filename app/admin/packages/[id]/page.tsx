@@ -21,7 +21,7 @@ export default async function EditPackage({
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Edit Package</h1>
+      <h1 className="text-3xl font-bold mb-6">Editar Pacote</h1>
       <PackageForm packageToEdit={packageData} packageTypes={packageTypes} />
     </div>
   );

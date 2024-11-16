@@ -12,11 +12,11 @@ export default async function AdminPackages() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Travel Packages</h1>
+        <h1 className="text-3xl font-bold">Pacotes</h1>
         <Link href="/admin/packages/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Package
+            Adicionar Pacote
           </Button>
         </Link>
       </div>

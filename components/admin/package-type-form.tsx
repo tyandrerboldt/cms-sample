@@ -13,8 +13,8 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
 const packageTypeSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
+  name: z.string().min(1, "Nome é obrigatório"),
+  description: z.string().min(1, "Descrição é obrigatória"),
 });
 
 type PackageTypeFormData = z.infer<typeof packageTypeSchema>;
@@ -48,19 +48,19 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to save package type");
+      if (!response.ok) throw new Error("Falha ao salvar o tipo de pacote");
 
       toast({
-        title: packageTypeToEdit ? "Package Type Updated" : "Package Type Created",
-        description: "The package type has been saved successfully.",
+        title: packageTypeToEdit ? "Tipo de Pacote Atualizado" : "Tipo de Pacote Criado",
+        description: "O tipo de pacote foi salvo com sucesso.",
       });
 
       router.push("/admin/package-types");
       router.refresh();
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to save the package type.",
+        title: "Erro",
+        description: "Falha ao salvar o tipo de pacote.",
         variant: "destructive",
       });
     }
@@ -71,7 +71,7 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
       <CardContent className="pt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-w-2xl">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nome</Label>
             <Input id="name" {...register("name")} />
             {errors.name && (
               <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -79,7 +79,7 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Descrição</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
@@ -92,10 +92,10 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
               variant="outline"
               onClick={() => router.push("/admin/package-types")}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit">
-              {packageTypeToEdit ? "Update Package Type" : "Create Package Type"}
+              {packageTypeToEdit ? "Atualizar" : "Criar"}
             </Button>
           </div>
         </form>

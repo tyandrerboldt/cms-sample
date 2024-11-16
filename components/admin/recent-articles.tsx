@@ -16,7 +16,7 @@ export function RecentArticles({ articles }: RecentArticlesProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Recent Articles</CardTitle>
+        <CardTitle>Artigos Recentes</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
@@ -30,14 +30,14 @@ export function RecentArticles({ articles }: RecentArticlesProps) {
                   {article.title}
                 </Link>
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <span>{format(new Date(article.createdAt), "MMM d, yyyy")}</span>
+                  <span>{format(new Date(article.createdAt), "d 'de' MMM 'de' yyyy")}</span>
                   <span className="mx-2">•</span>
                   <Badge variant="secondary">{article.category.name}</Badge>
                 </div>
               </div>
               <div className="ml-4">
                 <Badge variant={article.published ? "default" : "secondary"}>
-                  {article.published ? "Published" : "Draft"}
+                  {article.published ? "Publicado" : "Rascunho"}
                 </Badge>
               </div>
             </div>

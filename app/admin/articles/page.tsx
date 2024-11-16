@@ -15,11 +15,11 @@ export default async function AdminArticles() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Articles</h1>
+        <h1 className="text-3xl font-bold">Artigos</h1>
         <Link href="/admin/articles/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Add Article
+            Adicionar Artigo
           </Button>
         </Link>
       </div>
