@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,12 +13,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import { RichTextEditor } from "./rich-text-editor";
+import { ImagePlus, X } from "lucide-react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const articleSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   content: z.string().min(1, "Conteúdo é obrigatório"),
   excerpt: z.string().min(1, "Resumo é obrigatório"),
-  imageUrl: z.string().url("Deve ser uma URL válida"),
   categoryId: z.string().min(1, "Categoria é obrigatória"),
   published: z.boolean().default(false),
 });
@@ -35,6 +37,9 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isPublished, setIsPublished] = useState(articleToEdit?.published ?? false);
+  const [content, setContent] = useState(articleToEdit?.content || "");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(articleToEdit?.imageUrl || null);
 
   const {
     register,
@@ -46,19 +51,53 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
     defaultValues: {
       ...articleToEdit,
       published: isPublished,
+      content: content,
     },
   });
 
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    if (imagePreview && !articleToEdit?.imageUrl) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(null);
+  };
+
   const onSubmit = async (data: ArticleFormData) => {
     try {
+      const formData = new FormData();
+      
+      // Adicionar imagem se existir
+      if (imageFile) {
+        formData.append('image', imageFile);
+      } else if (imagePreview && articleToEdit?.imageUrl) {
+        formData.append('existingImage', articleToEdit.imageUrl);
+      } else {
+        // Indica que a imagem deve ser removida
+        formData.append('removeImage', 'true');
+      }
+
+      // Adicionar todos os outros dados do formulário
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value.toString());
+      });
+
       const response = await fetch(
         articleToEdit
           ? `/api/articles/${articleToEdit.id}`
           : "/api/articles",
         {
           method: articleToEdit ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: formData,
         }
       );
 
@@ -116,20 +155,66 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="imageUrl">URL da Imagem Destacada</Label>
-            <Input id="imageUrl" {...register("imageUrl")} />
-            {errors.imageUrl && (
-              <p className="text-sm text-red-500">{errors.imageUrl.message}</p>
-            )}
+          <div className="space-y-4">
+            <Label>Imagem em Destaque</Label>
+            <AnimatePresence mode="wait">
+              {imagePreview ? (
+                <motion.div
+                  key="image"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  className="relative w-full h-[300px] border rounded-lg overflow-hidden group"
+                >
+                  <Image
+                    src={imagePreview}
+                    alt="Pré-visualização da imagem em destaque"
+                    fill
+                    className="object-cover"
+                  />
+                  <motion.button
+                    type="button"
+                    onClick={removeImage}
+                    initial={{ opacity: 0 }}
+                    whileHover={{ opacity: 1 }}
+                    className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-red-500 hover:text-white transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="upload"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                >
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <Label
+                    htmlFor="image"
+                    className="flex flex-col items-center justify-center w-full h-[300px] border-2 border-dashed rounded-lg cursor-pointer hover:border-primary transition-colors"
+                  >
+                    <div className="flex flex-col items-center">
+                      <ImagePlus className="h-8 w-8 text-muted-foreground" />
+                      <span className="mt-2 text-sm text-muted-foreground">Carregar Imagem</span>
+                    </div>
+                  </Label>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="excerpt">Resumo</Label>
-            <Textarea
+            <Input
               id="excerpt"
               {...register("excerpt")}
-              rows={3}
               placeholder="Escreva um breve resumo do artigo..."
             />
             {errors.excerpt && (
@@ -139,12 +224,12 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="content">Conteúdo</Label>
-            <Textarea
-              id="content"
-              {...register("content")}
-              rows={15}
-              className="font-mono"
-              placeholder="Escreva o conteúdo do seu artigo aqui..."
+            <RichTextEditor
+              content={content}
+              onChange={(newContent) => {
+                setContent(newContent);
+                setValue("content", newContent);
+              }}
             />
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
@@ -172,7 +257,7 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
               Cancelar
             </Button>
             <Button type="submit">
-              {articleToEdit ? "Atualizar" : "Criar Artigo"}
+              {articleToEdit ? "Atualizar Artigo" : "Criar Artigo"}
             </Button>
           </div>
         </form>

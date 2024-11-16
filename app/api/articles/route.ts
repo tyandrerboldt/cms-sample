@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
+import { saveImage } from "@/lib/image-upload";
 
 export async function GET() {
   try {
@@ -21,15 +22,30 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const slug = slugify(data.title, { lower: true, strict: true });
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const slug = slugify(title, { lower: true, strict: true });
     
+    // Handle image upload
+    const imageFile = formData.get('image') as File;
+    let imageUrl = '';
+    
+    if (imageFile) {
+      imageUrl = await saveImage(imageFile, 'articles');
+    }
+
     const article = await prisma.article.create({
       data: {
-        ...data,
-        slug
+        title,
+        slug,
+        content: formData.get('content') as string,
+        excerpt: formData.get('excerpt') as string,
+        imageUrl,
+        published: formData.get('published') === 'true',
+        categoryId: formData.get('categoryId') as string,
       }
     });
+    
     return NextResponse.json(article);
   } catch (error) {
     return NextResponse.json(
