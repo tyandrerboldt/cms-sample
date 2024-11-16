@@ -1,4 +1,4 @@
-import { writeFile } from 'fs/promises';
+import { writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,6 +18,23 @@ export async function saveImage(file: File, folder: string = 'packages'): Promis
   // Save the file
   await writeFile(fullPath, buffer);
   return relativePath;
+}
+
+export async function deleteImage(imageUrl: string): Promise<void> {
+  if (!imageUrl) return;
+
+  try {
+    // Only delete files from our uploads directory to prevent unauthorized deletions
+    if (!imageUrl.startsWith('/uploads/')) return;
+
+    const fullPath = join(process.cwd(), 'public', imageUrl);
+    await unlink(fullPath);
+  } catch (error) {
+    // Ignore errors if file doesn't exist
+    if ((error as any).code !== 'ENOENT') {
+      throw error;
+    }
+  }
 }
 
 async function createDirIfNotExists(dir: string) {

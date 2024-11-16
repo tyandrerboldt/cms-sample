@@ -75,14 +75,14 @@ export function ImageUpload({ existingImages = [], onImagesChange }: ImageUpload
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label>Package Images</Label>
+        <Label>Imagens</Label>
         <Button
           type="button"
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
         >
           <ImagePlus className="mr-2 h-4 w-4" />
-          Add Images
+          Adicionar
         </Button>
         <input
           ref={fileInputRef}
@@ -102,7 +102,7 @@ export function ImageUpload({ existingImages = [], onImagesChange }: ImageUpload
           >
             <Image
               src={image.url}
-              alt={`Package image ${index + 1}`}
+              alt={`Imagem ${index + 1}`}
               fill
               className="object-cover"
             />
@@ -131,7 +131,7 @@ export function ImageUpload({ existingImages = [], onImagesChange }: ImageUpload
             </div>
             {image.isMain && (
               <div className="absolute bottom-2 left-2 px-2 py-1 bg-yellow-500 text-white text-xs rounded">
-                Main Image
+                Principal
               </div>
             )}
           </div>

@@ -1,12 +1,25 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { saveImage } from "@/lib/image-upload";
+import { saveImage, deleteImage } from "@/lib/image-upload";
 
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
+    // Get the current package to find images to delete
+    const currentPackage = await prisma.travelPackage.findUnique({
+      where: { id: params.id },
+      include: { images: true }
+    });
+
+    if (!currentPackage) {
+      return NextResponse.json(
+        { error: "Package not found" },
+        { status: 404 }
+      );
+    }
+
     const formData = await request.formData();
     
     // Handle new image uploads
@@ -18,8 +31,22 @@ export async function PUT(
       imageUrls.push(url);
     }
 
-    // Get existing images
+    // Get existing images that will be kept
     const existingImages = formData.getAll('existingImages') as string[];
+
+    // Delete removed images
+    const imagesToDelete = currentPackage.images
+      .filter(img => !existingImages.includes(img.url))
+      .map(img => img.url);
+
+    for (const imageUrl of imagesToDelete) {
+      await deleteImage(imageUrl);
+    }
+
+    // If main image was deleted, also delete it from the package
+    if (imagesToDelete.includes(currentPackage.imageUrl)) {
+      await deleteImage(currentPackage.imageUrl);
+    }
 
     // Combine all images with their isMain status
     const allImages = [
@@ -33,7 +60,7 @@ export async function PUT(
       }))
     ];
 
-    // Delete all existing images for this package
+    // Delete all existing images for this package from the database
     await prisma.packageImage.deleteMany({
       where: { packageId: params.id }
     });
@@ -79,9 +106,30 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Get the package with its images before deletion
+    const packageToDelete = await prisma.travelPackage.findUnique({
+      where: { id: params.id },
+      include: { images: true }
+    });
+
+    if (!packageToDelete) {
+      return NextResponse.json(
+        { error: "Package not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete all image files
+    await Promise.all([
+      deleteImage(packageToDelete.imageUrl),
+      ...packageToDelete.images.map(img => deleteImage(img.url))
+    ]);
+
+    // Delete the package (this will cascade delete the images from the database)
     await prisma.travelPackage.delete({
       where: { id: params.id },
     });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

@@ -6,7 +6,7 @@ export default async function NewArticle() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Criar Novo Artigo</h1>
+      <h1 className="text-3xl font-bold mb-6">Criar Artigo</h1>
       <ArticleForm categories={categories} />
     </div>
   );

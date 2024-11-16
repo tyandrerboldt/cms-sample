@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { saveImage } from "@/lib/image-upload";
+import { saveImage, deleteImage } from "@/lib/image-upload";
 
 export async function GET() {
   try {
@@ -19,18 +19,36 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    let logoUrl = formData.get('existingLogo') as string;
+    
+    // Get current settings to check for logo changes
+    const currentSettings = await prisma.siteSettings.findFirst({
+      where: { id: "default" }
+    });
 
+    let logoUrl: any = formData.get('existingLogo') as string;
+    const shouldRemoveLogo = formData.get('removeLogo') === 'true';
+
+    // Handle logo removal
+    if (shouldRemoveLogo && currentSettings?.logo) {
+      await deleteImage(currentSettings.logo);
+      logoUrl = null;
+    }
     // Handle logo upload
-    const logoFile = formData.get('logo') as File;
-    if (logoFile) {
-      logoUrl = await saveImage(logoFile, 'logos');
+    else {
+      const logoFile = formData.get('logo') as File;
+      if (logoFile) {
+        // Delete old logo if it exists
+        if (currentSettings?.logo) {
+          await deleteImage(currentSettings.logo);
+        }
+        logoUrl = await saveImage(logoFile, 'logos');
+      }
     }
 
     // Convert form data to settings object
     const data: any = {};
     formData.forEach((value, key) => {
-      if (key !== 'logo' && key !== 'existingLogo') {
+      if (key !== 'logo' && key !== 'existingLogo' && key !== 'removeLogo') {
         if (key === 'status') {
           data[key] = value === 'true';
         } else if (key === 'smtpPort' && value) {
@@ -42,7 +60,7 @@ export async function POST(request: Request) {
     });
 
     // Add logo URL if exists
-    if (logoUrl) {
+    if (logoUrl !== undefined) {
       data.logo = logoUrl;
     }
 

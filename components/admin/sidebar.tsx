@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -127,6 +127,8 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent side="left" className="w-[300px] p-0">
+          <SheetTitle></SheetTitle>
+          <SheetDescription></SheetDescription>
           <SidebarContent pathname={pathname} settings={settings} />
         </SheetContent>
       </Sheet>

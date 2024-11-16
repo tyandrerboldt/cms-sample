@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome do site é obrigatório"),
@@ -61,6 +62,10 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Clean up old preview URL if it exists and it's not from the server
+      if (logoPreview && !settings?.logo) {
+        URL.revokeObjectURL(logoPreview);
+      }
       setLogoFile(file);
       const previewUrl = URL.createObjectURL(file);
       setLogoPreview(previewUrl);
@@ -73,7 +78,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       URL.revokeObjectURL(logoPreview);
     }
     setLogoPreview(null);
-    setValue("logo", "");
+    setValue("logo", null);
   };
 
   const onSubmit = async (data: SettingsFormData) => {
@@ -85,11 +90,13 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         formData.append('logo', logoFile);
       } else if (logoPreview && settings?.logo) {
         formData.append('existingLogo', settings.logo);
+      } else {
+        formData.append('removeLogo', 'true');
       }
 
       // Add all other form data
       Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== null && key !== 'logo') {
           formData.append(key, value.toString());
         }
       });
@@ -161,42 +168,57 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
               <div className="space-y-4">
                 <Label>Logo</Label>
-                {logoPreview ? (
-                  <div className="relative w-32 h-32 border rounded-lg overflow-hidden group">
-                    <Image
-                      src={logoPreview}
-                      alt="Logo preview"
-                      fill
-                      className="object-contain"
-                    />
-                    <button
-                      type="button"
-                      onClick={removeLogo}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-red-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                <AnimatePresence mode="wait">
+                  {logoPreview ? (
+                    <motion.div
+                      key="logo"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="relative w-32 h-32 border rounded-lg overflow-hidden group"
                     >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <Input
-                      id="logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoChange}
-                      className="hidden"
-                    />
-                    <Label
-                      htmlFor="logo"
-                      className="flex items-center justify-center w-32 h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary"
+                      <Image
+                        src={logoPreview}
+                        alt="Logo preview"
+                        fill
+                        className="object-contain"
+                      />
+                      <motion.button
+                        type="button"
+                        onClick={removeLogo}
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 1 }}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 hover:bg-red-500 hover:text-white transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </motion.button>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="upload"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
                     >
-                      <div className="flex flex-col items-center">
-                        <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                        <span className="mt-2 text-sm text-muted-foreground">Carregar Logo</span>
-                      </div>
-                    </Label>
-                  </div>
-                )}
+                      <Input
+                        id="logo"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoChange}
+                        className="hidden"
+                      />
+                      <Label
+                        htmlFor="logo"
+                        className="flex items-center justify-center w-32 h-32 border-2 border-dashed rounded-lg cursor-pointer hover:border-primary transition-colors"
+                      >
+                        <div className="flex flex-col items-center">
+                          <ImagePlus className="h-8 w-8 text-muted-foreground" />
+                          <span className="mt-2 text-sm text-muted-foreground">Carregar Logo</span>
+                        </div>
+                      </Label>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </TabsContent>
 

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage } from "@/lib/image-upload";
+import slugify from "slugify";
 
 export async function POST(request: Request) {
   try {
@@ -15,39 +16,33 @@ export async function POST(request: Request) {
       imageUrls.push(url);
     }
 
-    // Get existing images
-    const existingImages = formData.getAll('existingImages') as string[];
-
-    // Combine all images with their isMain status
-    const allImages = [
-      ...imageUrls.map((url, index) => ({
-        url,
-        isMain: formData.get(`imageIsMain${index}`) === 'true'
-      })),
-      ...existingImages.map(url => ({
-        url,
-        isMain: formData.get(`existingImageIsMain${url}`) === 'true'
-      }))
-    ];
+    // Generate slug from title
+    const title = formData.get('title') as string;
+    const slug = slugify(title, { lower: true, strict: true });
 
     // Create package with images and package type
     const packageData = await prisma.travelPackage.create({
       data: {
-        title: formData.get('title') as string,
-        // code: formData.get('code') as string,
-        // slug: formData.get('title')?.toString().toLocaleLowerCase() as string,
+        title,
+        slug,
+        code: formData.get('code') as string,
         description: formData.get('description') as string,
         location: formData.get('location') as string,
         price: parseFloat(formData.get('price') as string),
         startDate: new Date(formData.get('startDate') as string),
         endDate: new Date(formData.get('endDate') as string),
         maxGuests: parseInt(formData.get('maxGuests') as string),
+        dormitories: parseInt(formData.get('dormitories') as string),
+        suites: parseInt(formData.get('suites') as string),
+        bathrooms: parseInt(formData.get('bathrooms') as string),
+        numberOfDays: parseInt(formData.get('numberOfDays') as string),
+        status: formData.get('status') as any,
         typeId: formData.get('typeId') as string,
-        imageUrl: allImages.find(img => img.isMain)?.url || allImages[0]?.url || '',
+        imageUrl: imageUrls[0] || '',
         images: {
-          create: allImages.map(img => ({
-            url: img.url,
-            isMain: img.isMain
+          create: imageUrls.map((url, index) => ({
+            url,
+            isMain: index === 0
           }))
         }
       },
