@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -42,7 +45,6 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  role          UserRole  @default(USER)
 }
 
 model VerificationToken {
@@ -54,39 +56,38 @@ model VerificationToken {
 }
 
 model TravelPackage {
-  id          String         @id @default(cuid())
-  code        String         @unique
-  slug        String         @unique
-  title       String
-  description String
-  location    String
-  imageUrl    String
-  price       Decimal        @db.Decimal(10, 2)
-  startDate   DateTime
-  endDate     DateTime
-  maxGuests   Int
-  dormitories Int           @default(0)
-  suites      Int           @default(0)
-  bathrooms   Int           @default(0)
-  numberOfDays Int
-  status      PackageStatus @default(DRAFT)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  packageType PackageType   @relation(fields: [typeId], references: [id])
-  typeId      String
-  images      PackageImage[]
+  id           String         @id @default(cuid())
+  code         String         @unique
+  slug         String         @unique
+  title        String
+  description  String
+  location     String
+  imageUrl     String
+  price        Float
+  startDate    DateTime
+  endDate      DateTime
+  maxGuests    Int
+  dormitories  Int           @default(0)
+  suites       Int           @default(0)
+  bathrooms    Int           @default(0)
+  numberOfDays Int           @default(1)
+  status       PackageStatus @default(DRAFT)
+  contactCount Int           @default(0)
+  typeId       String
+  packageType  PackageType   @relation(fields: [typeId], references: [id])
+  images       PackageImage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model PackageImage {
   id        String        @id @default(cuid())
   url       String
   isMain    Boolean       @default(false)
-  package   TravelPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
   packageId String
+  package   TravelPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-
-  @@index([packageId])
 }
 
 model PackageType {
@@ -99,17 +100,17 @@ model PackageType {
 }
 
 model Article {
-  id         String          @id @default(cuid())
-  title      String
-  content    String          @db.Text
-  imageUrl   String
-  excerpt    String
-  slug       String          @unique
-  published  Boolean         @default(false)
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  category   ArticleCategory @relation(fields: [categoryId], references: [id])
-  categoryId String
+  id          String          @id @default(cuid())
+  title       String
+  slug        String          @unique
+  content     String
+  excerpt     String
+  imageUrl    String
+  published   Boolean         @default(false)
+  categoryId  String
+  category    ArticleCategory @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model ArticleCategory {
@@ -121,20 +122,8 @@ model ArticleCategory {
   updatedAt   DateTime  @updatedAt
 }
 
-enum UserRole {
-  USER
-  ADMIN
-}
-
-enum PackageStatus {
-  DRAFT
-  ACTIVE
-  INACTIVE
-  UNAVAILABLE
-}
-
 model SiteSettings {
-  id            String   @id @default("default") // Single record
+  id            String   @id @default("default")
   name          String
   description   String
   logo          String?
@@ -151,4 +140,11 @@ model SiteSettings {
   youtubeUrl    String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+enum PackageStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  UNAVAILABLE
 }

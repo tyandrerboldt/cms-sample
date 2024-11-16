@@ -34,6 +34,8 @@ export async function POST(request: Request) {
     const packageData = await prisma.travelPackage.create({
       data: {
         title: formData.get('title') as string,
+        // code: formData.get('code') as string,
+        // slug: formData.get('title')?.toString().toLocaleLowerCase() as string,
         description: formData.get('description') as string,
         location: formData.get('location') as string,
         price: parseFloat(formData.get('price') as string),
