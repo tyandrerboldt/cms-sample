@@ -6,7 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -138,6 +138,8 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
+        <SheetTitle></SheetTitle>
+        <SheetDescription></SheetDescription>
         <SheetContent side="left" className="w-[300px] p-0">
           <AnimatePresence mode="wait">
             {isOpen && <SidebarContent pathname={pathname} settings={settings} />}

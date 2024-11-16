@@ -1,6 +1,34 @@
 "use client";
 
-import { TravelPackage, PackageType } from "@prisma/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -9,27 +37,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Edit, Search, Trash2, ArrowUpDown, X } from "lucide-react";
-import { format } from "date-fns";
-import Link from "next/link";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { useState } from "react";
+import { PackageType, TravelPackage } from "@prisma/client";
+import { format } from "date-fns";
 import { motion } from "framer-motion";
+import { ArrowUpDown, Edit, Search, Trash2, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 interface PackageListProps {
   packages: (TravelPackage & {
@@ -44,7 +59,7 @@ interface PackageListProps {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
-export function PackageList({ 
+export function PackageList({
   packages,
   packageTypes,
   currentPage,
@@ -55,12 +70,16 @@ export function PackageList({
   const router = useRouter();
   const { toast } = useToast();
   const searchParams = useSearchParams();
-  
+
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [status, setStatus] = useState(searchParams.get("status") || "");
   const [typeId, setTypeId] = useState(searchParams.get("typeId") || "");
-  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "createdAt");
-  const [sortOrder, setSortOrder] = useState(searchParams.get("sortOrder") || "desc");
+  const [sortBy, setSortBy] = useState(
+    searchParams.get("sortBy") || "createdAt"
+  );
+  const [sortOrder, setSortOrder] = useState(
+    searchParams.get("sortOrder") || "desc"
+  );
   const [pageSize, setPageSize] = useState(perPage);
 
   const handleDelete = async (id: string) => {
@@ -72,7 +91,7 @@ export function PackageList({
         title: "Pacote Excluído",
         description: "O pacote foi excluído com sucesso.",
       });
-      
+
       router.refresh();
     } catch (error) {
       toast({
@@ -85,7 +104,7 @@ export function PackageList({
 
   const updateSearchParams = (params: Record<string, string>) => {
     const newSearchParams = new URLSearchParams(searchParams.toString());
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value) {
         newSearchParams.set(key, value);
@@ -93,23 +112,24 @@ export function PackageList({
         newSearchParams.delete(key);
       }
     });
-    
+
     router.push(`/admin/packages?${newSearchParams.toString()}`);
   };
 
   const handleSort = (column: string) => {
-    const newSortOrder = sortBy === column && sortOrder === "asc" ? "desc" : "asc";
+    const newSortOrder =
+      sortBy === column && sortOrder === "asc" ? "desc" : "asc";
     setSortBy(column);
     setSortOrder(newSortOrder);
     updateSearchParams({ sortBy: column, sortOrder: newSortOrder });
   };
 
   const handleSearch = () => {
-    updateSearchParams({ 
+    updateSearchParams({
       search,
       status,
       typeId,
-      page: "1" // Reset to first page on new search
+      page: "1", // Reset to first page on new search
     });
   };
 
@@ -119,9 +139,9 @@ export function PackageList({
 
   const handlePageSizeChange = (size: string) => {
     setPageSize(Number(size));
-    updateSearchParams({ 
+    updateSearchParams({
       perPage: size,
-      page: "1" // Reset to first page when changing page size
+      page: "1", // Reset to first page when changing page size
     });
   };
 
@@ -135,20 +155,33 @@ export function PackageList({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "secondary" | "destructive" | "outline"
+    > = {
       ACTIVE: "default",
       DRAFT: "secondary",
       INACTIVE: "destructive",
       UNAVAILABLE: "outline",
     };
-    return <Badge variant={variants[status]}>{status}</Badge>;
+    const labels: Record<
+      string,
+      "Ativo" | "Rascunho" | "Inativo" | "Indisponível"
+    > = {
+      ACTIVE: "Ativo",
+      DRAFT: "Rascunho",
+      INACTIVE: "Inativo",
+      UNAVAILABLE: "Indisponível",
+    };
+    return <Badge variant={variants[status]}>{labels[status]}</Badge>;
   };
+
 
   const hasActiveFilters = search || status || typeId;
 
   return (
     <div className="space-y-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-lg border"
@@ -165,12 +198,15 @@ export function PackageList({
             />
           </div>
         </div>
-        
+
         <div className="w-full md:w-48">
-          <Select value={status} onValueChange={(value) => {
-            setStatus(value);
-            updateSearchParams({ status: value, page: "1" });
-          }}>
+          <Select
+            value={status}
+            onValueChange={(value) => {
+              setStatus(value);
+              updateSearchParams({ status: value, page: "1" });
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -185,10 +221,13 @@ export function PackageList({
         </div>
 
         <div className="w-full md:w-48">
-          <Select value={typeId} onValueChange={(value) => {
-            setTypeId(value);
-            updateSearchParams({ typeId: value, page: "1" });
-          }}>
+          <Select
+            value={typeId}
+            onValueChange={(value) => {
+              setTypeId(value);
+              updateSearchParams({ typeId: value, page: "1" });
+            }}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Tipo de Pacote" />
             </SelectTrigger>
@@ -218,25 +257,40 @@ export function PackageList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("code")}>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("code")}
+              >
                 Código
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("title")}>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("title")}
+              >
                 Título
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("location")}>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("location")}
+              >
                 Localização
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("price")}>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("price")}
+              >
                 Preço
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Tipo</TableHead>
-              <TableHead className="cursor-pointer" onClick={() => handleSort("startDate")}>
+              <TableHead
+                className="cursor-pointer"
+                onClick={() => handleSort("startDate")}
+              >
                 Data Início
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
@@ -252,7 +306,9 @@ export function PackageList({
                 <TableCell>R$ {pkg.price.toFixed(2)}</TableCell>
                 <TableCell>{getStatusBadge(pkg.status)}</TableCell>
                 <TableCell>{pkg.packageType.name}</TableCell>
-                <TableCell>{format(new Date(pkg.startDate), "dd/MM/yyyy")}</TableCell>
+                <TableCell>
+                  {format(new Date(pkg.startDate), "dd/MM/yyyy")}
+                </TableCell>
                 <TableCell>
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/packages/${pkg.id}`}>
@@ -270,12 +326,15 @@ export function PackageList({
                         <AlertDialogHeader>
                           <AlertDialogTitle>Excluir Pacote</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Tem certeza que deseja excluir este pacote? Esta ação não pode ser desfeita.
+                            Tem certeza que deseja excluir este pacote? Esta
+                            ação não pode ser desfeita.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(pkg.id)}>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(pkg.id)}
+                          >
                             Excluir
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -289,11 +348,12 @@ export function PackageList({
         </Table>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4">
         <div className="flex items-center gap-4">
           <p className="text-sm text-muted-foreground">
             Mostrando {(currentPage - 1) * perPage + 1} até{" "}
-            {Math.min(currentPage * perPage, totalItems)} de {totalItems} resultados
+            {Math.min(currentPage * perPage, totalItems)} de {totalItems}{" "}
+            resultados
           </p>
 
           <Select
@@ -312,16 +372,18 @@ export function PackageList({
             </SelectContent>
           </Select>
         </div>
-        
+          
         <Pagination>
           <PaginationContent>
             <PaginationItem>
-              <PaginationPrevious 
+              <PaginationPrevious
                 href="#"
-                onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+                onClick={() =>
+                  currentPage > 1 && handlePageChange(currentPage - 1)
+                }
               />
             </PaginationItem>
-            
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <PaginationItem key={page}>
                 <PaginationLink
@@ -333,11 +395,13 @@ export function PackageList({
                 </PaginationLink>
               </PaginationItem>
             ))}
-            
+
             <PaginationItem>
-              <PaginationNext 
+              <PaginationNext
                 href="#"
-                onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+                onClick={() =>
+                  currentPage < totalPages && handlePageChange(currentPage + 1)
+                }
               />
             </PaginationItem>
           </PaginationContent>
