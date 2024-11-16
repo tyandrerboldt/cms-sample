@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage, deleteImage } from "@/lib/image-upload";
+import slugify from "slugify";
 
 export async function PUT(
   request: Request,
@@ -65,17 +66,28 @@ export async function PUT(
       where: { packageId: params.id }
     });
 
+    // Generate slug from title
+    const title = formData.get('title') as string;
+    const slug = slugify(title, { lower: true, strict: true });
+    
     // Update package with new images and package type
     const packageData = await prisma.travelPackage.update({
       where: { id: params.id },
       data: {
-        title: formData.get('title') as string,
+        title,
+        slug,
+        code: formData.get('code') as string,
         description: formData.get('description') as string,
         location: formData.get('location') as string,
         price: parseFloat(formData.get('price') as string),
         startDate: new Date(formData.get('startDate') as string),
         endDate: new Date(formData.get('endDate') as string),
         maxGuests: parseInt(formData.get('maxGuests') as string),
+        dormitories: parseInt(formData.get('dormitories') as string),
+        suites: parseInt(formData.get('suites') as string),
+        bathrooms: parseInt(formData.get('bathrooms') as string),
+        numberOfDays: parseInt(formData.get('numberOfDays') as string),
+        status: formData.get('status') as any,
         typeId: formData.get('typeId') as string,
         imageUrl: allImages.find(img => img.isMain)?.url || allImages[0]?.url || '',
         images: {
