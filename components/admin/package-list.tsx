@@ -57,7 +57,7 @@ interface PackageListProps {
   perPage: number;
 }
 
-const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 30];
 
 export function PackageList({
   packages,

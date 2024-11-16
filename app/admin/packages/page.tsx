@@ -21,7 +21,7 @@ export default async function AdminPackages({
   searchParams: SearchParams;
 }) {
   const page = Number(searchParams.page) || 1;
-  const perPage = Number(searchParams.perPage) || 10;
+  const perPage = Number(searchParams.perPage) || 5;
   const search = searchParams.search;
   const status = searchParams.status;
   const typeId = searchParams.typeId;

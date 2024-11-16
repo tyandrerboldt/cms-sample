@@ -34,14 +34,14 @@ const menuItems = [
     icon: Package,
   },
   {
-    title: "Tipos de Pacote",
-    href: "/admin/package-types",
-    icon: Tags,
-  },
-  {
     title: "Artigos",
     href: "/admin/articles",
     icon: FileText,
+  },
+  {
+    title: "Tipos de Pacotes",
+    href: "/admin/package-types",
+    icon: Tags,
   },
   {
     title: "Categorias de Artigos",
