@@ -12,18 +12,37 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { format } from "date-fns";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useSession } from "next-auth/react";
 
 interface UserListProps {
   users: User[];
 }
 
 export function UserList({ users }: UserListProps) {
+  const session: any = useSession();
+
   const router = useRouter();
   const { toast } = useToast();
 
@@ -36,7 +55,7 @@ export function UserList({ users }: UserListProps) {
         title: "Usuário Deletado",
         description: "O usuário foi deletado com sucesso.",
       });
-      
+
       router.refresh();
     } catch (error) {
       toast({
@@ -55,13 +74,14 @@ export function UserList({ users }: UserListProps) {
         body: JSON.stringify({ role: newRole }),
       });
 
-      if (!response.ok) throw new Error("Falha ao atualizar o papel do usuário");
+      if (!response.ok)
+        throw new Error("Falha ao atualizar o papel do usuário");
 
       toast({
         title: "Papel Atualizado",
         description: "O papel do usuário foi atualizado com sucesso.",
       });
-      
+
       router.refresh();
     } catch (error) {
       toast({
@@ -113,46 +133,57 @@ export function UserList({ users }: UserListProps) {
                   <Badge variant={getRoleBadgeVariant(user.role)}>
                     {user.role}
                   </Badge>
-                  <Select
-                    defaultValue={user.role}
-                    onValueChange={(value) => handleRoleChange(user.id, value)}
-                  >
-                    <SelectTrigger className="w-[110px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="USER">Usuário</SelectItem>
-                      <SelectItem value="EDITOR">Editor</SelectItem>
-                      <SelectItem value="ADMIN">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  {session.data?.user?.id !== user.id && (
+                    <Select
+                      defaultValue={user.role}
+                      onValueChange={(value) =>
+                        handleRoleChange(user.id, value)
+                      }
+                    >
+                      <SelectTrigger className="w-[110px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="USER">Usuário</SelectItem>
+                        <SelectItem value="EDITOR">Editor</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               </TableCell>
-              <TableCell>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableCell>
               <TableCell>
-                <div className="flex justify-end">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Deletar Usuário</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Tem certeza de que deseja deletar este usuário? Esta ação não pode ser desfeita.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(user.id)}>
-                          Deletar
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
+                {format(new Date(user.createdAt), "MMM d, yyyy")}
+              </TableCell>
+              <TableCell>
+                {session.data?.user?.id !== user.id && (
+                  <div className="flex justify-end">
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Deletar Usuário</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza de que deseja deletar este usuário? Esta
+                            ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(user.id)}
+                          >
+                            Deletar
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           ))}

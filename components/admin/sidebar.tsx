@@ -98,7 +98,7 @@ const SidebarContent = ({ pathname, settings }: { pathname: string; settings: Si
                 href={item.href}
                 className={cn(
                   "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  pathname === item.href
+                  (pathname.startsWith(item.href) && item.href != "/admin") || pathname === item.href
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-primary/5"
                 )}

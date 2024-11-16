@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome do site é obrigatório"),
@@ -23,7 +24,11 @@ const settingsSchema = z.object({
   logo: z.string().nullable().optional(),
   status: z.boolean(),
   smtpHost: z.string().nullable().optional(),
-  smtpPort: z.string().transform(val => val ? parseInt(val) : null).nullable().optional(),
+  smtpPort: z
+    .string()
+    .transform((val) => (val ? parseInt(val) : null))
+    .nullable()
+    .optional(),
   smtpUser: z.string().nullable().optional(),
   smtpPass: z.string().nullable().optional(),
   smtpFrom: z.string().email().nullable().optional(),
@@ -42,9 +47,12 @@ interface SettingsFormProps {
 
 export function SettingsForm({ settings }: SettingsFormProps) {
   const { toast } = useToast();
+  const router = useRouter();
   const [isActive, setIsActive] = useState(settings?.status ?? true);
   const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [logoPreview, setLogoPreview] = useState<string | null>(settings?.logo || null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(
+    settings?.logo || null
+  );
 
   const {
     register,
@@ -84,25 +92,25 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   const onSubmit = async (data: SettingsFormData) => {
     try {
       const formData = new FormData();
-      
+
       // Handle logo
       if (logoFile) {
-        formData.append('logo', logoFile);
+        formData.append("logo", logoFile);
       } else if (logoPreview && settings?.logo) {
-        formData.append('existingLogo', settings.logo);
+        formData.append("existingLogo", settings.logo);
       } else {
-        formData.append('removeLogo', 'true');
+        formData.append("removeLogo", "true");
       }
 
       // Add all other form data
       Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && key !== 'logo') {
+        if (value !== undefined && value !== null && key !== "logo") {
           formData.append(key, value.toString());
         }
       });
 
-      const response = await fetch('/api/settings', {
-        method: 'POST',
+      const response = await fetch("/api/settings", {
+        method: "POST",
         body: formData,
       });
 
@@ -112,6 +120,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
         title: "Configurações Atualizadas",
         description: "As configurações do site foram salvas com sucesso.",
       });
+      setTimeout(() => {
+        window.location.reload();
+        }, 100);
     } catch (error) {
       toast({
         title: "Erro",
@@ -138,7 +149,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   <Label htmlFor="name">Nome do Site</Label>
                   <Input id="name" {...register("name")} />
                   {errors.name && (
-                    <p className="text-sm text-red-500">{errors.name.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 
@@ -153,7 +166,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                         setValue("status", checked);
                       }}
                     />
-                    <Label htmlFor="status">{isActive ? 'Ativo' : 'Inativo'}</Label>
+                    <Label htmlFor="status">
+                      {isActive ? "Ativo" : "Inativo"}
+                    </Label>
                   </div>
                 </div>
               </div>
@@ -162,7 +177,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="description">Descrição do Site</Label>
                 <Textarea id="description" {...register("description")} />
                 {errors.description && (
-                  <p className="text-sm text-red-500">{errors.description.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.description.message}
+                  </p>
                 )}
               </div>
 
@@ -213,7 +230,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                       >
                         <div className="flex flex-col items-center">
                           <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                          <span className="mt-2 text-sm text-muted-foreground">Carregar Logo</span>
+                          <span className="mt-2 text-sm text-muted-foreground">
+                            Carregar Logo
+                          </span>
                         </div>
                       </Label>
                     </motion.div>
@@ -231,7 +250,11 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
                 <div className="space-y-2">
                   <Label htmlFor="smtpPort">SMTP Port</Label>
-                  <Input id="smtpPort" type="number" {...register("smtpPort")} />
+                  <Input
+                    id="smtpPort"
+                    type="number"
+                    {...register("smtpPort")}
+                  />
                 </div>
               </div>
 
@@ -243,7 +266,11 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
                 <div className="space-y-2">
                   <Label htmlFor="smtpPass">SMTP Senha</Label>
-                  <Input id="smtpPass" type="password" {...register("smtpPass")} />
+                  <Input
+                    id="smtpPass"
+                    type="password"
+                    {...register("smtpPass")}
+                  />
                 </div>
               </div>
 
@@ -251,7 +278,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="smtpFrom">Endereço de Email do Remetente</Label>
                 <Input id="smtpFrom" type="email" {...register("smtpFrom")} />
                 {errors.smtpFrom && (
-                  <p className="text-sm text-red-500">{errors.smtpFrom.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.smtpFrom.message}
+                  </p>
                 )}
               </div>
             </TabsContent>
@@ -262,7 +291,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   <Label htmlFor="facebookUrl">URL do Facebook</Label>
                   <Input id="facebookUrl" {...register("facebookUrl")} />
                   {errors.facebookUrl && (
-                    <p className="text-sm text-red-500">{errors.facebookUrl.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.facebookUrl.message}
+                    </p>
                   )}
                 </div>
 
@@ -270,7 +301,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   <Label htmlFor="instagramUrl">URL do Instagram</Label>
                   <Input id="instagramUrl" {...register("instagramUrl")} />
                   {errors.instagramUrl && (
-                    <p className="text-sm text-red-500">{errors.instagramUrl.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.instagramUrl.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -280,7 +313,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   <Label htmlFor="twitterUrl">URL do Twitter</Label>
                   <Input id="twitterUrl" {...register("twitterUrl")} />
                   {errors.twitterUrl && (
-                    <p className="text-sm text-red-500">{errors.twitterUrl.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.twitterUrl.message}
+                    </p>
                   )}
                 </div>
 
@@ -288,7 +323,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   <Label htmlFor="linkedinUrl">URL do LinkedIn</Label>
                   <Input id="linkedinUrl" {...register("linkedinUrl")} />
                   {errors.linkedinUrl && (
-                    <p className="text-sm text-red-500">{errors.linkedinUrl.message}</p>
+                    <p className="text-sm text-red-500">
+                      {errors.linkedinUrl.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -297,7 +334,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="youtubeUrl">URL do YouTube</Label>
                 <Input id="youtubeUrl" {...register("youtubeUrl")} />
                 {errors.youtubeUrl && (
-                  <p className="text-sm text-red-500">{errors.youtubeUrl.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.youtubeUrl.message}
+                  </p>
                 )}
               </div>
             </TabsContent>

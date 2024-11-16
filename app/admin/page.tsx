@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
 
   return (
     <PageTransition>
-      <div className="space-y-8">
+      <div className="space-y-8 w-full 3xl:w-2/3">
         <h1 className="text-3xl font-bold">Dashboard</h1>
 
         <DashboardStats stats={stats} />
