@@ -4,6 +4,7 @@ import { AdminSidebar } from "@/components/admin/sidebar";
 import { AdminHeader } from "@/components/admin/header";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { Breadcrumbs } from "@/components/admin/breadcrumbs";
 
 export default function AdminLayout({
   children,
@@ -37,8 +38,14 @@ export default function AdminLayout({
           !isMobile ? "ml-64" : "ml-0"
         )}
       >
-        <AdminHeader onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} isMobile={isMobile} />
-        <main className="p-8">{children}</main>
+        <AdminHeader
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          isMobile={isMobile}
+        />
+        <main className="p-8">
+          <Breadcrumbs />
+          {children}
+        </main>
       </div>
     </div>
   );
