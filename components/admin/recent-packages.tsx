@@ -12,6 +12,29 @@ interface RecentPackagesProps {
   })[];
 }
 
+const getStatusBadge = (status: string) => {
+  const variants: Record<
+    string,
+    "default" | "secondary" | "destructive" | "outline"
+  > = {
+    ACTIVE: "default",
+    DRAFT: "secondary",
+    INACTIVE: "destructive",
+    UNAVAILABLE: "outline",
+  };
+  const labels: Record<
+    string,
+    "Ativo" | "Rascunho" | "Inativo" | "Indisponível"
+  > = {
+    ACTIVE: "Ativo",
+    DRAFT: "Rascunho",
+    INACTIVE: "Inativo",
+    UNAVAILABLE: "Indisponível",
+  };
+  return <Badge variant={variants[status]}>{labels[status]}</Badge>;
+};
+
+
 export function RecentPackages({ packages }: RecentPackagesProps) {
   return (
     <Card>
@@ -36,9 +59,7 @@ export function RecentPackages({ packages }: RecentPackagesProps) {
                 </div>
               </div>
               <div className="ml-4">
-                <Badge variant={pkg.status === "ACTIVE" ? "default" : "secondary"}>
-                  {pkg.status}
-                </Badge>
+                {getStatusBadge(pkg.status)}
               </div>
             </div>
           ))}
