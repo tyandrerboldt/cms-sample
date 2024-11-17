@@ -37,7 +37,7 @@ export function PackageFilter() {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+    <div className="bg-background rounded-lg shadow-md p-6 space-y-6 border">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <SlidersHorizontal className="h-5 w-5" />

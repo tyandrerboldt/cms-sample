@@ -136,7 +136,7 @@ export function ArticleList({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-lg border">
+      <div className="flex flex-col md:flex-row gap-4 bg-background p-4 rounded-lg border">
         <div className="flex-1">
           <div className="relative">
             <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
@@ -202,7 +202,7 @@ export function ArticleList({
         </div>
       </div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-background">
         <Table>
           <TableHeader>
             <TableRow>

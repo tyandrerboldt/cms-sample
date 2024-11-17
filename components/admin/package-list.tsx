@@ -184,7 +184,7 @@ export function PackageList({
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-lg border"
+        className="flex flex-col md:flex-row gap-4 bg-background p-4 rounded-lg border"
       >
         <div className="flex-1">
           <div className="relative">
@@ -253,7 +253,7 @@ export function PackageList({
         </div>
       </motion.div>
 
-      <div className="rounded-md border bg-white">
+      <div className="rounded-md border bg-background">
         <Table>
           <TableHeader>
             <TableRow>

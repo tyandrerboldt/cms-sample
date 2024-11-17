@@ -104,7 +104,7 @@ export function UserList({ users }: UserListProps) {
   };
 
   return (
-    <div className="rounded-md border bg-white">
+    <div className="rounded-md border bg-background">
       <Table>
         <TableHeader>
           <TableRow>
