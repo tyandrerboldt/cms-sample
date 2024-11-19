@@ -50,7 +50,7 @@ export function ArticleCategoryList({ categories }: ArticleCategoryListProps) {
   };
 
   return (
-    <div className="rounded-md border bg-white">
+    <div className="rounded-md border bg-background">
       <Table>
         <TableHeader>
           <TableRow>
