@@ -1,8 +1,8 @@
+import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
-import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -12,27 +12,22 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
-    async session({ session, user }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-          role: user.role,
-        },
-      };
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-        token.id = user.id;
+    async jwt({ token, account }) {
+
+      if (account) {
+        token.provider = account.provider; // Adiciona o provider ao token
       }
       return token;
     },
-  },
-  pages: {
-    signIn: "/auth/signin",
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub || ""; // Adiciona o Id do user a sessão
+        session.user.provider = token.provider; // Adiciona o token a sessão
+      }
+      return session;
+    },
   },
   secret: process.env.NEXTAUTH_SECRET
 };
