@@ -43,7 +43,12 @@ interface PackageFormProps {
 export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const [images, setImages] = useState<{ file?: File; url: string; isMain: boolean }[]>([]);
+  const [images, setImages] = useState<{ file?: File; url: string; isMain: boolean }[]>(
+    packageToEdit?.images?.map(img => ({
+      url: img.url,
+      isMain: img.isMain,
+    })) || []
+  );
 
   const {
     register,
@@ -84,16 +89,18 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
       const slug = slugify(data.title, { lower: true, strict: true });
       formData.append("slug", slug);
       
+      // Handle images
       images.forEach((image, index) => {
         if (image.file) {
-          formData.append(`images`, image.file);
+          formData.append("images", image.file);
           formData.append(`imageIsMain${index}`, image.isMain.toString());
         } else {
-          formData.append(`existingImages`, image.url);
+          formData.append("existingImages", image.url);
           formData.append(`existingImageIsMain${image.url}`, image.isMain.toString());
         }
       });
 
+      // Add all other form data
       Object.entries(data).forEach(([key, value]) => {
         formData.append(key, value.toString());
       });

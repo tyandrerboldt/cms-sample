@@ -50,6 +50,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.0",
+    "react-number-format": "^5.3.3",
     "recharts": "^2.13.3",
     "slugify": "^1.6.6",
     "tailwind-merge": "^2.2.1",

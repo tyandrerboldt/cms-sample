@@ -11,6 +11,7 @@ import { ArticleCategory } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import slugify from "slugify";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -30,6 +31,7 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: categoryToEdit,
@@ -37,6 +39,7 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
 
   const onSubmit = async (data: CategoryFormData) => {
     try {
+      const slug = slugify(data.name, { lower: true, strict: true });
       const response = await fetch(
         categoryToEdit
           ? `/api/article-categories/${categoryToEdit.id}`
@@ -44,7 +47,7 @@ export function ArticleCategoryForm({ categoryToEdit }: ArticleCategoryFormProps
         {
           method: categoryToEdit ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, slug }),
         }
       );
 

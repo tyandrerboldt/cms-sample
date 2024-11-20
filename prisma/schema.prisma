@@ -102,6 +102,7 @@ model PackageImage {
 model PackageType {
   id          String          @id @default(cuid())
   name        String
+  slug        String          @unique
   description String
   packages    TravelPackage[]
   createdAt   DateTime        @default(now())
@@ -125,6 +126,7 @@ model Article {
 model ArticleCategory {
   id          String    @id @default(cuid())
   name        String
+  slug        String    @unique
   description String
   articles    Article[]
   createdAt   DateTime  @default(now())

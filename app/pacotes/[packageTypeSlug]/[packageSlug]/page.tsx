@@ -1,19 +1,27 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { format } from "date-fns";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import { Calendar, MapPin, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { PageTransition } from "@/components/page-transition";
 
 export default async function PackageDetails({
   params,
 }: {
-  params: { id: string };
+  params: { packageTypeSlug: string; packageSlug: string };
 }) {
-  const travelPackage = await prisma.travelPackage.findUnique({
-    where: { id: params.id },
+  const travelPackage = await prisma.travelPackage.findFirst({
+    where: {
+      slug: params.packageSlug,
+      packageType: {
+        slug: params.packageTypeSlug,
+      },
+    },
+    include: {
+      packageType: true,
+    },
   });
 
   if (!travelPackage) {

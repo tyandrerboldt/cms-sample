@@ -8,10 +8,12 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Get the current package to find images to delete
+    const { id } = params;
+
+    // Obtém o pacote atual para acessar as imagens existentes
     const currentPackage = await prisma.travelPackage.findUnique({
-      where: { id: params.id },
-      include: { images: true }
+      where: { id },
+      include: { images: true },
     });
 
     if (!currentPackage) {
@@ -22,130 +24,84 @@ export async function PUT(
     }
 
     const formData = await request.formData();
-    
-    // Handle new image uploads
-    const imageFiles = formData.getAll('images') as File[];
-    const imageUrls: string[] = [];
-    
+
+    // Processa novas imagens enviadas no formulário
+    const imageFiles = formData.getAll("images") as File[];
+    const newImageUrls: string[] = [];
     for (const file of imageFiles) {
       const url = await saveImage(file);
-      imageUrls.push(url);
+      newImageUrls.push(url);
     }
 
-    // Get existing images that will be kept
-    const existingImages = formData.getAll('existingImages') as string[];
+    // Recupera as imagens existentes enviadas no formulário
+    const existingImages = formData.getAll("existingImages") as string[];
 
-    // Delete removed images
+    // Determina quais imagens precisam ser excluídas
     const imagesToDelete = currentPackage.images
-      .filter(img => !existingImages.includes(img.url))
-      .map(img => img.url);
+      .filter((img) => !existingImages.includes(img.url))
+      .map((img) => img.url);
 
     for (const imageUrl of imagesToDelete) {
       await deleteImage(imageUrl);
     }
 
-    // If main image was deleted, also delete it from the package
-    if (imagesToDelete.includes(currentPackage.imageUrl)) {
-      await deleteImage(currentPackage.imageUrl);
-    }
-
-    // Combine all images with their isMain status
+    // Atualiza as imagens (novas e existentes)
     const allImages = [
-      ...imageUrls.map((url, index) => ({
+      ...newImageUrls.map((url, index) => ({
         url,
-        isMain: formData.get(`imageIsMain${index}`) === 'true'
+        isMain: formData.get(`imageIsMain${index}`) === "true",
       })),
-      ...existingImages.map(url => ({
+      ...existingImages.map((url) => ({
         url,
-        isMain: formData.get(`existingImageIsMain${url}`) === 'true'
-      }))
+        isMain: formData.get(`existingImageIsMain${url}`) === "true",
+      })),
     ];
 
-    // Delete all existing images for this package from the database
-    await prisma.packageImage.deleteMany({
-      where: { packageId: params.id }
-    });
-
-    // Generate slug from title
-    const title = formData.get('title') as string;
+    // Atualiza o pacote sem apagar imagens existentes do banco
+    const title = formData.get("title") as string;
     const slug = slugify(title, { lower: true, strict: true });
-    
-    // Update package with new images and package type
-    const packageData = await prisma.travelPackage.update({
-      where: { id: params.id },
+
+    const updatedPackage = await prisma.travelPackage.update({
+      where: { id },
       data: {
         title,
         slug,
-        code: formData.get('code') as string,
-        description: formData.get('description') as string,
-        location: formData.get('location') as string,
-        price: parseFloat(formData.get('price') as string),
-        startDate: new Date(formData.get('startDate') as string),
-        endDate: new Date(formData.get('endDate') as string),
-        maxGuests: parseInt(formData.get('maxGuests') as string),
-        dormitories: parseInt(formData.get('dormitories') as string),
-        suites: parseInt(formData.get('suites') as string),
-        bathrooms: parseInt(formData.get('bathrooms') as string),
-        numberOfDays: parseInt(formData.get('numberOfDays') as string),
-        status: formData.get('status') as any,
-        typeId: formData.get('typeId') as string,
-        imageUrl: allImages.find(img => img.isMain)?.url || allImages[0]?.url || '',
+        code: formData.get("code") as string,
+        description: formData.get("description") as string,
+        location: formData.get("location") as string,
+        price: parseFloat(formData.get("price") as string),
+        startDate: new Date(formData.get("startDate") as string),
+        endDate: new Date(formData.get("endDate") as string),
+        maxGuests: parseInt(formData.get("maxGuests") as string),
+        dormitories: parseInt(formData.get("dormitories") as string),
+        suites: parseInt(formData.get("suites") as string),
+        bathrooms: parseInt(formData.get("bathrooms") as string),
+        numberOfDays: parseInt(formData.get("numberOfDays") as string),
+        status: formData.get("status") as any,
+        typeId: formData.get("typeId") as string,
+        imageUrl:
+          allImages.find((img) => img.isMain)?.url || currentPackage.imageUrl,
         images: {
-          create: allImages.map(img => ({
-            url: img.url,
-            isMain: img.isMain
-          }))
-        }
+          deleteMany: {
+            url: { in: imagesToDelete },
+          },
+          create: newImageUrls.map((url) => ({
+            url,
+            isMain: formData.get(`imageIsMain${url}`) === "true",
+          })),
+        },
       },
       include: {
         images: true,
-        packageType: true
-      }
+        packageType: true,
+      },
     });
 
-    return NextResponse.json(packageData);
+    return NextResponse.json(updatedPackage);
   } catch (error) {
-    console.error('Failed to update package:', error);
+    console.error("Failed to update package:", error);
     return NextResponse.json(
       { error: "Failed to update package" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    // Get the package with its images before deletion
-    const packageToDelete = await prisma.travelPackage.findUnique({
-      where: { id: params.id },
-      include: { images: true }
-    });
-
-    if (!packageToDelete) {
-      return NextResponse.json(
-        { error: "Package not found" },
-        { status: 404 }
-      );
-    }
-
-    // Delete all image files
-    await Promise.all([
-      deleteImage(packageToDelete.imageUrl),
-      ...packageToDelete.images.map(img => deleteImage(img.url))
-    ]);
-
-    // Delete the package (this will cascade delete the images from the database)
-    await prisma.travelPackage.delete({
-      where: { id: params.id },
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to delete package" },
       { status: 500 }
     );
   }

@@ -11,6 +11,7 @@ import { PackageType } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import slugify from "slugify";
 
 const packageTypeSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
@@ -30,6 +31,7 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<PackageTypeFormData>({
     resolver: zodResolver(packageTypeSchema),
     defaultValues: packageTypeToEdit,
@@ -37,6 +39,7 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
 
   const onSubmit = async (data: PackageTypeFormData) => {
     try {
+      const slug = slugify(data.name, { lower: true, strict: true });
       const response = await fetch(
         packageTypeToEdit
           ? `/api/package-types/${packageTypeToEdit.id}`
@@ -44,7 +47,7 @@ export function PackageTypeForm({ packageTypeToEdit }: PackageTypeFormProps) {
         {
           method: packageTypeToEdit ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, slug }),
         }
       );
 

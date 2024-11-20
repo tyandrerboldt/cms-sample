@@ -9,7 +9,13 @@ import { format } from "date-fns";
 import Link from "next/link";
 
 interface PackageCardProps {
-  package: TravelPackage;
+  package: TravelPackage & {
+    packageType: {
+      id: string;
+      name: string;
+      slug: string;
+    };
+  };
 }
 
 export function PackageCard({ package: pkg }: PackageCardProps) {
@@ -26,7 +32,7 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <h3 className="text-xl font-semibold">{pkg.title}</h3>
-          <span className="text-lg font-bold">${pkg.price.toString()}</span>
+          <span className="text-lg font-bold">R$ {pkg.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
         </div>
         <div className="flex items-center text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
@@ -50,8 +56,8 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
         </div>
       </CardContent>
       <CardFooter>
-        <Link href={`/packages/${pkg.id}`} className="w-full">
-          <Button className="w-full">View Details</Button>
+        <Link href={`/pacotes/${pkg.packageType.slug}/${pkg.slug}`} className="w-full">
+          <Button className="w-full">Ver Detalhes</Button>
         </Link>
       </CardFooter>
     </Card>
