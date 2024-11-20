@@ -1,19 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Image from "next/image"
-import { getSiteConfig } from "@/lib/site-config"
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { getSiteConfig } from "@/lib/site-config";
+import { ContactModal } from "@/components/contact-modal";
+import { Button } from "@/components/ui/button";
 
 export default function MaintenancePage() {
-  const [config, setConfig] = useState<any>(null)
+  const [config, setConfig] = useState<any>(null);
 
   useEffect(() => {
     const fetchConfig = async () => {
-      const data = await getSiteConfig()
-      setConfig(data)
-    }
-    fetchConfig()
-  }, [])
+      const data = await getSiteConfig();
+      setConfig(data);
+    };
+    fetchConfig();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -62,8 +64,21 @@ export default function MaintenancePage() {
             Estamos realizando algumas melhorias para proporcionar uma experiência ainda melhor.
             Por favor, volte em breve!
           </p>
+
+          <div className="pt-4">
+            <ContactModal
+              source="Página de Manutenção"
+              title="Precisa de Ajuda?"
+              description="Envie sua mensagem e entraremos em contato assim que possível."
+              trigger={
+                <Button size="lg">
+                  Entrar em Contato
+                </Button>
+              }
+            />
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
