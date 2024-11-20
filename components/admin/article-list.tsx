@@ -238,7 +238,7 @@ export function ArticleList({
                 <TableCell>{format(new Date(article.createdAt), "dd/MM/yyyy")}</TableCell>
                 <TableCell>
                   <div className="flex justify-end space-x-2">
-                    <Link href={`/blog/${article.slug}`} target="_blank">
+                    <Link href={`/blog/${article.category.slug}/${article.slug}`} target="_blank">
                       <Button variant="outline" size="icon">
                         <Eye className="h-4 w-4" />
                       </Button>

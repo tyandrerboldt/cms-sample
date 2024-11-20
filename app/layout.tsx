@@ -2,6 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SiteStatusAlert } from "@/components/site-status-alert";
+import AuthProvider from "@/components/auth-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,8 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
-        <Toaster />
+        <AuthProvider>
+          <SiteStatusAlert />
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

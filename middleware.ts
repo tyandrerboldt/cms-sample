@@ -16,9 +16,10 @@ export async function middleware(request: NextRequest) {
   // Verifica se é uma rota administrativa
   const isAdminPath = ADMIN_PATHS.some(path => pathname.startsWith(path));
 
+  // Verifica o token do usuário
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
   if (isAdminPath) {
-    // Verifica o token do usuário
-    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
       // Redireciona para a página de login se não autenticado
@@ -39,7 +40,7 @@ export async function middleware(request: NextRequest) {
     const config = await response.json();
 
     // Se o site estiver inativo e não for uma rota pública, redireciona para manutenção
-    if (!config?.status) {
+    if (!config?.status && !token) {
       return NextResponse.redirect(new URL("/maintenance", request.url));
     }
 

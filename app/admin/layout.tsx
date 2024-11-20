@@ -28,36 +28,34 @@ export default function AdminLayout({
   }, []);
 
   return (
-    <AuthProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-          <AdminSidebar
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <AdminSidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          isMobile={isMobile}
+        />
+        <div
+          className={cn(
+            "transition-all duration-300",
+            !isMobile ? "ml-64" : "ml-0"
+          )}
+        >
+          <AdminHeader
+            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
             isMobile={isMobile}
           />
-          <div
-            className={cn(
-              "transition-all duration-300",
-              !isMobile ? "ml-64" : "ml-0"
-            )}
-          >
-            <AdminHeader
-              onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-              isMobile={isMobile}
-            />
-            <main className="p-8">
-              <Breadcrumbs />
-              {children}
-            </main>
-          </div>
+          <main className="p-8">
+            <Breadcrumbs />
+            {children}
+          </main>
         </div>
-      </ThemeProvider>
-    </AuthProvider>
+      </div>
+    </ThemeProvider>
   );
 }
