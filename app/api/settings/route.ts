@@ -51,6 +51,8 @@ export async function POST(request: Request) {
       if (key !== 'logo' && key !== 'existingLogo' && key !== 'removeLogo') {
         if (key === 'status') {
           data[key] = value === 'true';
+        }else if (key === 'allowRegistration') {
+          data[key] = value === 'true';
         } else if (key === 'smtpPort' && value) {
           data[key] = parseInt(value as string);
         } else if (value) {
