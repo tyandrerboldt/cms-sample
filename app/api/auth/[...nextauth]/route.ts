@@ -14,6 +14,24 @@ export const authOptions: NextAuthOptions = {
   ],
   session: { strategy: "jwt" },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      const config = await prisma.siteSettings.findFirst()
+      const userExists = await prisma.user.findUnique({
+        where: {
+          id: user.id
+        }
+      })
+      
+      if(userExists && userExists.enabled) {
+        return true
+      }
+
+      if(userExists && !userExists.enabled){
+        return false
+      }
+
+      return !userExists && config?.allowRegistration
+    },
     async jwt({ token }) {
 
       const user = await prisma.user.findUnique({
@@ -27,6 +45,7 @@ export const authOptions: NextAuthOptions = {
 
       return token;
     },
+
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub || ""; // Adiciona o Id do user a sessão

@@ -1,15 +1,26 @@
 import { prisma } from "@/lib/prisma";
 import { ArticleForm } from "@/components/admin/article-form";
 import { notFound } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function EditArticle({
   params,
 }: {
   params: { id: string };
 }) {
+  const session = await getServerSession(authOptions);
+  const user = await prisma.user.findUnique({
+    where: { email: session?.user?.email || "" },
+  });
+
+  // If user is not admin, only show their own article
+  const where: any = user?.role === "ADMIN" ? {} : { userId: user?.id };
+  where.id = params.id;
+
   const article = await prisma.article.findUnique({
-    where: { id: params.id },
-    include: { category: true }
+    where,
+    include: { category: true },
   });
 
   if (!article) {

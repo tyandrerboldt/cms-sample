@@ -44,8 +44,11 @@ model User {
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(USER)
+  enabled       Boolean  @default(false)
   accounts      Account[]
   sessions      Session[]
+  packages      TravelPackage[]
+  articles      Article[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -83,7 +86,9 @@ model TravelPackage {
   status       PackageStatus @default(DRAFT)
   contactCount Int           @default(0)
   typeId       String
+  userId       String
   packageType  PackageType   @relation(fields: [typeId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
   images       PackageImage[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -118,7 +123,9 @@ model Article {
   imageUrl    String
   published   Boolean         @default(false)
   categoryId  String
+  userId      String
   category    ArticleCategory @relation(fields: [categoryId], references: [id])
+  user        User           @relation(fields: [userId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
@@ -134,23 +141,24 @@ model ArticleCategory {
 }
 
 model SiteSettings {
-  id            String   @id @default("default")
-  name          String
-  description   String
-  logo          String?
-  status        Boolean  @default(true)
-  smtpHost      String?
-  smtpPort      Int?
-  smtpUser      String?
-  smtpPass      String?
-  smtpFrom      String?
-  facebookUrl   String?
-  instagramUrl  String?
-  twitterUrl    String?
-  linkedinUrl   String?
-  youtubeUrl    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String   @id @default("default")
+  name              String
+  description       String
+  logo              String?
+  status            Boolean  @default(true)
+  allowRegistration Boolean  @default(true)
+  smtpHost          String?
+  smtpPort          Int?
+  smtpUser          String?
+  smtpPass          String?
+  smtpFrom          String?
+  facebookUrl       String?
+  instagramUrl      String?
+  twitterUrl        String?
+  linkedinUrl       String?
+  youtubeUrl        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 enum PackageStatus {

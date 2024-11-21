@@ -23,6 +23,7 @@ const settingsSchema = z.object({
   description: z.string().min(1, "Descrição do site é obrigatória"),
   logo: z.string().nullable().optional(),
   status: z.boolean(),
+  allowRegistration: z.boolean(),
   smtpHost: z.string().nullable().optional(),
   smtpPort: z
     .string()
@@ -49,6 +50,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isActive, setIsActive] = useState(settings?.status ?? true);
+  const [allowRegistration, setAllowRegistration] = useState(
+    settings?.allowRegistration ?? true
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(
     settings?.logo || null
@@ -64,6 +68,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
     defaultValues: {
       ...settings,
       status: isActive,
+      allowRegistration: allowRegistration,
     },
   });
 
@@ -122,7 +127,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       });
       setTimeout(() => {
         window.location.reload();
-        }, 100);
+      }, 100);
     } catch (error) {
       toast({
         title: "Erro",
@@ -144,7 +149,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
             </TabsList>
 
             <TabsContent value="general" className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome do Site</Label>
                   <Input id="name" {...register("name")} />
@@ -155,8 +160,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                   )}
                 </div>
 
+                <div className="flex gap-8">
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status">Status do Site</Label>
                   <div className="flex items-center space-x-2">
                     <Switch
                       id="status"
@@ -170,6 +176,27 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                       {isActive ? "Ativo" : "Inativo"}
                     </Label>
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="allowRegistration">
+                    Cadastro de Usuários
+                  </Label>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="allowRegistration"
+                      checked={allowRegistration}
+                      onCheckedChange={(checked) => {
+                        setAllowRegistration(checked);
+                        setValue("allowRegistration", checked);
+                      }}
+                    />
+                    <Label htmlFor="allowRegistration">
+                      {allowRegistration ? "Permitido" : "Bloqueado"}
+                    </Label>
+                  </div>
+                </div>
+
                 </div>
               </div>
 

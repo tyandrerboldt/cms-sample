@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { PageTransition } from "@/components/page-transition";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface SearchParams {
   page?: string;
@@ -28,8 +30,14 @@ export default async function AdminArticles({
   const sortBy = searchParams.sortBy || "createdAt";
   const sortOrder = searchParams.sortOrder || "desc";
 
-  // Build where clause
-  const where: any = {};
+  const session = await getServerSession(authOptions);
+  const user = await prisma.user.findUnique({
+    where: { email: session?.user?.email || "" }
+  });
+  
+  // If user is not admin, only show their own packages
+  const where: any = user?.role === "ADMIN" ? {} : { userId: user?.id };
+
   
   if (search) {
     where.OR = [

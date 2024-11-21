@@ -1,12 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, Users, LogOut, BookOpen, Tags, FileText, FolderTree, Settings } from "lucide-react";
+import { LayoutDashboard, Package, Users, LogOut, FileText, Tags, FolderTree, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,45 +22,66 @@ interface SiteSettings {
   logo: string | null;
 }
 
-const menuItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Pacotes",
-    href: "/admin/packages",
-    icon: Package,
-  },
-  {
-    title: "Artigos",
-    href: "/admin/articles",
-    icon: FileText,
-  },
-  {
-    title: "Tipos de Pacotes",
-    href: "/admin/package-types",
-    icon: Tags,
-  },
-  {
-    title: "Categorias de Artigos",
-    href: "/admin/article-categories",
-    icon: FolderTree,
-  },
-  {
-    title: "Usuários",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    title: "Configurações",
-    href: "/admin/settings",
-    icon: Settings,
-  },
-];
+const getMenuItems = (role: string) => {
+  const items = [
+    {
+      title: "Dashboard",
+      href: "/admin",
+      icon: LayoutDashboard,
+      roles: ["USER", "EDITOR", "ADMIN"],
+    },
+  ];
 
-const SidebarContent = ({ pathname, settings }: { pathname: string; settings: SiteSettings | null }) => (
+  if (["EDITOR", "ADMIN"].includes(role)) {
+    items.push(
+      {
+        title: "Pacotes",
+        href: "/admin/packages",
+        icon: Package,
+        roles: ["EDITOR", "ADMIN"],
+      },
+      {
+        title: "Artigos",
+        href: "/admin/articles",
+        icon: FileText,
+        roles: ["EDITOR", "ADMIN"],
+      }
+    );
+  }
+
+  if (role === "ADMIN") {
+    items.push(
+      {
+        title: "Tipos de Pacotes",
+        href: "/admin/package-types",
+        icon: Tags,
+        roles: ["ADMIN"],
+      },
+      {
+        title: "Categorias de Artigos",
+        href: "/admin/article-categories",
+        icon: FolderTree,
+        roles: ["ADMIN"],
+      },
+      {
+        title: "Usuários",
+        href: "/admin/users",
+        icon: Users,
+        roles: ["ADMIN"],
+      },
+      {
+        title: "Configurações",
+        href: "/admin/settings",
+        icon: Settings,
+        roles: ["ADMIN"],
+      }
+    );
+  }
+
+  return items;
+};
+
+const SidebarContent = ({ pathname, settings, role }: { pathname: string; settings: SiteSettings | null; role: string }) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -85,7 +106,7 @@ const SidebarContent = ({ pathname, settings }: { pathname: string; settings: Si
     </div>
     <nav className="flex-1 p-4">
       <div className="space-y-1">
-        {menuItems.map((item, index) => {
+        {getMenuItems(role).map((item, index) => {
           const Icon = item.icon;
           return (
             <motion.div
@@ -127,6 +148,8 @@ const SidebarContent = ({ pathname, settings }: { pathname: string; settings: Si
 export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   const pathname = usePathname();
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const { data: session } = useSession();
+  const userRole = session?.role || "USER";
 
   useEffect(() => {
     fetch('/api/settings')
@@ -138,11 +161,9 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetTitle></SheetTitle>
-        <SheetDescription></SheetDescription>
         <SheetContent side="left" className="w-[300px] p-0">
           <AnimatePresence mode="wait">
-            {isOpen && <SidebarContent pathname={pathname} settings={settings} />}
+            {isOpen && <SidebarContent pathname={pathname} settings={settings} role={userRole} />}
           </AnimatePresence>
         </SheetContent>
       </Sheet>
@@ -155,7 +176,7 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
         "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300 w-64",
       )}
     >
-      <SidebarContent pathname={pathname} settings={settings} />
+      <SidebarContent pathname={pathname} settings={settings} role={userRole} />
     </div>
   );
 }

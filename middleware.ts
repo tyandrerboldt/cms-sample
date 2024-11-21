@@ -3,49 +3,46 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api", "/auth/signin"];
-const EDITOR_PATHS = ["/admin", "/api/admin"];
-const ADMIN_PATHS = [
-  "/admin/users",
-  "/admin/settings",
-  "/api/admin/users",
-  "/api/admin/settings",
-];
+const ADMIN_PATHS = ["/admin/users", "/admin/package-types","/admin/article-categories", "/admin/settings"];
+const EDITOR_PATHS = ["/admin/packages", "/admin/articles"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Sempre permite acesso às rotas públicas
+  // Always allow access to public routes
   if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // Verifica se é uma rota administrativa
-  const isEditorPath = EDITOR_PATHS.some(path => pathname.startsWith(path));
+  // Check if it's an admin path
   const isAdminPath = ADMIN_PATHS.some(path => pathname.startsWith(path));
+  const isEditorPath = EDITOR_PATHS.some(path => pathname.startsWith(path));
 
-  // Verifica o token do usuário
+  // Get user token
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-  if (isEditorPath || isAdminPath) {
-    if (!token) {
-      // Redireciona para a página de login se não autenticado
-      return NextResponse.redirect(new URL("/auth/signin", request.url));
-    }
-
-    if (isEditorPath && (token.role == "EDITOR" || token.role == "ADMIN")) {
-      return NextResponse.next();
-    }
-
-    if (isAdminPath && token.role == "ADMIN") {
-      return NextResponse.next();
-    }
-      
-    // Redireciona para a página de login se não tiver necessário
+  // If no token and trying to access admin routes, redirect to login
+  if (!token && (isAdminPath || isEditorPath || pathname.startsWith("/admin"))) {
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
+  // Check role-based access
+  if (token) {
+    const userRole = token.role;
+
+    // Only allow admin access to admin paths
+    if (isAdminPath && userRole !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+
+    // Only allow admin and editor access to editor paths
+    if (isEditorPath && !["ADMIN", "EDITOR"].includes(userRole)) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+  }
+
   try {
-    // Checa configuração do site (exemplo)
+    // Check site configuration
     const response = await fetch(new URL("/api/config", request.url));
     if (!response.ok) {
       throw new Error("Failed to fetch site config");
@@ -53,15 +50,15 @@ export async function middleware(request: NextRequest) {
 
     const config = await response.json();
 
-    // Se o site estiver inativo e não for uma rota pública, redireciona para manutenção
-    if (!config?.status && (token?.role != "EDITOR" && token?.role != "ADMIN")) {
+    // If site is inactive and not a public route, redirect to maintenance
+    if (!config?.status && !token) {
       return NextResponse.redirect(new URL("/maintenance", request.url));
     }
 
-    // Site ativo, permite acesso normal
+    // Site active, allow normal access
     return NextResponse.next();
   } catch (error) {
-    console.error("Erro ao verificar status do site:", error);
+    console.error("Error checking site status:", error);
     return NextResponse.next();
   }
 }
