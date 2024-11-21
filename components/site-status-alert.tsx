@@ -26,7 +26,7 @@ export function SiteStatusAlert() {
     }
   }, [session]);
 
-  if (!session?.user || !isInactive) return null;
+  if (session?.role != "EDITOR" || session?.role != "ADMIN" || !isInactive) return null;
 
   return (
     <AnimatePresence>

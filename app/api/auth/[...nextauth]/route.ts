@@ -14,17 +14,23 @@ export const authOptions: NextAuthOptions = {
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token }) {
 
-      if (account) {
-        token.provider = account.provider; // Adiciona o provider ao token
+      const user = await prisma.user.findUnique({
+        where: {
+          id: token.sub
+        }
+      })
+      if (user) {
+        token.role = user.role
       }
+
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub || ""; // Adiciona o Id do user a sessão
-        session.user.provider = token.provider; // Adiciona o token a sessão
+        session.role = token.role
       }
       return session;
     },

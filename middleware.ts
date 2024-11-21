@@ -3,7 +3,13 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api", "/auth/signin"];
-const ADMIN_PATHS = ["/admin", "/api/admin"];
+const EDITOR_PATHS = ["/admin", "/api/admin"];
+const ADMIN_PATHS = [
+  "/admin/users",
+  "/admin/settings",
+  "/api/admin/users",
+  "/api/admin/settings",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,20 +20,28 @@ export async function middleware(request: NextRequest) {
   }
 
   // Verifica se é uma rota administrativa
+  const isEditorPath = EDITOR_PATHS.some(path => pathname.startsWith(path));
   const isAdminPath = ADMIN_PATHS.some(path => pathname.startsWith(path));
 
   // Verifica o token do usuário
   const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
 
-  if (isAdminPath) {
-
+  if (isEditorPath || isAdminPath) {
     if (!token) {
       // Redireciona para a página de login se não autenticado
       return NextResponse.redirect(new URL("/auth/signin", request.url));
     }
 
-    // Usuário autenticado e autorizado, permite o acesso
-    return NextResponse.next();
+    if (isEditorPath && (token.role == "EDITOR" || token.role == "ADMIN")) {
+      return NextResponse.next();
+    }
+
+    if (isAdminPath && token.role == "ADMIN") {
+      return NextResponse.next();
+    }
+      
+    // Redireciona para a página de login se não tiver necessário
+    return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 
   try {
@@ -40,7 +54,7 @@ export async function middleware(request: NextRequest) {
     const config = await response.json();
 
     // Se o site estiver inativo e não for uma rota pública, redireciona para manutenção
-    if (!config?.status && !token) {
+    if (!config?.status && (token?.role != "EDITOR" && token?.role != "ADMIN")) {
       return NextResponse.redirect(new URL("/maintenance", request.url));
     }
 

@@ -23,7 +23,7 @@ export default function SignIn() {
             >
               <Button
                 className="w-full flex items-center justify-center gap-2"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={() => signIn("google", { callbackUrl: "/admin" })}
               >
                 <Chrome className="h-5 w-5" />
                 Entrar com Google
