@@ -49,10 +49,6 @@ export default async function PackageDetails({
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2" />
-                <span>
-                  {format(new Date(travelPackage.startDate), "MMM d")} -{" "}
-                  {format(new Date(travelPackage.endDate), "MMM d, yyyy")}
-                </span>
               </div>
               <div className="flex items-center">
                 <Users className="h-5 w-5 mr-2" />
@@ -68,7 +64,6 @@ export default async function PackageDetails({
               <div>
                 <p className="text-sm text-muted-foreground">Price per person</p>
                 <p className="text-3xl font-bold">
-                  ${travelPackage.price.toString()}
                 </p>
               </div>
               <Button size="lg">Book Now</Button>
