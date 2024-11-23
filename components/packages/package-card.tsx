@@ -32,7 +32,6 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
       <CardHeader>
         <div className="flex justify-between items-start">
           <h3 className="text-xl font-semibold">{pkg.title}</h3>
-          <span className="text-lg font-bold">R$ {pkg.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
         </div>
         <div className="flex items-center text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
@@ -44,10 +43,6 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
         <div className="flex items-center justify-between mt-4 text-sm">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
-            <span>
-              {format(new Date(pkg.startDate), "MMM d")} -{" "}
-              {format(new Date(pkg.endDate), "MMM d, yyyy")}
-            </span>
           </div>
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
