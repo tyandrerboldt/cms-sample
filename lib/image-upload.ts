@@ -23,8 +23,10 @@ export async function saveImage(file: File, folder: string = 'packages'): Promis
     
     // Create full directory path
     const uploadDir = join(baseUploadDir, folder);
-    const relativePath = join(folder, uniqueFilename);
-    const fullPath = join(baseUploadDir, relativePath);
+    const fullPath = join(baseUploadDir, folder, uniqueFilename);
+
+    // Create the full URL path that will be stored in the database
+    const storagePath = join(baseUploadDir, folder, uniqueFilename).replace(/\\/g, '/');
 
     // Ensure the directory exists
     await mkdir(uploadDir, { recursive: true });
@@ -32,8 +34,8 @@ export async function saveImage(file: File, folder: string = 'packages'): Promis
     // Save the file
     await writeFile(fullPath, buffer);
     
-    // Return the relative path for storage in database
-    return relativePath.replace(/\\/g, '/'); // Convert Windows paths to forward slashes
+    // Return the complete path for storage in database
+    return storagePath;
   } catch (error) {
     console.error('Error saving image:', error);
     throw new Error('Failed to save image');
@@ -44,10 +46,8 @@ export async function deleteImage(imageUrl: string): Promise<void> {
   if (!imageUrl) return;
 
   try {
-    const baseUploadDir = getUploadDir();
-    const fullPath = join(baseUploadDir, imageUrl);
-
-    await unlink(fullPath);
+    // Since the full path is now stored in the database, we can use it directly
+    await unlink(imageUrl);
   } catch (error) {
     // Ignore errors if file doesn't exist
     if ((error as any).code !== 'ENOENT') {
