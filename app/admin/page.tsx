@@ -1,3 +1,5 @@
+"use client";
+
 import { prisma } from "@/lib/prisma";
 import { DashboardStats } from "@/components/admin/dashboard-stats";
 import { RecentPackages } from "@/components/admin/recent-packages";
@@ -5,74 +7,69 @@ import { RecentArticles } from "@/components/admin/recent-articles";
 import { TrendingPackages } from "@/components/admin/trending-packages";
 import { PackageTypeChart } from "@/components/admin/package-type-chart";
 import { PageTransition } from "@/components/page-transition";
+import { useEffect, useState } from "react";
+import { Article, ArticleCategory, PackageType, TravelPackage } from "@prisma/client";
 
-export default async function AdminDashboard() {
-  const [recentPackages, recentArticles, trendingPackages, packageStats] =
-    await Promise.all([
-      // Get recent packages
-      prisma.travelPackage.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: {
-          packageType: true,
-        },
-      }),
-      // Get recent articles
-      prisma.article.findMany({
-        take: 5,
-        orderBy: { createdAt: "desc" },
-        include: {
-          category: true,
-        },
-      }),
-      // Get trending packages
-      prisma.travelPackage.findMany({
-        take: 5,
-        orderBy: { contactCount: "desc" },
-        include: {
-          packageType: true,
-        },
-      }),
-      // Get package type stats
-      prisma.packageType.findMany({
-        include: {
-          _count: {
-            select: { packages: true },
-          },
-        },
-      }),
-    ]);
-
-  // Calculate total stats
-  const totalPackages = await prisma.travelPackage.count();
-  const totalArticles = await prisma.article.count();
-  const totalContacts = await prisma.travelPackage.aggregate({
-    _sum: {
-      contactCount: true,
-    },
-  });
-
-  const stats = {
-    totalPackages,
-    totalArticles,
-    totalContacts: totalContacts._sum.contactCount || 0,
+interface DashboardData {
+  recentPackages: (TravelPackage & { packageType: PackageType })[];
+  recentArticles: (Article & { category: ArticleCategory })[];
+  trendingPackages: (TravelPackage & { packageType: PackageType })[];
+  packageStats: (PackageType & {
+    _count: {
+      packages: number;
+    };
+  })[];
+  stats: {
+    totalPackages: number;
+    totalArticles: number;
+    totalContacts: number;
   };
+}
+
+export default function AdminDashboard() {
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch('/api/admin/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const dashboardData = await response.json();
+        setData(dashboardData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <PageTransition>
       <div className="space-y-8 w-full 3xl:w-2/3">
         <h1 className="text-3xl font-bold">Dashboard</h1>
 
-        <DashboardStats stats={stats} />
+        <DashboardStats stats={data.stats} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <RecentPackages packages={recentPackages} />
-          <RecentArticles articles={recentArticles} />
+          <RecentPackages packages={data.recentPackages} />
+          <RecentArticles articles={data.recentArticles} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <TrendingPackages packages={trendingPackages} />
-          <PackageTypeChart packageStats={packageStats} />
+          <TrendingPackages packages={data.trendingPackages} />
+          <PackageTypeChart packageStats={data.packageStats} />
         </div>
       </div>
     </PageTransition>

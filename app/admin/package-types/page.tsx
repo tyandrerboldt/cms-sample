@@ -1,19 +1,47 @@
-import { prisma } from "@/lib/prisma";
+"use client";
+
 import { PackageTypeList } from "@/components/admin/package-type-list";
+import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { PageTransition } from "@/components/page-transition";
+import { useEffect, useState } from "react";
+import { PackageType } from "@prisma/client";
 
-export default async function AdminPackageTypes() {
-  const packageTypes = await prisma.packageType.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { packages: true },
-      },
-    },
-  });
+interface PackageTypeWithCount extends PackageType {
+  _count: {
+    packages: number;
+  };
+}
+
+export default function AdminPackageTypes() {
+  const [packageTypes, setPackageTypes] = useState<PackageTypeWithCount[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPackageTypes = async () => {
+      try {
+        const response = await fetch('/api/package-types');
+        if (!response.ok) throw new Error('Failed to fetch package types');
+        const data = await response.json();
+        setPackageTypes(data);
+      } catch (error) {
+        console.error('Error fetching package types:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackageTypes();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <PageTransition>

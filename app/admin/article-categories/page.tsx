@@ -1,19 +1,47 @@
+"use client";
+
 import { ArticleCategoryList } from "@/components/admin/article-category-list";
 import { PageTransition } from "@/components/page-transition";
 import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
 import { Plus } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { ArticleCategory } from "@prisma/client";
 
-export default async function AdminArticleCategories() {
-  const categories = await prisma.articleCategory.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: { articles: true },
-      },
-    },
-  });
+interface CategoryWithCount extends ArticleCategory {
+  _count: {
+    articles: number;
+  };
+}
+
+export default function AdminArticleCategories() {
+  const [categories, setCategories] = useState<CategoryWithCount[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/article-categories');
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[200px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <PageTransition>
