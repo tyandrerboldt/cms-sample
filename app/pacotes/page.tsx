@@ -50,30 +50,9 @@ export default async function PackagesPage({
     where.description = { contains: searchParams.description, mode: "insensitive" };
   }
 
-  if (searchParams.minPrice || searchParams.maxPrice) {
-    where.price = {};
-    if (searchParams.minPrice) {
-      where.price.gte = parseFloat(searchParams.minPrice);
-    }
-    if (searchParams.maxPrice) {
-      where.price.lte = parseFloat(searchParams.maxPrice);
-    }
-  }
-
-  if (searchParams.startDate) {
-    where.startDate = { gte: new Date(searchParams.startDate) };
-  }
-
-  if (searchParams.endDate) {
-    where.endDate = { lte: new Date(searchParams.endDate) };
-  }
 
   if (searchParams.maxGuests) {
     where.maxGuests = { gte: parseInt(searchParams.maxGuests) };
-  }
-
-  if (searchParams.dormitories) {
-    where.dormitories = { gte: parseInt(searchParams.dormitories) };
   }
 
   if (searchParams.suites) {
