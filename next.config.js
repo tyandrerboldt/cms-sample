@@ -4,6 +4,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: { unoptimized: true },
+  output: 'standalone', // Enable standalone output
 };
 
 module.exports = nextConfig;

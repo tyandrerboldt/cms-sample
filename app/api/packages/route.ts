@@ -2,10 +2,21 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage } from "@/lib/image-upload";
 import slugify from "slugify";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
+
+    const session = await getServerSession(authOptions);
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user?.email || "" }
+    });
+
+    if(!user){
+      throw new Error("Failed to load User")
+    }
     
     // Handle image uploads
     const imageFiles = formData.getAll('images') as File[];
@@ -23,6 +34,7 @@ export async function POST(request: Request) {
     // Create package with images and package type
     const packageData = await prisma.travelPackage.create({
       data: {
+        userId: user.id,
         title,
         slug,
         code: formData.get('code') as string,

@@ -102,7 +102,7 @@ export default async function Home() {
               </motion.div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredPackages.map((pkg, index) => (
+              {featuredPackages.map((pkg: any, index) => (
                 <motion.div
                   key={pkg.id}
                   variants={itemVariants}

@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import Link from "next/link";
 import { PageTransition } from "@/components/page-transition";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 
 interface SearchParams {
   page?: string;

@@ -67,17 +67,17 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             .split("T")[0],
           endDate: new Date(packageToEdit.endDate).toISOString().split("T")[0],
           maxGuests: packageToEdit.maxGuests.toString(),
-          dormitories: packageToEdit.dormitories.toString(),
-          suites: packageToEdit.suites.toString(),
-          bathrooms: packageToEdit.bathrooms.toString(),
-          numberOfDays: packageToEdit.numberOfDays.toString(),
+          dormitories: packageToEdit.dormitories,
+          suites: packageToEdit.suites,
+          bathrooms: packageToEdit.bathrooms,
+          numberOfDays: packageToEdit.numberOfDays,
         }
       : {
           status: "DRAFT",
-          dormitories: "0",
-          suites: "0",
-          bathrooms: "0",
-          numberOfDays: "1",
+          dormitories: 0,
+          suites: 0,
+          bathrooms: 0,
+          numberOfDays: 1,
         },
   });
 

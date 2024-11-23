@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
 import { saveImage } from "@/lib/image-upload";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -23,6 +25,16 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
+
+    const session = await getServerSession(authOptions);
+    const user = await prisma.user.findUnique({
+      where: { email: session?.user?.email || "" }
+    });
+
+    if(!user){
+      throw new Error("Failed to load User")
+    }    
+
     const title = formData.get('title') as string;
     const slug = slugify(title, { lower: true, strict: true });
     
@@ -36,6 +48,7 @@ export async function POST(request: Request) {
 
     const article = await prisma.article.create({
       data: {
+        userId: user.id,
         title,
         slug,
         content: formData.get('content') as string,
