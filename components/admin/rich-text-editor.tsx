@@ -52,6 +52,11 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
     },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none focus:outline-none min-h-[300px]',
+      },
+    },
   });
 
   if (!editor) {
@@ -67,8 +72,8 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   };
 
   return (
-    <div className="border rounded-lg">
-      <div className="border-b p-2 flex flex-wrap gap-1">
+    <div className="border rounded-lg overflow-hidden">
+      <div className="border-b p-2 flex flex-wrap gap-1 bg-background sticky top-0 z-10">
         <Toggle
           size="sm"
           pressed={editor.isActive('bold')}
@@ -209,7 +214,9 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
         </BubbleMenu>
       )}
 
-      <EditorContent editor={editor} className="prose max-w-none p-4" />
+      <div className="p-4 bg-background">
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 }

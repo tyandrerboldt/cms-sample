@@ -44,7 +44,7 @@ model User {
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(USER)
-  enabled       Boolean  @default(false)
+  enabled       Boolean   @default(false)
   accounts      Account[]
   sessions      Session[]
   packages      TravelPackage[]
@@ -73,15 +73,10 @@ model TravelPackage {
   slug         String         @unique
   title        String
   description  String
+  content      String        @db.Text @default("")
   location     String
   imageUrl     String
-  price        Float
-  startDate    DateTime
-  endDate      DateTime
   maxGuests    Int
-  dormitories  Int           @default(0)
-  suites       Int           @default(0)
-  bathrooms    Int           @default(0)
   numberOfDays Int           @default(1)
   status       PackageStatus @default(DRAFT)
   contactCount Int           @default(0)

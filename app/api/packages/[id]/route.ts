@@ -68,14 +68,9 @@ export async function PUT(
         slug,
         code: formData.get("code") as string,
         description: formData.get("description") as string,
+        content: formData.get("content") as string,
         location: formData.get("location") as string,
-        price: parseFloat(formData.get("price") as string),
-        startDate: new Date(formData.get("startDate") as string),
-        endDate: new Date(formData.get("endDate") as string),
         maxGuests: parseInt(formData.get("maxGuests") as string),
-        dormitories: parseInt(formData.get("dormitories") as string),
-        suites: parseInt(formData.get("suites") as string),
-        bathrooms: parseInt(formData.get("bathrooms") as string),
         numberOfDays: parseInt(formData.get("numberOfDays") as string),
         status: formData.get("status") as any,
         typeId: formData.get("typeId") as string,
@@ -102,6 +97,41 @@ export async function PUT(
     console.error("Failed to update package:", error);
     return NextResponse.json(
       { error: "Failed to update package" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+
+    // Get the package to delete its images
+    const packageToDelete = await prisma.travelPackage.findUnique({
+      where: { id },
+      include: { images: true }
+    });
+
+    if (packageToDelete) {
+      // Delete all associated images
+      for (const image of packageToDelete.images) {
+        await deleteImage(image.url);
+      }
+    }
+
+    // Delete the package (this will cascade delete the images from the database)
+    await prisma.travelPackage.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete package:", error);
+    return NextResponse.json(
+      { error: "Failed to delete package" },
       { status: 500 }
     );
   }

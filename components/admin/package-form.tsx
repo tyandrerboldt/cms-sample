@@ -15,21 +15,18 @@ import { ImageUpload } from "@/components/admin/image-upload";
 import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import slugify from "slugify";
+import { RichTextEditor } from "./rich-text-editor";
+import { Loader2 } from "lucide-react";
 
 const packageSchema = z.object({
   code: z.string().min(1, "Código é obrigatório"),
   title: z.string().min(1, "Título é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
+  content: z.string().min(1, "Conteúdo é obrigatório"),
   location: z.string().min(1, "Localização é obrigatória"),
-  price: z.string().min(1, "Preço é obrigatório"),
-  startDate: z.string().min(1, "Data de início é obrigatória"),
-  endDate: z.string().min(1, "Data de término é obrigatória"),
   maxGuests: z.string().min(1, "Máximo de hóspedes é obrigatório"),
   typeId: z.string().min(1, "Tipo de pacote é obrigatório"),
-  dormitories: z.string().transform(val => parseInt(val)),
-  suites: z.string().transform(val => parseInt(val)),
-  bathrooms: z.string().transform(val => parseInt(val)),
-  numberOfDays: z.string().transform(val => parseInt(val)),
+  numberOfDays: z.any().transform(val => parseInt(val)),
   status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "UNAVAILABLE"]),
 });
 
@@ -43,12 +40,14 @@ interface PackageFormProps {
 export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<{ file?: File; url: string; isMain: boolean }[]>(
     packageToEdit?.images?.map(img => ({
       url: img.url,
       isMain: img.isMain,
     })) || []
   );
+  const [content, setContent] = useState(packageToEdit?.content || "");
 
   const {
     register,
@@ -61,33 +60,20 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
     defaultValues: packageToEdit
       ? {
           ...packageToEdit,
-          price: packageToEdit.price.toString(),
-          startDate: new Date(packageToEdit.startDate)
-            .toISOString()
-            .split("T")[0],
-          endDate: new Date(packageToEdit.endDate).toISOString().split("T")[0],
           maxGuests: packageToEdit.maxGuests.toString(),
-          dormitories: packageToEdit.dormitories,
-          suites: packageToEdit.suites,
-          bathrooms: packageToEdit.bathrooms,
           numberOfDays: packageToEdit.numberOfDays,
+          content: content,
         }
       : {
           status: "DRAFT",
-          dormitories: 0,
-          suites: 0,
-          bathrooms: 0,
           numberOfDays: 1,
         },
   });
 
   const onSubmit = async (data: PackageFormData) => {
     try {
+      setLoading(true);
       const formData = new FormData();
-      
-      // Generate slug from title
-      const slug = slugify(data.title, { lower: true, strict: true });
-      formData.append("slug", slug);
       
       // Handle images
       images.forEach((image, index) => {
@@ -128,6 +114,8 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
         description: "Falha ao salvar o pacote de viagem.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -209,27 +197,30 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
           />
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descrição</Label>
+            <Label htmlFor="description">Descrição Curta</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
               <p className="text-sm text-red-500">{errors.description.message}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="price">Preço</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                {...register("price")}
+          <div className="space-y-2">
+            <Label htmlFor="content">Conteúdo</Label>
+            <div className="min-h-[400px]">
+              <RichTextEditor
+                content={content}
+                onChange={(newContent) => {
+                  setContent(newContent);
+                  setValue("content", newContent);
+                }}
               />
-              {errors.price && (
-                <p className="text-sm text-red-500">{errors.price.message}</p>
-              )}
             </div>
+            {errors.content && (
+              <p className="text-sm text-red-500">{errors.content.message}</p>
+            )}
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="numberOfDays">Diárias</Label>
               <Input
@@ -242,38 +233,6 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
                 <p className="text-sm text-red-500">{errors.numberOfDays.message}</p>
               )}
             </div>
-          </div>
-
-          <div className="grid grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dormitories">Dormitórios</Label>
-              <Input
-                id="dormitories"
-                type="number"
-                min="0"
-                {...register("dormitories")}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="suites">Suítes</Label>
-              <Input
-                id="suites"
-                type="number"
-                min="0"
-                {...register("suites")}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bathrooms">Banheiros</Label>
-              <Input
-                id="bathrooms"
-                type="number"
-                min="0"
-                {...register("bathrooms")}
-              />
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="maxGuests">Máximo de Hóspedes</Label>
@@ -282,31 +241,8 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
                 type="number"
                 {...register("maxGuests")}
               />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Data de Início</Label>
-              <Input
-                id="startDate"
-                type="date"
-                {...register("startDate")}
-              />
-              {errors.startDate && (
-                <p className="text-sm text-red-500">{errors.startDate.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="endDate">Data de Término</Label>
-              <Input
-                id="endDate"
-                type="date"
-                {...register("endDate")}
-              />
-              {errors.endDate && (
-                <p className="text-sm text-red-500">{errors.endDate.message}</p>
+              {errors.maxGuests && (
+                <p className="text-sm text-red-500">{errors.maxGuests.message}</p>
               )}
             </div>
           </div>
@@ -316,10 +252,12 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
               type="button"
               variant="outline"
               onClick={() => router.push("/admin/packages")}
+              disabled={loading}
             >
               Cancelar
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {packageToEdit ? "Atualizar Pacote" : "Criar Pacote"}
             </Button>
           </div>

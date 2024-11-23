@@ -1,74 +1,137 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { saveImage } from "@/lib/image-upload";
+import { saveImage, deleteImage } from "@/lib/image-upload";
 import slugify from "slugify";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
-export async function POST(request: Request) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const formData = await request.formData();
+    const { id } = params;
 
-    const session = await getServerSession(authOptions);
-    const user = await prisma.user.findUnique({
-      where: { email: session?.user?.email || "" }
+    // Obtém o pacote atual para acessar as imagens existentes
+    const currentPackage = await prisma.travelPackage.findUnique({
+      where: { id },
+      include: { images: true },
     });
 
-    if(!user){
-      throw new Error("Failed to load User")
+    if (!currentPackage) {
+      return NextResponse.json(
+        { error: "Package not found" },
+        { status: 404 }
+      );
     }
-    
-    // Handle image uploads
-    const imageFiles = formData.getAll('images') as File[];
-    const imageUrls: string[] = [];
-    
+
+    const formData = await request.formData();
+
+    // Processa novas imagens enviadas no formulário
+    const imageFiles = formData.getAll("images") as File[];
+    const newImageUrls: string[] = [];
     for (const file of imageFiles) {
       const url = await saveImage(file);
-      imageUrls.push(url);
+      newImageUrls.push(url);
     }
 
-    // Generate slug from title
-    const title = formData.get('title') as string;
+    // Recupera as imagens existentes enviadas no formulário
+    const existingImages = formData.getAll("existingImages") as string[];
+
+    // Determina quais imagens precisam ser excluídas
+    const imagesToDelete = currentPackage.images
+      .filter((img) => !existingImages.includes(img.url))
+      .map((img) => img.url);
+
+    for (const imageUrl of imagesToDelete) {
+      await deleteImage(imageUrl);
+    }
+
+    // Atualiza as imagens (novas e existentes)
+    const allImages = [
+      ...newImageUrls.map((url, index) => ({
+        url,
+        isMain: formData.get(`imageIsMain${index}`) === "true",
+      })),
+      ...existingImages.map((url) => ({
+        url,
+        isMain: formData.get(`existingImageIsMain${url}`) === "true",
+      })),
+    ];
+
+    // Atualiza o pacote sem apagar imagens existentes do banco
+    const title = formData.get("title") as string;
     const slug = slugify(title, { lower: true, strict: true });
 
-    // Create package with images and package type
-    const packageData = await prisma.travelPackage.create({
+    const updatedPackage = await prisma.travelPackage.update({
+      where: { id },
       data: {
-        userId: user.id,
         title,
         slug,
-        code: formData.get('code') as string,
-        description: formData.get('description') as string,
-        location: formData.get('location') as string,
-        price: parseFloat(formData.get('price') as string),
-        startDate: new Date(formData.get('startDate') as string),
-        endDate: new Date(formData.get('endDate') as string),
-        maxGuests: parseInt(formData.get('maxGuests') as string),
-        dormitories: parseInt(formData.get('dormitories') as string),
-        suites: parseInt(formData.get('suites') as string),
-        bathrooms: parseInt(formData.get('bathrooms') as string),
-        numberOfDays: parseInt(formData.get('numberOfDays') as string),
-        status: formData.get('status') as any,
-        typeId: formData.get('typeId') as string,
-        imageUrl: imageUrls[0] || '',
+        code: formData.get("code") as string,
+        description: formData.get("description") as string,
+        content: formData.get("content") as string,
+        location: formData.get("location") as string,
+        maxGuests: parseInt(formData.get("maxGuests") as string),
+        numberOfDays: parseInt(formData.get("numberOfDays") as string),
+        status: formData.get("status") as any,
+        typeId: formData.get("typeId") as string,
+        imageUrl:
+          allImages.find((img) => img.isMain)?.url || currentPackage.imageUrl,
         images: {
-          create: imageUrls.map((url, index) => ({
+          deleteMany: {
+            url: { in: imagesToDelete },
+          },
+          create: newImageUrls.map((url) => ({
             url,
-            isMain: index === 0
-          }))
-        }
+            isMain: formData.get(`imageIsMain${url}`) === "true",
+          })),
+        },
       },
       include: {
         images: true,
-        packageType: true
-      }
+        packageType: true,
+      },
     });
 
-    return NextResponse.json(packageData);
+    return NextResponse.json(updatedPackage);
   } catch (error) {
-    console.error('Failed to create package:', error);
+    console.error("Failed to update package:", error);
     return NextResponse.json(
-      { error: "Failed to create package" },
+      { error: "Failed to update package" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+
+    // Get the package to delete its images
+    const packageToDelete = await prisma.travelPackage.findUnique({
+      where: { id },
+      include: { images: true }
+    });
+
+    if (packageToDelete) {
+      // Delete all associated images
+      for (const image of packageToDelete.images) {
+        await deleteImage(image.url);
+      }
+    }
+
+    // Delete the package (this will cascade delete the images from the database)
+    await prisma.travelPackage.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to delete package:", error);
+    return NextResponse.json(
+      { error: "Failed to delete package" },
       { status: 500 }
     );
   }

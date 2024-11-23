@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { RichTextEditor } from "./rich-text-editor";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -36,6 +36,7 @@ interface ArticleFormProps {
 export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const [isPublished, setIsPublished] = useState(articleToEdit?.published ?? false);
   const [content, setContent] = useState(articleToEdit?.content || "");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -74,6 +75,7 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
 
   const onSubmit = async (data: ArticleFormData) => {
     try {
+      setLoading(true);
       const formData = new FormData();
       
       // Adicionar imagem se existir
@@ -116,6 +118,8 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
         description: "Falha ao salvar o artigo.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -224,13 +228,15 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
 
           <div className="space-y-2">
             <Label htmlFor="content">Conteúdo</Label>
-            <RichTextEditor
-              content={content}
-              onChange={(newContent) => {
-                setContent(newContent);
-                setValue("content", newContent);
-              }}
-            />
+            <div className="min-h-[400px]">
+              <RichTextEditor
+                content={content}
+                onChange={(newContent) => {
+                  setContent(newContent);
+                  setValue("content", newContent);
+                }}
+              />
+            </div>
             {errors.content && (
               <p className="text-sm text-red-500">{errors.content.message}</p>
             )}
@@ -253,10 +259,12 @@ export function ArticleForm({ articleToEdit, categories }: ArticleFormProps) {
               type="button"
               variant="outline"
               onClick={() => router.push("/admin/articles")}
+              disabled={loading}
             >
               Cancelar
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {articleToEdit ? "Atualizar Artigo" : "Criar Artigo"}
             </Button>
           </div>

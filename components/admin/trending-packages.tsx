@@ -4,6 +4,7 @@ import { TravelPackage, PackageType } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { format } from "date-fns";
 
 interface TrendingPackagesProps {
   packages: (TravelPackage & {
@@ -29,9 +30,9 @@ export function TrendingPackages({ packages }: TrendingPackagesProps) {
                   {pkg.title}
                 </Link>
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Badge variant="secondary">{pkg.packageType.name}</Badge>
+                  <span>{format(new Date(pkg.createdAt), "d 'de' MMM 'de' yyyy")}</span>
                   <span className="mx-2">•</span>
-                  <span>R${pkg.price.toLocaleString()}</span>
+                  <Badge variant="secondary">{pkg.packageType.name}</Badge>
                 </div>
               </div>
               <div className="ml-4">

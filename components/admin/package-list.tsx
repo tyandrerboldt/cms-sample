@@ -39,12 +39,12 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { PackageType, TravelPackage } from "@prisma/client";
-import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { ArrowUpDown, Edit, Search, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 interface PackageListProps {
   packages: (TravelPackage & {
@@ -176,7 +176,6 @@ export function PackageList({
     return <Badge variant={variants[status]}>{labels[status]}</Badge>;
   };
 
-
   const hasActiveFilters = search || status || typeId;
 
   return (
@@ -257,6 +256,7 @@ export function PackageList({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Imagem</TableHead>
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("code")}
@@ -278,37 +278,29 @@ export function PackageList({
                 Localização
                 <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("price")}
-              >
-                Preço
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
-              </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Tipo</TableHead>
-              <TableHead
-                className="cursor-pointer"
-                onClick={() => handleSort("startDate")}
-              >
-                Data Início
-                <ArrowUpDown className="ml-2 h-4 w-4 inline" />
-              </TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {packages.map((pkg) => (
               <TableRow key={pkg.id}>
+                <TableCell>
+                  <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                    <Image
+                      src={pkg.imageUrl}
+                      alt={pkg.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </TableCell>
                 <TableCell className="font-medium">{pkg.code}</TableCell>
                 <TableCell>{pkg.title}</TableCell>
                 <TableCell>{pkg.location}</TableCell>
-                <TableCell>R$ {pkg.price.toFixed(2)}</TableCell>
                 <TableCell>{getStatusBadge(pkg.status)}</TableCell>
                 <TableCell>{pkg.packageType.name}</TableCell>
-                <TableCell>
-                  {format(new Date(pkg.startDate), "dd/MM/yyyy")}
-                </TableCell>
                 <TableCell>
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/packages/${pkg.id}`}>
