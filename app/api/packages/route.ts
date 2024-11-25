@@ -1,9 +1,9 @@
-import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { saveImage } from "@/lib/image-upload";
-import slugify from "slugify";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { saveImage } from "@/lib/image-upload";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import slugify from "slugify";
 
 export async function POST(request: Request) {
   try {
@@ -14,14 +14,14 @@ export async function POST(request: Request) {
       where: { email: session?.user?.email || "" }
     });
 
-    if(!user){
+    if (!user) {
       throw new Error("Failed to load User")
     }
-    
+
     // Handle image uploads
     const imageFiles = formData.getAll('images') as File[];
     const imageUrls: string[] = [];
-    
+
     for (const file of imageFiles) {
       const url = await saveImage(file);
       imageUrls.push(url);

@@ -24,7 +24,8 @@ export async function PATCH(
     const user = await prisma.user.update({
       where: { id: params.id },
       data: {
-        role: data.role
+        role: data.role,
+        enabled: data.enabled !== undefined ? data.enabled : undefined,
       }
     });
     return NextResponse.json(user);

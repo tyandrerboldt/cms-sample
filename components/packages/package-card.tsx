@@ -5,7 +5,6 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users } from "lucide-react";
 import Image from "next/image";
-import { format } from "date-fns";
 import Link from "next/link";
 
 interface PackageCardProps {
@@ -43,10 +42,11 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
         <div className="flex items-center justify-between mt-4 text-sm">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
+            <span>{pkg.numberOfDays} dias</span>
           </div>
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
-            <span>Max {pkg.maxGuests} guests</span>
+            <span>Max {pkg.maxGuests} hóspedes</span>
           </div>
         </div>
       </CardContent>

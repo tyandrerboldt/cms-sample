@@ -4,20 +4,24 @@ import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, Moon, Plane, Sun, User, X } from "lucide-react";
+import { Menu, Moon, Plane, Sun, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
-export function Header() {
+interface HeaderProps {
+  className?: string;
+}
+
+export function Header({ className }: HeaderProps) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const menuItems = [
-    { href: "/destinations", label: "Destinations" },
-    { href: "/packages", label: "Packages" },
+    { href: "/pacotes", label: "Packages" },
     { href: "/blog", label: "Blog" },
     ...(session?.user ? [{ href: "/admin/packages", label: "Admin Panel" }] : []),
   ];
@@ -65,7 +69,7 @@ export function Header() {
   );
 
   return (
-    <header className="border-b bg-background">
+    <header className={cn("border-b bg-background", className)}>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Plane className="h-6 w-6" />
@@ -105,7 +109,7 @@ export function Header() {
                   <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
                 </Avatar>
                 <Button variant="outline" onClick={() => signOut()}>
-                  Sign Out
+                  Sair
                 </Button>
               </div>
             ) : (

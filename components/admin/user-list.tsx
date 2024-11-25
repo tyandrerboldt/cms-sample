@@ -35,6 +35,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "next-auth/react";
+import { Switch } from "@/components/ui/switch";
 
 interface UserListProps {
   users: User[];
@@ -92,6 +93,32 @@ export function UserList({ users }: UserListProps) {
     }
   };
 
+  const handleStatusChange = async (userId: string, enabled: boolean) => {
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enabled }),
+      });
+
+      if (!response.ok)
+        throw new Error("Falha ao atualizar o status do usuário");
+
+      toast({
+        title: "Status Atualizado",
+        description: "O status do usuário foi atualizado com sucesso.",
+      });
+
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao atualizar o status do usuário.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const getRoleBadgeVariant = (role: string) => {
     switch (role) {
       case "ADMIN":
@@ -111,6 +138,7 @@ export function UserList({ users }: UserListProps) {
             <TableHead>Usuário</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Tipo</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Entrou</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -151,6 +179,13 @@ export function UserList({ users }: UserListProps) {
                     </Select>
                   )}
                 </div>
+              </TableCell>
+              <TableCell>
+                <Switch
+                  checked={user.enabled}
+                  onCheckedChange={(checked) => handleStatusChange(user.id, checked)}
+                  disabled={session.data?.user?.id === user.id}
+                />
               </TableCell>
               <TableCell>
                 {format(new Date(user.createdAt), "MMM d, yyyy")}

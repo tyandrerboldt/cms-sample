@@ -28,6 +28,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Image from "next/image";
 
 interface ArticleListProps {
   articles: (Article & {
@@ -206,6 +207,7 @@ export function ArticleList({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Imagem</TableHead>
               <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort("title")}
@@ -228,6 +230,16 @@ export function ArticleList({
           <TableBody>
             {articles.map((article) => (
               <TableRow key={article.id}>
+                <TableCell>
+                  <div className="relative w-16 h-16 rounded-md overflow-hidden">
+                    <Image
+                      src={article.imageUrl}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                </TableCell>
                 <TableCell className="font-medium">{article.title}</TableCell>
                 <TableCell>{article.category.name}</TableCell>
                 <TableCell>
