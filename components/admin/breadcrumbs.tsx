@@ -15,6 +15,7 @@ const translations: Record<string, string> = {
   "admin": "Painel",
   "packages": "Pacotes",
   "articles": "Artigos",
+  "hero-slides": "Destaques",
   "users": "Usuários",
   "settings": "Configurações",
   

@@ -1,7 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Package, Users, LogOut, FileText, Tags, FolderTree, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  Users,
+  LogOut,
+  FileText,
+  Tags,
+  FolderTree,
+  Settings,
+  Sliders,
+  SlidersIcon,
+  PictureInPicture,
+  PieChart,
+  PictureInPicture2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
@@ -45,6 +59,12 @@ const getMenuItems = (role: string) => {
         href: "/admin/articles",
         icon: FileText,
         roles: ["EDITOR", "ADMIN"],
+      },
+      {
+        title: "Destaques",
+        href: "/admin/hero-slides",
+        icon: PictureInPicture2,
+        roles: ["EDITOR", "ADMIN"],
       }
     );
   }
@@ -81,7 +101,15 @@ const getMenuItems = (role: string) => {
   return items;
 };
 
-const SidebarContent = ({ pathname, settings, role }: { pathname: string; settings: SiteSettings | null; role: string }) => (
+const SidebarContent = ({
+  pathname,
+  settings,
+  role,
+}: {
+  pathname: string;
+  settings: SiteSettings | null;
+  role: string;
+}) => (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -101,7 +129,9 @@ const SidebarContent = ({ pathname, settings, role }: { pathname: string; settin
         ) : (
           <Package className="h-6 w-6" />
         )}
-        <span className="font-bold text-lg">{settings?.name || "TravelPortal"}</span>
+        <span className="font-bold text-lg">
+          {settings?.name || "TravelPortal"}
+        </span>
       </Link>
     </div>
     <nav className="flex-1 p-4">
@@ -119,7 +149,8 @@ const SidebarContent = ({ pathname, settings, role }: { pathname: string; settin
                 href={item.href}
                 className={cn(
                   "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  (pathname.startsWith(item.href) && item.href != "/admin") || pathname === item.href
+                  (pathname.startsWith(item.href) && item.href != "/admin") ||
+                    pathname === item.href
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-primary/5"
                 )}
@@ -152,9 +183,9 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   const userRole = session?.role || "USER";
 
   useEffect(() => {
-    fetch('/api/settings')
-      .then(res => res.json())
-      .then(data => setSettings(data))
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => setSettings(data))
       .catch(console.error);
   }, []);
 
@@ -163,7 +194,13 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent side="left" className="w-[300px] p-0">
           <AnimatePresence mode="wait">
-            {isOpen && <SidebarContent pathname={pathname} settings={settings} role={userRole} />}
+            {isOpen && (
+              <SidebarContent
+                pathname={pathname}
+                settings={settings}
+                role={userRole}
+              />
+            )}
           </AnimatePresence>
         </SheetContent>
       </Sheet>
@@ -173,7 +210,7 @@ export function AdminSidebar({ isOpen, onClose, isMobile }: AdminSidebarProps) {
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300 w-64",
+        "bg-white dark:bg-gray-800 border-r border-border fixed top-0 left-0 h-screen transition-all duration-300 w-64"
       )}
     >
       <SidebarContent pathname={pathname} settings={settings} role={userRole} />

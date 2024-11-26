@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/header";
 import { useEffect, useState } from "react";
 import { TravelPackage, PackageType } from "@prisma/client";
+import { HeroCarousel } from "@/components/hero-carousel";
 import { PackageCard } from "@/components/packages/package-card";
 
 export default function Home() {
@@ -19,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await fetch("/api/front/packages?featured=true&limit=3");
+        const response = await fetch("/api/packages?featured=true&limit=3");
         if (!response.ok) throw new Error("Failed to fetch packages");
         const data = await response.json();
         setFeaturedPackages(data);
@@ -53,54 +54,8 @@ export default function Home() {
       <Header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm" />
       <main className="min-h-screen pt-16 bg-background">
         <PageTransition>
-          {/* Seção Hero */}
-          <section className="relative h-[600px] flex items-center justify-center text-white">
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage:
-                  "url('https://images.unsplash.com/photo-1469474968028-56623f02e42e')",
-              }}
-            >
-              <div className="absolute inset-0 bg-black/50" />
-            </div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative z-10 text-center max-w-3xl mx-auto px-4"
-            >
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-5xl font-bold mb-6"
-              >
-                Descubra Sua Próxima Aventura
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-xl mb-8"
-              >
-                Explore nossa seleção exclusiva de destinos de viagem incríveis
-                e crie memórias inesquecíveis.
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                <Link href="/packages">
-                  <Button size="lg" className="text-lg">
-                    Ver Pacotes
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </motion.div>
-            </motion.div>
-          </section>
+          {/* Hero Carousel */}
+          <HeroCarousel />
 
           {/* Pacotes em Destaque */}
           <section className="py-16 px-4">
