@@ -1,6 +1,6 @@
-export const dynamic = "force-dynamic";
-
 "use client";
+
+export const dynamic = "force-dynamic";
 
 import { Header } from "@/components/header";
 import { HeroCarousel } from "@/components/hero-carousel";
