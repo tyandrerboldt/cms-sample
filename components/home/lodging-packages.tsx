@@ -1,11 +1,11 @@
 "use client";
 
-import { TravelPackage, PackageType } from "@prisma/client";
+import { PackageCard } from "@/components/packages/package-card";
 import { Button } from "@/components/ui/button";
+import { PackageType, TravelPackage } from "@prisma/client";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { PackageCard } from "@/components/packages/package-card";
 import { useEffect, useState } from "react";
 
 const containerVariants = {
@@ -60,10 +60,7 @@ export function LodgingPackages() {
           viewport={{ once: true }}
         >
           <div className="flex justify-between items-center mb-8">
-            <motion.h2
-              variants={itemVariants}
-              className="text-3xl font-bold"
-            >
+            <motion.h2 variants={itemVariants} className="text-3xl font-bold">
               Pousadas
             </motion.h2>
             <motion.div variants={itemVariants}>
@@ -87,13 +84,7 @@ export function LodgingPackages() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {packages.map((pkg, index) => (
-                <motion.div
-                  key={pkg.id}
-                  variants={itemVariants}
-                  transition={{ delay: index * 0.2 }}
-                >
-                  <PackageCard package={pkg} />
-                </motion.div>
+                <PackageCard package={pkg} />
               ))}
             </div>
           )}
