@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage, deleteImage } from "@/lib/image-upload";
+import { revalidatePath } from "next/cache";
 
 export async function PUT(
   request: Request,
@@ -8,7 +9,7 @@ export async function PUT(
 ) {
   try {
     const formData = await request.formData();
-    
+
     // Get current slide to check for image changes
     const currentSlide = await prisma.heroSlide.findUnique({
       where: { id: params.id }
@@ -54,7 +55,7 @@ export async function PUT(
         order: parseInt(formData.get('order') as string) || 0,
       },
     });
-
+    revalidatePath('/');
     return NextResponse.json(slide);
   } catch (error) {
     console.error('Failed to update slide:', error);
@@ -81,6 +82,8 @@ export async function DELETE(
     await prisma.heroSlide.delete({
       where: { id: params.id },
     });
+
+    revalidatePath('/');
 
     return NextResponse.json({ success: true });
   } catch (error) {

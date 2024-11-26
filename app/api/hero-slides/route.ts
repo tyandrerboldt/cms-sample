@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage } from "@/lib/image-upload";
+import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
@@ -42,6 +43,8 @@ export async function POST(request: Request) {
         order: parseInt(formData.get('order') as string) || 0,
       },
     });
+
+    revalidatePath('/');
 
     return NextResponse.json(slide);
   } catch (error) {
