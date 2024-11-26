@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse, NextRequest } from 'next/server';
+import { prisma } from '@/lib/prisma'; 
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const limit = parseInt(searchParams.get("limit") || "10");
 
     const packages = await prisma.travelPackage.findMany({
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       take: limit,
       orderBy: [
         { contactCount: 'desc' },
-        { createdAt: 'desc' }
+        { createdAt: 'desc' },
       ],
       include: {
         packageType: true,
