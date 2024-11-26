@@ -11,6 +11,8 @@ import { TravelPackage, PackageType } from "@prisma/client";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { PackageCard } from "@/components/packages/package-card";
 
+export const revalidate = 60;
+
 export default function Home() {
   const [featuredPackages, setFeaturedPackages] = useState<
     (TravelPackage & { packageType: PackageType })[]
