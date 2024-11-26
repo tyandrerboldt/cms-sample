@@ -10,6 +10,8 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import Image from "next/image";
 
 interface HeaderProps {
   className?: string;
@@ -19,10 +21,11 @@ export function Header({ className }: HeaderProps) {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { settings, loading } = useSiteSettings();
 
   const menuItems = [
-    { href: "/pacotes", label: "Packages" },
-    ...(session?.user ? [{ href: "/admin", label: "Painel Admin" }] : []),
+    { href: "/pacotes", label: "Pacotes" },
+    ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 
   const MobileMenu = () => (
@@ -71,8 +74,18 @@ export function Header({ className }: HeaderProps) {
     <header className={cn("border-b bg-background", className)}>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <Plane className="h-6 w-6" />
-          <span className="font-bold text-xl">Portal</span>
+          {settings?.logo ? (
+            <Image
+              src={settings.logo}
+              alt={settings.name}
+              width={32}
+              height={32}
+              className="object-contain"
+            />
+          ) : (
+            <Plane className="h-6 w-6" />
+          )}
+          <span className="font-bold text-xl">{settings?.name || "TravelPortal"}</span>
         </Link>
 
         <NavigationMenu className="hidden md:flex">
@@ -108,7 +121,7 @@ export function Header({ className }: HeaderProps) {
                   <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
                 </Avatar>
                 <Button variant="outline" onClick={() => signOut()}>
-                  Sair
+                  Sign Out
                 </Button>
               </div>
             ) : (

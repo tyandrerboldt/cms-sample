@@ -1,10 +1,9 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { Header } from "@/components/header";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { FeaturedPackages } from "@/components/home/featured-packages";
+import { LodgingPackages } from "@/components/home/lodging-packages";
 import { PageTransition } from "@/components/page-transition";
 
 export default function Home() {
@@ -15,6 +14,7 @@ export default function Home() {
         <PageTransition>
           <HeroCarousel />
           <FeaturedPackages />
+          <LodgingPackages />
         </PageTransition>
       </main>
     </>
