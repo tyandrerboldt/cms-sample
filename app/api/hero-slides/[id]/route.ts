@@ -27,7 +27,7 @@ export async function PUT(
     // Handle image removal
     if (shouldRemoveImage && currentSlide.imageUrl) {
       await deleteImage(currentSlide.imageUrl);
-      imageUrl = null;
+      imageUrl = "";
     }
     // Handle image upload
     else {
