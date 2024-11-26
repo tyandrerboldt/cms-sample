@@ -20,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await fetch("/api/packages?featured=true&limit=3");
+        const response = await fetch("/api/front/packages?limit=3");
         if (!response.ok) throw new Error("Failed to fetch packages");
         const data = await response.json();
         setFeaturedPackages(data);
@@ -74,7 +74,7 @@ export default function Home() {
                     Pacotes em Destaque
                   </motion.h2>
                   <motion.div variants={itemVariants}>
-                    <Link href="/packages">
+                    <Link href="/pacotes">
                       <Button variant="ghost">
                         Ver Todos
                         <ArrowRight className="ml-2 h-4 w-4" />
@@ -91,17 +91,17 @@ export default function Home() {
                       />
                     ))}
                   </div>
-                ) : (
+                ) : featuredPackages.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {featuredPackages.map((pkg, index) => (
-                      <motion.div
-                        key={pkg.id}
-                        variants={itemVariants}
-                        transition={{ delay: index * 0.2 }}
-                      >
-                        <PackageCard package={pkg} />
-                      </motion.div>
+                      <PackageCard package={pkg} key={index} />
                     ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-lg text-muted-foreground">
+                      Nenhum pacote disponível no momento.
+                    </p>
                   </div>
                 )}
               </motion.div>

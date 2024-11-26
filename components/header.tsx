@@ -22,8 +22,7 @@ export function Header({ className }: HeaderProps) {
 
   const menuItems = [
     { href: "/pacotes", label: "Packages" },
-    { href: "/blog", label: "Blog" },
-    ...(session?.user ? [{ href: "/admin/packages", label: "Admin Panel" }] : []),
+    ...(session?.user ? [{ href: "/admin", label: "Painel Admin" }] : []),
   ];
 
   const MobileMenu = () => (
@@ -73,7 +72,7 @@ export function Header({ className }: HeaderProps) {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Plane className="h-6 w-6" />
-          <span className="font-bold text-xl">TravelPortal</span>
+          <span className="font-bold text-xl">Portal</span>
         </Link>
 
         <NavigationMenu className="hidden md:flex">

@@ -130,7 +130,7 @@ const SidebarContent = ({
           <Package className="h-6 w-6" />
         )}
         <span className="font-bold text-lg">
-          {settings?.name || "TravelPortal"}
+          {settings?.name || "Portal"}
         </span>
       </Link>
     </div>

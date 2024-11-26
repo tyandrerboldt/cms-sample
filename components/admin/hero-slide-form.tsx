@@ -42,7 +42,8 @@ export function HeroSlideForm({ slideToEdit }: HeroSlideFormProps) {
     slideToEdit?.imageUrl || null
   );
   const [mediaType, setMediaType] = useState<"image" | "video">(
-    slideToEdit?.videoUrl ? "video" : "image"
+    // slideToEdit?.videoUrl ? "video" : "image"
+    "image"
   );
 
   const {
@@ -148,15 +149,15 @@ export function HeroSlideForm({ slideToEdit }: HeroSlideFormProps) {
             </div>
           </div>
 
-          {/* <Tabs value={mediaType} onValueChange={(v) => setMediaType(v as "image" | "video")}>
+          <Tabs value={mediaType} onValueChange={(v) => setMediaType(v as "image" | "video")}>
             <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="image">Imagem</TabsTrigger>
-            </TabsList> */}
-          <Tabs value={mediaType} onValueChange={(v) => setMediaType(v as "image" | "video")}>
+            </TabsList>
+          {/* <Tabs value={mediaType} onValueChange={(v) => setMediaType(v as "image" | "video")}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="image">Imagem</TabsTrigger>
               <TabsTrigger value="video">Vídeo</TabsTrigger>
-            </TabsList>
+            </TabsList> */}
             <TabsContent value="image" className="space-y-4">
               <Label>Imagem do Slide</Label>
               <AnimatePresence mode="wait">
