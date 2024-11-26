@@ -1,16 +1,15 @@
-import { NextResponse, NextRequest } from 'next/server';
-import { prisma } from '@/lib/prisma'; 
+import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = request.nextUrl;
-    const limit = parseInt(searchParams.get("limit") || "10");
 
     const packages = await prisma.travelPackage.findMany({
       where: {
         status: "ACTIVE",
       },
-      take: limit,
+      take: 3,
       orderBy: [
         { contactCount: 'desc' },
         { createdAt: 'desc' },

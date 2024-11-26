@@ -20,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        const response = await fetch("/api/front/packages?limit=3");
+        const response = await fetch("/api/front/featured-packages");
         if (!response.ok) throw new Error("Failed to fetch packages");
         const data = await response.json();
         setFeaturedPackages(data);
