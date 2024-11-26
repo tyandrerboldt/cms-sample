@@ -56,6 +56,9 @@ export function HeroSlideForm({ slideToEdit }: HeroSlideFormProps) {
     resolver: zodResolver(slideSchema),
     defaultValues: {
       ...slideToEdit,
+      subtitle: slideToEdit?.subtitle ?? "",
+      linkText: slideToEdit?.linkText ?? "",
+      linkUrl: slideToEdit?.linkUrl ?? "",
       videoUrl: slideToEdit?.videoUrl ?? "",
       isActive: slideToEdit?.isActive ?? true,
       order: slideToEdit?.order ?? 0,
