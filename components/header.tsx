@@ -33,7 +33,7 @@ export function Header({ className }: HeaderProps) {
 
   const menuItems = [
     { href: "/pacotes", label: "Pacotes" },
-    { href: "/blog", label: "Artigos" },
+    // { href: "/blog", label: "Artigos" },
     ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 
