@@ -5,6 +5,7 @@ import "./globals.css";
 import { SiteStatusAlert } from "@/components/site-status-alert";
 import AuthProvider from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { PublicThemeProvider } from "@/components/theme/public-theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <PublicThemeProvider />
           <AuthProvider>
             <SiteStatusAlert />
             {children}

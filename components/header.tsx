@@ -2,7 +2,12 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Menu, Moon, Plane, Sun, User } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +17,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import Image from "next/image";
+import { SocialBar } from "./social-bar";
 
 interface HeaderProps {
   className?: string;
@@ -25,7 +31,10 @@ export function Header({ className }: HeaderProps) {
 
   const menuItems = [
     { href: "/pacotes", label: "Pacotes" },
-    ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
+    { href: "/blog", label: "Artigos" },
+    ...(session?.user
+      ? [{ href: "/admin", label: "Admin" }]
+      : []),
   ];
 
   const MobileMenu = () => (
@@ -57,10 +66,7 @@ export function Header({ className }: HeaderProps) {
                 Sign Out
               </Button>
             ) : (
-              <Button
-                onClick={() => signIn("google")}
-                className="w-full"
-              >
+              <Button onClick={() => signIn("google")} className="w-full">
                 Sign In
               </Button>
             )}
@@ -71,66 +77,78 @@ export function Header({ className }: HeaderProps) {
   );
 
   return (
-    <header className={cn("border-b bg-background", className)}>
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          {settings?.logo ? (
-            <Image
-              src={settings.logo}
-              alt={settings.name}
-              width={32}
-              height={32}
-              className="object-contain"
-            />
-          ) : (
-            <Plane className="h-6 w-6" />
-          )}
-          <span className="font-bold text-xl">{settings?.name || "TravelPortal"}</span>
-        </Link>
-
-        <NavigationMenu className="hidden md:flex">
-          <NavigationMenuList className="space-x-6">
-            {menuItems.map((item) => (
-              <NavigationMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
-                  <NavigationMenuLink className="font-medium">
-                    {item.label}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
-
-          <div className="hidden md:block">
-            {session?.user ? (
-              <div className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={session.user.image || ""} />
-                  <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
-                </Avatar>
-                <Button variant="outline" onClick={() => signOut()}>
-                  Sign Out
-                </Button>
-              </div>
+    <>
+      <header className={cn("border-b bg-background", className)}>
+        <SocialBar />
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
+          <Link href="/" className="absolute -top-10" title={settings?.name}>
+            {settings?.logo ? (
+              <>
+                <Image
+                  src={settings.logo}
+                  alt={settings.name}
+                  width={180}
+                  height={72}
+                  className="md:hidden object-contain"
+                />
+                <Image
+                  src={settings.logo}
+                  alt={settings.name}
+                  width={240}
+                  height={96}
+                  className="hidden md:block object-contain"
+                />
+              </>
             ) : (
-              <Button onClick={() => signIn("google")}>Sign In</Button>
+              <Plane className="h-12 w-12" />
             )}
+          </Link>
+          <div className="w-[240px]"></div>
+
+          <NavigationMenu className="hidden md:flex">
+            <NavigationMenuList className="space-x-6">
+              {menuItems.map((item) => (
+                <NavigationMenuItem key={item.href}>
+                  <Link href={item.href} legacyBehavior passHref>
+                    <NavigationMenuLink className="font-medium">
+                      {item.label}
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            >
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+
+            <div className="hidden md:block">
+              {session?.user ? (
+                <div className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage src={session.user.image || ""} />
+                    <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
+                  </Avatar>
+                  <Button variant="outline" onClick={() => signOut()}>
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={() => signIn("google")}>Sign In</Button>
+              )}
+            </div>
+            <MobileMenu />
           </div>
-          <MobileMenu />
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

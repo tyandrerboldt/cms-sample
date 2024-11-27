@@ -89,15 +89,15 @@ export function HeroCarousel() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="absolute inset-0 flex items-center justify-center text-white"
+                    className="absolute inset-0 flex items-center text-white"
                   >
-                    <div className="text-center max-w-3xl mx-auto px-4">
+                    <div className="text-center md:text-left max-w-full md:max-w-3xl mx-auto md:mx-48 px-4">
                       <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
                         transition={{ delay: 0.2 }}
-                        className="text-5xl font-bold mb-4"
+                        className="text-3xl md:text-5xl font-bold mb-4"
                       >
                         {slide.title}
                       </motion.h2>
@@ -107,7 +107,7 @@ export function HeroCarousel() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ delay: 0.4 }}
-                          className="text-xl mb-8"
+                          className="text-lg md:text-xl mb-8"
                         >
                           {slide.subtitle}
                         </motion.p>
