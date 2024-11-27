@@ -5,8 +5,8 @@ import { AdminHeader } from "@/components/admin/header";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Breadcrumbs } from "@/components/admin/breadcrumbs";
-import AuthProvider from "@/components/auth-provider";
-import { ThemeProvider } from "@/components/theme-provider";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 export default function AdminLayout({
   children,

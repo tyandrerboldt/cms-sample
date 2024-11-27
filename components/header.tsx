@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import Image from "next/image";
 import { SocialBar } from "./social-bar";
+import { usePathname } from "next/navigation";
 
 interface HeaderProps {
   className?: string;
@@ -28,14 +29,18 @@ export function Header({ className }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { settings, loading } = useSiteSettings();
+  const pathname = usePathname();
 
   const menuItems = [
     { href: "/pacotes", label: "Pacotes" },
     { href: "/blog", label: "Artigos" },
-    ...(session?.user
-      ? [{ href: "/admin", label: "Admin" }]
-      : []),
+    ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
   ];
+
+  const isActiveLink = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   const MobileMenu = () => (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -51,7 +56,12 @@ export function Header({ className }: HeaderProps) {
               key={item.href}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className="block px-2 py-1 text-lg"
+              className={cn(
+                "block px-2 py-1 text-lg transition-colors",
+                isActiveLink(item.href)
+                  ? "text-primary font-medium"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
               {item.label}
             </Link>
@@ -100,7 +110,7 @@ export function Header({ className }: HeaderProps) {
                 />
               </>
             ) : (
-              <Plane className="h-12 w-12" />
+              `${settings?.name}`
             )}
           </Link>
           <div className="w-[240px]"></div>
@@ -110,7 +120,14 @@ export function Header({ className }: HeaderProps) {
               {menuItems.map((item) => (
                 <NavigationMenuItem key={item.href}>
                   <Link href={item.href} legacyBehavior passHref>
-                    <NavigationMenuLink className="font-medium">
+                    <NavigationMenuLink
+                      className={cn(
+                        "font-medium transition-colors",
+                        isActiveLink(item.href)
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
                       {item.label}
                     </NavigationMenuLink>
                   </Link>
@@ -138,7 +155,7 @@ export function Header({ className }: HeaderProps) {
                     <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
                   </Avatar>
                   <Button variant="outline" onClick={() => signOut()}>
-                    Sign Out
+                    Sair
                   </Button>
                 </div>
               ) : (

@@ -142,6 +142,8 @@ model SiteSettings {
   logo              String?
   status            Boolean  @default(true)
   allowRegistration Boolean  @default(true)
+  aboutText         String?  @db.Text
+  ctaText           String?  @db.Text
   smtpHost          String?
   smtpPort          Int?
   smtpUser          String?

@@ -17,6 +17,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import { RichTextEditor } from "./rich-text-editor";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const settingsSchema = z.object({
   name: z.string().min(1, "Nome do site é obrigatório"),
@@ -24,6 +26,8 @@ const settingsSchema = z.object({
   logo: z.string().nullable().optional(),
   status: z.boolean(),
   allowRegistration: z.boolean(),
+  aboutText: z.string().nullable().optional(),
+  ctaText: z.string().nullable().optional(),
   smtpHost: z.string().nullable().optional(),
   smtpPort: z.string().transform(val => val ? parseInt(val) : null).nullable().optional(),
   smtpUser: z.string().nullable().optional(),
@@ -51,6 +55,8 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   const [logoPreview, setLogoPreview] = useState<string | null>(
     settings?.logo || null
   );
+  const [aboutText, setAboutText] = useState(settings?.aboutText || "");
+  const [ctaText, setCtaText] = useState(settings?.ctaText || "");
 
   const {
     register,
@@ -63,6 +69,8 @@ export function SettingsForm({ settings }: SettingsFormProps) {
       ...settings,
       status: isActive,
       allowRegistration: allowRegistration,
+      aboutText: aboutText,
+      ctaText: ctaText,
     },
   });
 
@@ -104,6 +112,10 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           formData.append(key, value.toString());
         }
       });
+
+      // Add rich text fields
+      formData.append("aboutText", aboutText);
+      formData.append("ctaText", ctaText);
 
       const response = await fetch("/api/settings", {
         method: "POST",
@@ -237,6 +249,44 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 )}
               </AnimatePresence>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Content Settings */}
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">Conteúdo</h2>
+
+            <Tabs defaultValue="about" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="about">Quem Somos</TabsTrigger>
+                <TabsTrigger value="cta">Texto CTA</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="about" className="space-y-4">
+                <div className="min-h-[400px]">
+                  <RichTextEditor
+                    content={aboutText}
+                    onChange={(content) => {
+                      setAboutText(content);
+                      setValue("aboutText", content);
+                    }}
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="cta" className="space-y-4">
+                <div className="min-h-[400px]">
+                  <RichTextEditor
+                    content={ctaText}
+                    onChange={(content) => {
+                      setCtaText(content);
+                      setValue("ctaText", content);
+                    }}
+                  />
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
 
           <Separator />
