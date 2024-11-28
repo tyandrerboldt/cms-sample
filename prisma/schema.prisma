@@ -150,6 +150,7 @@ model SiteSettings {
   smtpUser          String?
   smtpPass          String?
   smtpFrom          String?
+  whatsappNumber    String?
   facebookUrl       String?
   instagramUrl      String?
   twitterUrl        String?

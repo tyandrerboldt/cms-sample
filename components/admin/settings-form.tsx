@@ -28,6 +28,7 @@ const settingsSchema = z.object({
   allowRegistration: z.boolean(),
   aboutText: z.string().nullable().optional(),
   ctaText: z.string().nullable().optional(),
+  whatsappNumber: z.string().nullable().optional(),
   smtpHost: z.string().nullable().optional(),
   smtpPort: z.string().transform(val => val ? parseInt(val) : null).nullable().optional(),
   smtpUser: z.string().nullable().optional(),
@@ -50,7 +51,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isActive, setIsActive] = useState(settings?.status ?? true);
-  const [allowRegistration, setAllowRegistration] = useState(settings?.allowRegistration ?? true);
+  const [allowRegistration, setAllowRegistration] = useState(
+    settings?.allowRegistration ?? true
+  );
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(
     settings?.logo || null
@@ -146,7 +149,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           {/* General Settings */}
           <div className="space-y-6">
             <h2 className="text-lg font-semibold">Configurações Gerais</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome do Site</Label>
@@ -189,7 +192,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               <Label htmlFor="description">Descrição do Site</Label>
               <Textarea id="description" {...register("description")} />
               {errors.description && (
-                <p className="text-sm text-red-500">{errors.description.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.description.message}
+                </p>
               )}
             </div>
 
@@ -291,10 +296,29 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
           <Separator />
 
+          {/* Contact Settings */}
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">Contato</h2>
+
+            <div className="space-y-2">
+              <Label htmlFor="whatsappNumber">Número do WhatsApp</Label>
+              <Input
+                id="whatsappNumber"
+                placeholder="+5511999999999"
+                {...register("whatsappNumber")}
+              />
+              <p className="text-sm text-muted-foreground">
+                Digite o número completo com código do país e DDD
+              </p>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Email Settings */}
           <div className="space-y-6">
             <h2 className="text-lg font-semibold">Configurações de Email</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="smtpHost">SMTP Host</Label>
@@ -303,11 +327,7 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="smtpPort">SMTP Port</Label>
-                <Input
-                  id="smtpPort"
-                  type="number"
-                  {...register("smtpPort")}
-                />
+                <Input id="smtpPort" type="number" {...register("smtpPort")} />
               </div>
             </div>
 
@@ -331,7 +351,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               <Label htmlFor="smtpFrom">Endereço de Email do Remetente</Label>
               <Input id="smtpFrom" type="email" {...register("smtpFrom")} />
               {errors.smtpFrom && (
-                <p className="text-sm text-red-500">{errors.smtpFrom.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.smtpFrom.message}
+                </p>
               )}
             </div>
           </div>
@@ -341,13 +363,15 @@ export function SettingsForm({ settings }: SettingsFormProps) {
           {/* Social Media Settings */}
           <div className="space-y-6">
             <h2 className="text-lg font-semibold">Mídias Sociais</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="facebookUrl">URL do Facebook</Label>
                 <Input id="facebookUrl" {...register("facebookUrl")} />
                 {errors.facebookUrl && (
-                  <p className="text-sm text-red-500">{errors.facebookUrl.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.facebookUrl.message}
+                  </p>
                 )}
               </div>
 
@@ -355,7 +379,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="instagramUrl">URL do Instagram</Label>
                 <Input id="instagramUrl" {...register("instagramUrl")} />
                 {errors.instagramUrl && (
-                  <p className="text-sm text-red-500">{errors.instagramUrl.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.instagramUrl.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -365,7 +391,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="twitterUrl">URL do Twitter</Label>
                 <Input id="twitterUrl" {...register("twitterUrl")} />
                 {errors.twitterUrl && (
-                  <p className="text-sm text-red-500">{errors.twitterUrl.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.twitterUrl.message}
+                  </p>
                 )}
               </div>
 
@@ -373,7 +401,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
                 <Label htmlFor="linkedinUrl">URL do LinkedIn</Label>
                 <Input id="linkedinUrl" {...register("linkedinUrl")} />
                 {errors.linkedinUrl && (
-                  <p className="text-sm text-red-500">{errors.linkedinUrl.message}</p>
+                  <p className="text-sm text-red-500">
+                    {errors.linkedinUrl.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -382,7 +412,9 @@ export function SettingsForm({ settings }: SettingsFormProps) {
               <Label htmlFor="youtubeUrl">URL do YouTube</Label>
               <Input id="youtubeUrl" {...register("youtubeUrl")} />
               {errors.youtubeUrl && (
-                <p className="text-sm text-red-500">{errors.youtubeUrl.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.youtubeUrl.message}
+                </p>
               )}
             </div>
           </div>

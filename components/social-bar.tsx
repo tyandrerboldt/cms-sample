@@ -1,16 +1,17 @@
 "use client";
 
+import { WhatsappIcon } from "@/components/icons/whatsapp";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import { cn } from "@/lib/utils";
 import {
-  Mail,
   Facebook,
   Instagram,
   Linkedin,
+  Mail,
   Twitter,
   Youtube,
 } from "lucide-react";
 import Link from "next/link";
-import { useSiteSettings } from "@/hooks/use-site-settings";
-import { cn } from "@/lib/utils";
 
 interface SocialBarProps {
   className?: string;
@@ -30,9 +31,14 @@ export function SocialBar({ className }: SocialBarProps) {
   ].filter((link) => link.href);
 
   const hasEmail = settings.smtpFrom;
+  const hasWhatsApp = settings.whatsappNumber;
   const hasSocialLinks = socialLinks.length > 0;
 
-  if (!hasEmail && !hasSocialLinks) return null;
+  if (!hasEmail && !hasSocialLinks && !hasWhatsApp) return null;
+
+  const whatsappUrl = settings.whatsappNumber
+    ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`
+    : null;
 
   return (
     <div className={cn("bg-primary py-2 text-white", className)}>
@@ -41,12 +47,22 @@ export function SocialBar({ className }: SocialBarProps) {
           <div className="flex items-center space-x-4">
             {hasEmail && (
               <Link
-                key={"email"}
-                title="E-mail"
+                title="Enviar e-mail"
                 href={`mailto:${settings.smtpFrom}`}
                 className="flex items-center hover:text-foreground transition-colors"
               >
-                <Mail className="h-4 w-4" />
+                <Mail className="h-4 w-4 mr-2" />
+              </Link>
+            )}
+            {hasWhatsApp && (
+              <Link
+                title="Falar no Whatsapp"
+                href={whatsappUrl!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center hover:text-foreground transition-colors"
+              >
+                <WhatsappIcon className="h-4 w-4 mr-2" />
               </Link>
             )}
             {socialLinks.map(({ href, icon: Icon }) => (

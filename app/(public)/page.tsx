@@ -14,9 +14,9 @@ export default function Home() {
       <HeroCarousel />
       <FeaturedPackages />
       <AboutSection />
-      <LodgingPackages />
       <BoatPackages />
       <CTASection />
+      <LodgingPackages />
     </PageTransition>
   );
 }

@@ -5,6 +5,7 @@ import { Facebook, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { WhatsappIcon } from "@/components/icons/whatsapp";
 
 interface FooterProps {
   className?: string;
@@ -16,6 +17,7 @@ export function Footer({ className }: FooterProps) {
   if (!settings) return null;
 
   const socialLinks = [
+    { href: settings.whatsappNumber ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, '')}` : null, icon: WhatsappIcon, label: "WhatsApp" },
     { href: settings.facebookUrl, icon: Facebook, label: "Facebook" },
     { href: settings.instagramUrl, icon: Instagram, label: "Instagram" },
     { href: settings.twitterUrl, icon: Twitter, label: "Twitter" },
@@ -27,6 +29,18 @@ export function Footer({ className }: FooterProps) {
     <footer className={cn("bg-muted py-8 mt-auto", className)}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center space-y-6">
+          {settings.logo && (
+            <Link href="/" className="block" title={settings.name}>
+              <Image
+                src={settings.logo}
+                alt={settings.name}
+                width={160}
+                height={64}
+                className="object-contain"
+              />
+            </Link>
+          )}
+
           {socialLinks.length > 0 && (
             <div className="flex items-center space-x-4">
               {socialLinks.map(({ href, icon: Icon, label }) => (
