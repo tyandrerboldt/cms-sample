@@ -45,6 +45,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
+import { Switch } from "@/components/ui/switch";
 
 interface PackageListProps {
   packages: (TravelPackage & {
@@ -81,6 +82,9 @@ export function PackageList({
     searchParams.get("sortOrder") || "desc"
   );
   const [pageSize, setPageSize] = useState(perPage);
+  const [showHighlighted, setShowHighlighted] = useState(
+    searchParams.get("highlighted") === "true"
+  );
 
   const handleDelete = async (id: string) => {
     try {
@@ -129,6 +133,7 @@ export function PackageList({
       search,
       status,
       typeId,
+      highlighted: showHighlighted.toString(),
       page: "1", // Reset to first page on new search
     });
   };
@@ -149,6 +154,7 @@ export function PackageList({
     setSearch("");
     setStatus("");
     setTypeId("");
+    setShowHighlighted(false);
     setSortBy("createdAt");
     setSortOrder("desc");
     router.push("/admin/packages");
@@ -176,7 +182,21 @@ export function PackageList({
     return <Badge variant={variants[status]}>{labels[status]}</Badge>;
   };
 
-  const hasActiveFilters = search || status || typeId;
+  const getHighlightBadge = (highlight: string) => {
+    const variants: Record<string, "warning" | "default" | "outline"> = {
+      MAIN: "warning",
+      FEATURED: "default",
+      NORMAL: "outline",
+    };
+    const labels: Record<string, string> = {
+      MAIN: "Principal",
+      FEATURED: "Destaque",
+      NORMAL: "Normal",
+    };
+    return <Badge variant={variants[highlight]}>{labels[highlight]}</Badge>;
+  };
+
+  const hasActiveFilters = search || status || typeId || showHighlighted;
 
   return (
     <div className="space-y-4">
@@ -241,6 +261,17 @@ export function PackageList({
           </Select>
         </div>
 
+        <div className="flex items-center space-x-2">
+          <Switch
+            checked={showHighlighted}
+            onCheckedChange={(checked) => {
+              setShowHighlighted(checked);
+              updateSearchParams({ highlighted: checked.toString(), page: "1" });
+            }}
+          />
+          <span className="text-sm">Destaques</span>
+        </div>
+
         <div className="flex gap-2">
           <Button onClick={handleSearch}>Filtrar</Button>
           {hasActiveFilters && (
@@ -280,6 +311,7 @@ export function PackageList({
               </TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Tipo</TableHead>
+              <TableHead>Destaque</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
@@ -301,6 +333,7 @@ export function PackageList({
                 <TableCell>{pkg.location}</TableCell>
                 <TableCell>{getStatusBadge(pkg.status)}</TableCell>
                 <TableCell>{pkg.packageType.name}</TableCell>
+                <TableCell>{getHighlightBadge(pkg.highlight)}</TableCell>
                 <TableCell>
                   <div className="flex justify-end space-x-2">
                     <Link href={`/admin/packages/${pkg.id}`}>

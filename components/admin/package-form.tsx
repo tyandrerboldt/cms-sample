@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import slugify from "slugify";
 import { RichTextEditor } from "./rich-text-editor";
 import { Loader2 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const packageSchema = z.object({
   code: z.string().min(1, "Código é obrigatório"),
@@ -26,8 +27,9 @@ const packageSchema = z.object({
   location: z.string().min(1, "Localização é obrigatória"),
   maxGuests: z.string().min(1, "Máximo de hóspedes é obrigatório"),
   typeId: z.string().min(1, "Tipo de pacote é obrigatório"),
-  numberOfDays: z.any().transform(val => parseInt(val)),
+  numberOfDays: z.string().transform(val => parseInt(val)),
   status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "UNAVAILABLE"]),
+  highlight: z.enum(["NORMAL", "FEATURED", "MAIN"]),
 });
 
 type PackageFormData = z.infer<typeof packageSchema>;
@@ -63,10 +65,12 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
           maxGuests: packageToEdit.maxGuests.toString(),
           numberOfDays: packageToEdit.numberOfDays,
           content: content,
+          highlight: packageToEdit.highlight || "NORMAL",
         }
       : {
           status: "DRAFT",
           numberOfDays: 1,
+          highlight: "NORMAL",
         },
   });
 
@@ -189,6 +193,28 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             {errors.typeId && (
               <p className="text-sm text-red-500">{errors.typeId.message}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Destaque</Label>
+            <RadioGroup
+              defaultValue={packageToEdit?.highlight || "NORMAL"}
+              onValueChange={(value) => setValue("highlight", value as "NORMAL" | "FEATURED" | "MAIN")}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="NORMAL" id="normal" />
+                <Label htmlFor="normal">Normal</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="FEATURED" id="featured" />
+                <Label htmlFor="featured">Destaque</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="MAIN" id="main" />
+                <Label htmlFor="main">Principal</Label>
+              </div>
+            </RadioGroup>
           </div>
 
           <ImageUpload

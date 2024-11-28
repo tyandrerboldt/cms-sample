@@ -7,12 +7,16 @@ import { PageTransition } from "@/components/page-transition";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface SearchParams {
   page?: string;
   perPage?: string;
   search?: string;
   status?: string;
   typeId?: string;
+  highlighted?: string;
   sortBy?: string;
   sortOrder?: string;
 }
@@ -27,6 +31,7 @@ export default async function AdminPackages({
   const search = searchParams.search;
   const status = searchParams.status;
   const typeId = searchParams.typeId;
+  const highlighted = searchParams.highlighted === "true";
   const sortBy = searchParams.sortBy || "createdAt";
   const sortOrder = searchParams.sortOrder || "desc";
 
@@ -35,7 +40,6 @@ export default async function AdminPackages({
     where: { email: session?.user?.email || "" }
   });
   
-  // If user is not admin, only show their own packages
   const where: any = user?.role === "ADMIN" ? {} : { userId: user?.id };
 
   if (search) {
@@ -54,10 +58,15 @@ export default async function AdminPackages({
     where.typeId = typeId;
   }
 
-  // Get total count for pagination
+  if (highlighted) {
+    where.OR = [
+      { highlight: "FEATURED" },
+      { highlight: "MAIN" }
+    ];
+  }
+
   const total = await prisma.travelPackage.count({ where });
 
-  // Get packages with pagination and sorting
   const [packages, packageTypes] = await Promise.all([
     prisma.travelPackage.findMany({
       where,

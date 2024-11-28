@@ -79,6 +79,7 @@ model TravelPackage {
   maxGuests    Int
   numberOfDays Int           @default(1)
   status       PackageStatus @default(DRAFT)
+  highlight    PackageHighlight @default(NORMAL)
   contactCount Int           @default(0)
   typeId       String
   userId       String
@@ -177,4 +178,10 @@ enum PackageStatus {
   ACTIVE
   INACTIVE
   UNAVAILABLE
+}
+
+enum PackageHighlight {
+  NORMAL
+  FEATURED
+  MAIN
 }

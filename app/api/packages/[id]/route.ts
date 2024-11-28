@@ -10,7 +10,7 @@ export async function PUT(
   try {
     const { id } = params;
 
-    // Obtém o pacote atual para acessar as imagens existentes
+    // Get current package to check for image changes
     const currentPackage = await prisma.travelPackage.findUnique({
       where: { id },
       include: { images: true },
@@ -25,7 +25,25 @@ export async function PUT(
 
     const formData = await request.formData();
 
-    // Processa novas imagens enviadas no formulário
+    // Check if there's already a main package when this one is set as main
+    const highlight = formData.get('highlight') as 'NORMAL' | 'FEATURED' | 'MAIN';
+    if (highlight === 'MAIN' && currentPackage.highlight !== 'MAIN') {
+      const existingMain = await prisma.travelPackage.findFirst({
+        where: { 
+          highlight: 'MAIN',
+          id: { not: id }
+        }
+      });
+
+      if (existingMain) {
+        await prisma.travelPackage.update({
+          where: { id: existingMain.id },
+          data: { highlight: 'FEATURED' }
+        });
+      }
+    }
+
+    // Process new images
     const imageFiles = formData.getAll("images") as File[];
     const newImageUrls: string[] = [];
     for (const file of imageFiles) {
@@ -33,10 +51,10 @@ export async function PUT(
       newImageUrls.push(url);
     }
 
-    // Recupera as imagens existentes enviadas no formulário
+    // Get existing images from form
     const existingImages = formData.getAll("existingImages") as string[];
 
-    // Determina quais imagens precisam ser excluídas
+    // Determine which images to delete
     const imagesToDelete = currentPackage.images
       .filter((img) => !existingImages.includes(img.url))
       .map((img) => img.url);
@@ -45,8 +63,12 @@ export async function PUT(
       await deleteImage(imageUrl);
     }
 
-    // Atualiza as imagens (novas e existentes)
-    const allImages = [
+    // Update the package
+    const title = formData.get("title") as string;
+    const slug = slugify(title, { lower: true, strict: true });
+
+     // Atualiza as imagens (novas e existentes)
+     const allImages = [
       ...newImageUrls.map((url, index) => ({
         url,
         isMain: formData.get(`imageIsMain${index}`) === "true",
@@ -57,9 +79,6 @@ export async function PUT(
       })),
     ];
 
-    // Atualiza o pacote sem apagar imagens existentes do banco
-    const title = formData.get("title") as string;
-    const slug = slugify(title, { lower: true, strict: true });
 
     const updatedPackage = await prisma.travelPackage.update({
       where: { id },
@@ -73,6 +92,7 @@ export async function PUT(
         maxGuests: parseInt(formData.get("maxGuests") as string),
         numberOfDays: parseInt(formData.get("numberOfDays") as string),
         status: formData.get("status") as any,
+        highlight: highlight,
         typeId: formData.get("typeId") as string,
         imageUrl:
           allImages.find((img) => img.isMain)?.url || currentPackage.imageUrl,
