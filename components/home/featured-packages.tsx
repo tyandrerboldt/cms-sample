@@ -57,7 +57,7 @@ export function FeaturedPackages() {
         >
           <div className="flex justify-between items-center mb-8">
             <motion.h2 variants={itemVariants} className="text-3xl font-bold">
-              Pacotes em Destaque
+            Pacotes em Destaque
             </motion.h2>
             <motion.div variants={itemVariants}>
               <Link href="/pacotes">

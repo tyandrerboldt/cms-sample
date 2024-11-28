@@ -91,7 +91,7 @@ export function Header({ className }: HeaderProps) {
       <header className={cn("border-b bg-background", className)}>
         <SocialBar />
         <div className="container mx-auto px-4 py-4 flex items-center justify-between relative">
-          <Link href="/" className="absolute -top-10" title={settings?.name}>
+          <Link href="/" className="absolute -top-5" title={settings?.name}>
             {settings?.logo ? (
               <>
                 <Image

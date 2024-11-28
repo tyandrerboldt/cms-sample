@@ -34,14 +34,14 @@ export function AboutSection() {
         >
           <motion.h2
             variants={itemVariants}
-            className="text-3xl font-bold text-center mb-8"
+            className="text-3xl font-bold text-center text-white mb-8"
           >
             Quem Somos
           </motion.h2>
 
           <motion.div
             variants={itemVariants}
-            className="prose prose-lg dark:prose-invert mx-auto text-center"
+            className="prose prose-lg dark:prose-invert mx-auto text-center text-white"
             dangerouslySetInnerHTML={{ __html: settings.aboutText.split("||intro||")[0] }}
           />
         </motion.div>

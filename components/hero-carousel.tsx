@@ -136,13 +136,13 @@ export function HeroCarousel() {
         </div>
       </div>
       <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 text-gray-800 rounded-full bg-white/80 hover:bg-white flex items-center justify-center"
         onClick={() => emblaApi?.scrollPrev()}
       >
         <ArrowRight className="h-5 w-5 rotate-180" />
       </button>
       <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center"
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 text-gray-800 rounded-full bg-white/80 hover:bg-white flex items-center justify-center"
         onClick={() => emblaApi?.scrollNext()}
       >
         <ArrowRight className="h-5 w-5" />
