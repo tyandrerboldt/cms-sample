@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Menu, Moon, Plane, Sun, User } from "lucide-react";
+import { Menu, Moon, Sun } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -67,17 +67,13 @@ export function Header({ className }: HeaderProps) {
             </Link>
           ))}
           <div className="mt-4">
-            {session?.user ? (
+            {session?.user && (
               <Button
                 variant="outline"
                 onClick={() => signOut()}
                 className="w-full"
               >
-                Sign Out
-              </Button>
-            ) : (
-              <Button onClick={() => signIn("google")} className="w-full">
-                Sign In
+                Sair
               </Button>
             )}
           </div>
@@ -148,7 +144,7 @@ export function Header({ className }: HeaderProps) {
             </Button>
 
             <div className="hidden md:block">
-              {session?.user ? (
+              {session?.user && (
                 <div className="flex items-center space-x-4">
                   <Avatar>
                     <AvatarImage src={session.user.image || ""} />
@@ -158,8 +154,6 @@ export function Header({ className }: HeaderProps) {
                     Sair
                   </Button>
                 </div>
-              ) : (
-                <Button onClick={() => signIn("google")}>Sign In</Button>
               )}
             </div>
             <MobileMenu />
