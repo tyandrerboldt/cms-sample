@@ -2,6 +2,7 @@
 
 import { HeroCarousel } from "@/components/hero-carousel";
 import { AboutSection } from "@/components/home/about-section";
+import { BoatPackages } from "@/components/home/boat-packages";
 import { CTASection } from "@/components/home/cta-section";
 import { FeaturedPackages } from "@/components/home/featured-packages";
 import { LodgingPackages } from "@/components/home/lodging-packages";
@@ -14,6 +15,7 @@ export default function Home() {
       <FeaturedPackages />
       <AboutSection />
       <LodgingPackages />
+      <BoatPackages />
       <CTASection />
     </PageTransition>
   );

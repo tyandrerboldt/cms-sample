@@ -1,11 +1,10 @@
-"use client";
-
 import { TravelPackage } from "@prisma/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface PackageCardProps {
   package: TravelPackage & {
@@ -15,12 +14,13 @@ interface PackageCardProps {
       slug: string;
     };
   };
+  className?: string;
 }
 
-export function PackageCard({ package: pkg }: PackageCardProps) {
+export function PackageCard({ package: pkg, className }: PackageCardProps) {
   return (
-    <Card className="overflow-hidden">
-      <div className="relative h-48">
+    <Card className={cn("overflow-hidden flex flex-col", className)}>
+      <div className="relative aspect-[16/9]">
         <Image
           src={pkg.imageUrl}
           alt={pkg.title}
@@ -37,7 +37,7 @@ export function PackageCard({ package: pkg }: PackageCardProps) {
           <span>{pkg.location}</span>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <p className="text-muted-foreground line-clamp-2">{pkg.description}</p>
         <div className="flex items-center justify-between mt-4 text-sm">
           <div className="flex items-center">
