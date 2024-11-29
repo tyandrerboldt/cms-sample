@@ -107,7 +107,7 @@ export default function PackagesPage() {
 
   return (
     <PageTransition>
-      <div className="container mx-auto py-8 px-4 pt-12 md:pt-28">
+      <div className="container mx-auto py-8 px-4">
         <h1 className="text-4xl font-bold mb-8">Pacotes de Viagem</h1>
 
         <PackageFilter packageTypes={packageTypes} />

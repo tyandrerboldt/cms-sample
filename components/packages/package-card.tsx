@@ -54,11 +54,11 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
         <div className="flex items-center justify-between mt-4 text-sm">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
-            <span>{pkg.numberOfDays} dias</span>
+            <span>{pkg.numberOfDays} diária{pkg.numberOfDays > 1 ? "s" : ""}</span>
           </div>
           <div className="flex items-center">
             <Users className="h-4 w-4 mr-1" />
-            <span>Max {pkg.maxGuests} hóspedes</span>
+            <span>Max. {pkg.maxGuests} hóspede{pkg.maxGuests > 1 ? "s" : ""}</span>
           </div>
         </div>
       </CardContent>
