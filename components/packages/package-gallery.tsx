@@ -16,7 +16,7 @@ interface PackageGalleryProps {
 
 export function PackageGallery({ mainImage, images, title, className }: PackageGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const allImages = [mainImage, ...images.map(img => img.url)];
+  const allImages = [mainImage, ...images.filter(img => img.url !== mainImage).map(img => img.url)];
 
   const handlePrevious = () => {
     setCurrentImageIndex((prev) => 
@@ -68,33 +68,19 @@ export function PackageGallery({ mainImage, images, title, className }: PackageG
         )}
       </div>
 
-      {images.length > 0 && (
+      {allImages.length > 1 && (
         <div className="grid grid-cols-5 gap-2">
-          <button
-            className={cn(
-              "relative aspect-square rounded-md overflow-hidden ring-2 ring-offset-2",
-              currentImageIndex === 0 ? "ring-primary" : "ring-transparent"
-            )}
-            onClick={() => setCurrentImageIndex(0)}
-          >
-            <Image
-              src={mainImage}
-              alt={title}
-              fill
-              className="object-cover hover:scale-110 transition-transform duration-300"
-            />
-          </button>
-          {images.map((image, index) => (
+          {allImages.map((imageUrl, index) => (
             <button
-              key={image.id}
+              key={imageUrl}
               className={cn(
                 "relative aspect-square rounded-md overflow-hidden ring-2 ring-offset-2",
-                currentImageIndex === index + 1 ? "ring-primary" : "ring-transparent"
+                currentImageIndex === index ? "ring-primary" : "ring-transparent"
               )}
-              onClick={() => setCurrentImageIndex(index + 1)}
+              onClick={() => setCurrentImageIndex(index)}
             >
               <Image
-                src={image.url}
+                src={imageUrl}
                 alt={`${title} - Image ${index + 1}`}
                 fill
                 className="object-cover hover:scale-110 transition-transform duration-300"
