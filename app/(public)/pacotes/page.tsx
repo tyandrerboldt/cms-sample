@@ -8,6 +8,7 @@ import { PackageType, TravelPackage } from "@prisma/client";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
+export const dynamic = 'force-dynamic'
 interface PackageWithType extends TravelPackage {
   packageType: PackageType;
 }
