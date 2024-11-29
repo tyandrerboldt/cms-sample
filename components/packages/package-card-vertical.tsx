@@ -1,10 +1,11 @@
 import { TravelPackage } from "@prisma/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface PackageCardVerticalProps {
   package: TravelPackage & {
@@ -18,6 +19,8 @@ interface PackageCardVerticalProps {
 }
 
 export function PackageCardVertical({ package: pkg, className }: PackageCardVerticalProps) {
+  const TypeIcon = pkg.packageType.slug === "barcos" ? Anchor : Building2;
+
   return (
     <Card className={cn("overflow-hidden h-full", className)}>
       <div className="flex flex-col lg:flex-row h-full">
@@ -31,10 +34,21 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
         </div>
         <CardContent className="flex-1 p-4 flex flex-col">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold mb-2">{pkg.title}</h3>
-            <div className="flex items-center text-muted-foreground mb-2">
-              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-              <span className="truncate">{pkg.location}</span>
+            <div className="flex justify-between items-start gap-2 mb-2">
+              <h3 className="text-lg font-semibold">{pkg.title}</h3>
+              <Badge variant="outline" className="shrink-0">
+                {pkg.code}
+              </Badge>
+            </div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center text-muted-foreground">
+                <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                <span className="truncate">{pkg.location}</span>
+              </div>
+              <div className="flex items-center text-muted-foreground">
+                <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
+                <span>{pkg.packageType.name}</span>
+              </div>
             </div>
             <p className="text-muted-foreground line-clamp-2 mb-4">{pkg.description}</p>
             <div className="flex items-center justify-between text-sm">

@@ -1,10 +1,11 @@
 import { TravelPackage } from "@prisma/client";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface PackageCardProps {
   package: TravelPackage & {
@@ -18,6 +19,8 @@ interface PackageCardProps {
 }
 
 export function PackageCard({ package: pkg, className }: PackageCardProps) {
+  const TypeIcon = pkg.packageType.slug === "barcos" ? Anchor : Building2;
+
   return (
     <Card className={cn("overflow-hidden flex flex-col", className)}>
       <div className="relative aspect-[16/9]">
@@ -28,13 +31,22 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
           className="object-cover"
         />
       </div>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <h3 className="text-xl font-semibold">{pkg.title}</h3>
+      <CardHeader className="space-y-2">
+        <div className="flex justify-between items-start gap-2">
+          <h3 className="text-xl font-semibold flex-1">{pkg.title}</h3>
+          <Badge variant="outline" className="shrink-0">
+            {pkg.code}
+          </Badge>
         </div>
-        <div className="flex items-center text-muted-foreground">
-          <MapPin className="h-4 w-4 mr-1" />
-          <span>{pkg.location}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-muted-foreground">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span className="truncate">{pkg.location}</span>
+          </div>
+          <div className="flex items-center text-muted-foreground">
+            <TypeIcon className="h-4 w-4 mr-1" />
+            <span>{pkg.packageType.name}</span>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex-1">
