@@ -1,72 +1,124 @@
-import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import { format } from "date-fns";
-import { Calendar, MapPin, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+"use client";
+
+import { useEffect, useState } from "react";
 import { PageTransition } from "@/components/page-transition";
+import { PackageType, TravelPackage, PackageImage } from "@prisma/client";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users } from "lucide-react";
+import { WhatsappIcon } from "@/components/icons/whatsapp";
+import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSiteSettings } from "@/contexts/site-settings";
+import { PackageGallery } from "@/components/packages/package-gallery";
 
-export default async function PackageDetails({
-  params,
-}: {
-  params: { packageTypeSlug: string; packageSlug: string };
-}) {
-  const travelPackage = await prisma.travelPackage.findFirst({
-    where: {
-      slug: params.packageSlug,
-      packageType: {
-        slug: params.packageTypeSlug,
-      },
-    },
-    include: {
-      packageType: true,
-    },
-  });
+interface PackageWithDetails extends TravelPackage {
+  packageType: PackageType;
+  images: PackageImage[];
+}
 
-  if (!travelPackage) {
-    notFound();
+export default function PackageDetailsPage() {
+  const params = useParams();
+  const [pkg, setPkg] = useState<PackageWithDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { settings } = useSiteSettings();
+
+  useEffect(() => {
+    const fetchPackage = async () => {
+      try {
+        const response = await fetch(
+          `/api/front/packages/${params.packageSlug}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch package");
+        const data = await response.json();
+        setPkg(data);
+      } catch (error) {
+        console.error("Error fetching package:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPackage();
+  }, [params.packageSlug]);
+
+  const handleWhatsAppContact = () => {
+    if (!pkg || !settings?.whatsappNumber) return;
+    
+    const message = encodeURIComponent(
+      `Olá! Gostaria de mais informações sobre o pacote ${pkg.code} - ${pkg.title}`
+    );
+    const whatsappNumber = settings.whatsappNumber.replace(/\D/g, '');
+    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
+  };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-4 md:py-8 px-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Skeleton className="aspect-[4/3] rounded-lg" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      </div>
+    );
   }
+
+  if (!pkg) return null;
 
   return (
     <PageTransition>
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-4 md:py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="relative h-[400px] lg:h-[600px] rounded-lg overflow-hidden">
-            <Image
-              src={travelPackage.imageUrl}
-              alt={travelPackage.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold mb-4">{travelPackage.title}</h1>
-            <div className="flex items-center text-muted-foreground mb-4">
-              <MapPin className="h-5 w-5 mr-2" />
-              <span className="text-lg">{travelPackage.location}</span>
-            </div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2" />
+          {/* Gallery */}
+          <PackageGallery
+            mainImage={pkg.imageUrl}
+            images={pkg.images}
+            title={pkg.title}
+          />
+
+          {/* Package Details */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-4 mb-4">
+                <h1 className="text-4xl font-bold">{pkg.title}</h1>
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                  {pkg.code}
+                </span>
               </div>
-              <div className="flex items-center">
-                <Users className="h-5 w-5 mr-2" />
-                <span>Max {travelPackage.maxGuests} guests</span>
+              <div className="flex items-center text-muted-foreground mb-2">
+                <MapPin className="h-5 w-5 mr-2" />
+                <span>{pkg.location}</span>
+              </div>
+              <div className="flex items-center gap-6 text-sm">
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span>{pkg.numberOfDays} dias</span>
+                </div>
+                <div className="flex items-center">
+                  <Users className="h-4 w-4 mr-1" />
+                  <span>Máx. {pkg.maxGuests} hóspedes</span>
+                </div>
               </div>
             </div>
-            <Separator className="my-6" />
-            <div className="prose max-w-none">
-              <p className="text-lg">{travelPackage.description}</p>
-            </div>
-            <Separator className="my-6" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Price per person</p>
-                <p className="text-3xl font-bold">
-                </p>
-              </div>
-              <Button size="lg">Book Now</Button>
+
+            <div className="flex flex-col gap-6">
+              <p className="text-lg">{pkg.description}</p>
+              {settings?.whatsappNumber && (
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onClick={handleWhatsAppContact}
+                >
+                  <WhatsappIcon className="h-5 w-5 mr-2" />
+                  Entrar em Contato via WhatsApp
+                </Button>
+              )}
+              <div dangerouslySetInnerHTML={{ __html: pkg.content }} />
             </div>
           </div>
         </div>

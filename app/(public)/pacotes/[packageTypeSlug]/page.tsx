@@ -102,7 +102,7 @@ export default function PackageTypePage() {
 
   if (initialLoading) {
     return (
-      <div className="container mx-auto py-8 px-4 pt-12 md:pt-28">
+      <div className="container mx-auto px-4 pt-4 py-4 md:py-8">
         <div className="h-[100px] bg-muted animate-pulse rounded-lg mb-8" />
         <div className="h-[60px] bg-muted animate-pulse rounded-lg mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -118,7 +118,7 @@ export default function PackageTypePage() {
 
   return (
     <PageTransition>
-      <div className="container mx-auto py-8 px-4 pt-12 md:pt-28">
+      <div className="container mx-auto px-4 pt-12 py-4 md:py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{packageType.name}</h1>
           {packageType.description && (

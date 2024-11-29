@@ -93,6 +93,7 @@ export function FeaturedPackages() {
               <div className="grid lg:grid-cols-2 gap-6">
                 <div className="relative h-full">
                   <PackageCard
+                    key={mainPackage.code}
                     package={mainPackage}
                     className="border-yellow-500 border-2 h-full"
                   />
@@ -109,7 +110,7 @@ export function FeaturedPackages() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredPackages.slice(0, 3).map((pkg, index) => (
-                  <PackageCard package={pkg} className="h-full" />
+                  <PackageCard key={pkg.code} package={pkg} className="h-full" />
                 ))}
               </div>
             )

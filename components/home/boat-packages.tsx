@@ -84,7 +84,7 @@ export function BoatPackages() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {packages.map((pkg, index) => (
-                <PackageCard package={pkg} />
+                <PackageCard key={pkg.code} package={pkg} />
               ))}
             </div>
           )}

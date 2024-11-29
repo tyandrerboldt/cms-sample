@@ -37,8 +37,8 @@ export function PublicBreadcrumbs() {
   if (pathname === "/") return null;
 
   return (
-    <nav className="container mx-auto px-4 py-4 pt-24">
-      <ol className="flex items-center space-x-2 text-sm">
+    <nav className="container mx-auto px-4 py-4 pt-12 md:pt-24">
+      <ol className="flex items-center space-x-2 text-sm flex-wrap">
         {breadcrumbs.map((item, index) => (
           <li key={item.href} className="flex items-center">
             {index > 0 && (
