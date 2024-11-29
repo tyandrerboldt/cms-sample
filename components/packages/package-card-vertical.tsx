@@ -22,47 +22,49 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
   const TypeIcon = pkg.packageType.slug === "barcos" ? Anchor : Building2;
 
   return (
-    <Card className={cn("overflow-hidden h-full", className)}>
-      <div className="flex flex-col lg:flex-row h-full">
-        <div className="relative w-full lg:w-[40%] aspect-[4/3] lg:aspect-auto">
+    <Card className={cn("overflow-hidden h-[220px]", className)}>
+      <div className="flex h-full">
+        <div className="relative w-[300px] flex-none">
           <Image
             src={pkg.imageUrl}
             alt={pkg.title}
             fill
+            sizes="(max-width: 768px) 100vw, 300px"
             className="object-cover"
+            priority
           />
         </div>
         <CardContent className="flex-1 p-4 flex flex-col">
           <div className="flex-1">
             <div className="flex justify-between items-start gap-2 mb-2">
-              <h3 className="text-lg font-semibold">{pkg.title}</h3>
+              <h3 className="text-lg font-semibold line-clamp-1">{pkg.title}</h3>
               <Badge variant="outline" className="shrink-0">
-                Código: {pkg.code}
+                {pkg.code}
               </Badge>
             </div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 text-sm">
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                <span className="truncate">{pkg.location}</span>
+                <span className="truncate max-w-[120px]">{pkg.location}</span>
               </div>
               <div className="flex items-center text-muted-foreground">
                 <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
-                <span>{pkg.packageType.name}</span>
+                <span className="truncate max-w-[100px]">{pkg.packageType.name}</span>
               </div>
             </div>
-            <p className="text-muted-foreground line-clamp-2 mb-4">{pkg.description}</p>
+            <p className="text-muted-foreground text-sm line-clamp-2 mb-2">{pkg.description}</p>
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1 flex-shrink-0" />
-                <span>{pkg.numberOfDays} diária{pkg.numberOfDays > 1 ? "s" : ""}</span>
+                <span>{pkg.numberOfDays} dia{pkg.numberOfDays > 1 ? 's' : ''}</span>
               </div>
               <div className="flex items-center">
                 <Users className="h-4 w-4 mr-1 flex-shrink-0" />
-                <span>Max. {pkg.maxGuests} hóspede{pkg.maxGuests > 1 ? "s" : ""}</span>
+                <span>Max {pkg.maxGuests} hóspede{pkg.maxGuests > 1 ? 's' : ''}</span>
               </div>
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-2">
             <Link href={`/pacotes/${pkg.packageType.slug}/${pkg.slug}`} className="w-full">
               <Button className="w-full">Ver Detalhes</Button>
             </Link>

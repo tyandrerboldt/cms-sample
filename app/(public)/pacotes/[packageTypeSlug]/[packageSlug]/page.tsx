@@ -87,7 +87,7 @@ export default function PackageDetailsPage() {
               <div className="flex items-center gap-4 mb-4">
                 <h1 className="text-4xl font-bold">{pkg.title}</h1>
                 <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                  {pkg.code}
+                  Código: {pkg.code}
                 </span>
               </div>
               <div className="flex items-center text-muted-foreground mb-2">
