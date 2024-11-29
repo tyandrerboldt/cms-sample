@@ -121,20 +121,16 @@ export default function PackageTypePage() {
       <div className="container mx-auto px-4 pt-12 py-4 md:py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{packageType.name}</h1>
-          {packageType.description && (
-            <p className="text-lg text-muted-foreground">{packageType.description}</p>
-          )}
         </div>
 
         <div className="bg-background rounded-lg shadow-md p-6 space-y-6 border mb-8">
           <div className="space-y-2">
-            <Label htmlFor="search">Buscar</Label>
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 id="search"
                 className="pl-9"
-                placeholder="Buscar em título, descrição ou localização..."
+                placeholder="Busque por nome, rio, UF do estado, etc..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />

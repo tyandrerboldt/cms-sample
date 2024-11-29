@@ -54,7 +54,7 @@ export function CTASection() {
             <div className="space-y-4">
 
               <ContactModal
-                source="CTA Section"
+                source="Página Inicial"
                 trigger={
                   <Button variant={"secondary"} className="w-full">
                     <Phone className="mr-2 h-4 w-4" />

@@ -95,7 +95,7 @@ export function FeaturedPackages() {
                   <PackageCard
                     key={mainPackage.code}
                     package={mainPackage}
-                    className="border-yellow-500 border-2 h-full"
+                    className="border-yellow-500 border-2 h-full lg:max-h-full"
                   />
                   <div className="absolute top-4 right-4">
                     <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
@@ -103,14 +103,18 @@ export function FeaturedPackages() {
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-1 gap-6">
                   {featuredPackages.slice(0, 4).map((pkg, index) => (
-                    <PackageCardVertical package={pkg} className="h-full" />
+                    <PackageCardVertical key={pkg.code} package={pkg} className="h-full" />
                   ))}
                 </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {featuredPackages.slice(0, 3).map((pkg, index) => (
-                  <PackageCard key={pkg.code} package={pkg} className="h-full" />
+                  <PackageCard
+                    key={pkg.code}
+                    package={pkg}
+                    className="h-full"
+                  />
                 ))}
               </div>
             )

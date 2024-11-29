@@ -24,10 +24,10 @@ interface PackageCardProps {
 }
 
 export function PackageCard({ package: pkg, className }: PackageCardProps) {
-  const TypeIcon = pkg.packageType.slug === "barcos" ? Anchor : Building2;
+  const TypeIcon = pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
 
   return (
-    <Card className={cn("overflow-hidden flex flex-col h-[480px]", className)}>
+    <Card className={cn("overflow-hidden flex flex-col lg:max-h-[480px]", className)}>
       <div className="relative aspect-[16/9] flex-none">
         <Image
           src={pkg.imageUrl}
@@ -44,13 +44,13 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
             {pkg.title}
           </h3>
           <Badge variant="outline" className="shrink-0">
-            {pkg.code}
+            Código: {pkg.code}
           </Badge>
         </div>
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center text-muted-foreground">
             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="truncate max-w-[120px]">{pkg.location}</span>
+            <span className="truncate max-w-[200px]">{pkg.location}</span>
           </div>
           <div className="flex items-center text-muted-foreground">
             <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
@@ -61,7 +61,7 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-1">
-        <p className="text-muted-foreground text-sm line-clamp-3">
+        <p className="text-muted-foreground text-sm line-clamp-1">
           {pkg.description}
         </p>
         <div className="flex items-center justify-between mt-4 text-sm">

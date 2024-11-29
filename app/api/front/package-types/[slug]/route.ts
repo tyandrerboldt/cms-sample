@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { equal } from "assert";
 import { NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic'
@@ -35,11 +36,15 @@ export async function GET(
 
     if (search) {
       where.OR = [
+        { code: { equals: search } },
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
         { location: { contains: search, mode: "insensitive" } },
       ];
     }
+    console.log("where");
+    console.log(where);
+    
 
     // Get packages with pagination
     const packages = await prisma.travelPackage.findMany({

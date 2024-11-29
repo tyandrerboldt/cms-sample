@@ -77,7 +77,7 @@ export function PackageFilter({ packageTypes }: PackageFilterProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="typeSlug">Tipo de Pacote</Label>
+          <Label htmlFor="typeSlug">Tipo</Label>
           <Select value={typeSlug} onValueChange={(value) => handleFilter("typeSlug", value)}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione um tipo" />

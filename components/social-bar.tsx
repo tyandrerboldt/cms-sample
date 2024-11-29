@@ -45,15 +45,6 @@ export function SocialBar({ className }: SocialBarProps) {
       <div className="container mx-auto px-4 flex items-center justify-end text-sm">
         {hasSocialLinks && (
           <div className="flex items-center space-x-4">
-            {hasEmail && (
-              <Link
-                title="Enviar e-mail"
-                href={`mailto:${settings.smtpFrom}`}
-                className="flex items-center hover:text-foreground transition-colors"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-              </Link>
-            )}
             {hasWhatsApp && (
               <Link
                 title="Falar no Whatsapp"
@@ -62,7 +53,7 @@ export function SocialBar({ className }: SocialBarProps) {
                 rel="noopener noreferrer"
                 className="flex items-center hover:text-foreground transition-colors"
               >
-                <WhatsappIcon className="h-4 w-4 mr-2" />
+                <WhatsappIcon className="h-4 w-4" />
               </Link>
             )}
             {socialLinks.map(({ href, icon: Icon }) => (

@@ -19,12 +19,12 @@ interface PackageCardVerticalProps {
 }
 
 export function PackageCardVertical({ package: pkg, className }: PackageCardVerticalProps) {
-  const TypeIcon = pkg.packageType.slug === "barcos" ? Anchor : Building2;
+  const TypeIcon = pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
 
   return (
     <Card className={cn("overflow-hidden h-[220px]", className)}>
-      <div className="flex h-full">
-        <div className="relative w-[300px] flex-none">
+      <div className="flex flex-col lg:flex-row h-full">
+        <div className="relative aspect-[16/9] lg:w-[300px] flex-none">
           <Image
             src={pkg.imageUrl}
             alt={pkg.title}
@@ -39,7 +39,7 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
             <div className="flex justify-between items-start gap-2 mb-2">
               <h3 className="text-lg font-semibold line-clamp-1">{pkg.title}</h3>
               <Badge variant="outline" className="shrink-0">
-                {pkg.code}
+                Código: {pkg.code}
               </Badge>
             </div>
             <div className="flex items-center justify-between mb-2 text-sm">

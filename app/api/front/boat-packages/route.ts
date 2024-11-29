@@ -9,7 +9,7 @@ export async function GET() {
       where: {
         status: "ACTIVE",
         packageType: {
-          slug: 'barcos'
+          slug: 'barcos-hoteis'
         }
       },
       take: 3,

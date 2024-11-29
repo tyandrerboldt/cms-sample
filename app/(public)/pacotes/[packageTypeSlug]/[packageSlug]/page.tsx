@@ -5,12 +5,13 @@ import { PageTransition } from "@/components/page-transition";
 import { PackageType, TravelPackage, PackageImage } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteSettings } from "@/contexts/site-settings";
 import { PackageGallery } from "@/components/packages/package-gallery";
+import { PackageContactSection } from "@/components/packages/package-contact-section";
 
 interface PackageWithDetails extends TravelPackage {
   packageType: PackageType;
@@ -44,11 +45,11 @@ export default function PackageDetailsPage() {
 
   const handleWhatsAppContact = () => {
     if (!pkg || !settings?.whatsappNumber) return;
-    
+
     const message = encodeURIComponent(
       `Olá! Gostaria de mais informações sobre o pacote ${pkg.code} - ${pkg.title}`
     );
-    const whatsappNumber = settings.whatsappNumber.replace(/\D/g, '');
+    const whatsappNumber = settings.whatsappNumber.replace(/\D/g, "");
     window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
   };
 
@@ -83,12 +84,20 @@ export default function PackageDetailsPage() {
 
           {/* Package Details */}
           <div className="space-y-6">
-            <div>
+            <div className="flex flex-col gap-4">
               <div className="flex items-center gap-4 mb-4">
                 <h1 className="text-4xl font-bold">{pkg.title}</h1>
                 <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
                   Código: {pkg.code}
                 </span>
+              </div>
+              <div className="flex items-center text-muted-foreground mb-2">
+                {pkg?.packageType.slug === "barcos" ? (
+                  <Anchor className="h-5 w-5 mr-2" />
+                ) : (
+                  <Building2 className="h-5 w-5 mr-2" />
+                )}
+                <span>{pkg.packageType.name}</span>
               </div>
               <div className="flex items-center text-muted-foreground mb-2">
                 <MapPin className="h-5 w-5 mr-2" />
@@ -123,6 +132,8 @@ export default function PackageDetailsPage() {
           </div>
         </div>
       </div>
+      {/* Contact Section */}
+      <PackageContactSection package={pkg} />
     </PageTransition>
   );
 }

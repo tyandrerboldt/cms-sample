@@ -21,6 +21,7 @@ interface ContactModalProps {
   source?: string;
   title?: string;
   description?: string;
+  location?: string;
   trigger?: React.ReactNode;
 }
 
@@ -44,6 +45,7 @@ export function ContactModal({
       email: formData.get("email"),
       phone: formData.get("phone"),
       message: formData.get("message"),
+      location: formData.get("location"),
       source,
     };
 
@@ -114,6 +116,15 @@ export function ContactModal({
                 name="phone"
                 required
                 placeholder="(00) 00000-0000"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="message">Local</Label>
+              <Input
+                id="location"
+                name="location"
+                required
+                placeholder="Local que deseja pescar"
               />
             </div>
             <div className="grid gap-2">

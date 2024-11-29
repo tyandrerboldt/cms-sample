@@ -32,14 +32,17 @@ export function Header({ className }: HeaderProps) {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: "/pacotes", label: "Pacotes" },
+    { href: "/", label: "Home" },
+    { href: "/pacotes/barcos-hoteis", label: "Barcos Hotéis" },
+    { href: "/pacotes/pousadas", label: "Pousadas" },
+    // { href: "/pacotes", label: "Todos" },
     // { href: "/blog", label: "Artigos" },
     ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 
   const isActiveLink = (href: string) => {
     if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
+    return pathname == href;
   };
 
   const MobileMenu = () => (
