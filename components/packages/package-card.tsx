@@ -35,7 +35,7 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
         <div className="flex justify-between items-start gap-2">
           <h3 className="text-xl font-semibold flex-1">{pkg.title}</h3>
           <Badge variant="outline" className="shrink-0">
-            {pkg.code}
+            Código: {pkg.code}
           </Badge>
         </div>
         <div className="flex items-center justify-between">

@@ -7,7 +7,7 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const perPage = parseInt(searchParams.get("perPage") || "5");
     const code = searchParams.get("code");
-    const typeId = searchParams.get("typeId");
+    const typeSlug = searchParams.get("typeSlug");
     const search = searchParams.get("search");
 
     // Build where clause based on filters
@@ -19,8 +19,10 @@ export async function GET(request: Request) {
       where.code = { contains: code, mode: "insensitive" };
     }
 
-    if (typeId) {
-      where.typeId = typeId;
+    if (typeSlug) {
+      where.packageType = {
+        slug: typeSlug
+      };
     }
 
     if (search) {

@@ -37,7 +37,7 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
             <div className="flex justify-between items-start gap-2 mb-2">
               <h3 className="text-lg font-semibold">{pkg.title}</h3>
               <Badge variant="outline" className="shrink-0">
-                {pkg.code}
+                Código: {pkg.code}
               </Badge>
             </div>
             <div className="flex items-center justify-between mb-2">
