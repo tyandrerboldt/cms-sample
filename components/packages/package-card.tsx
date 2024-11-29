@@ -6,7 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
+import { Anchor, Building2, Calendar, MapPin, Star, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -20,14 +20,15 @@ interface PackageCardProps {
       slug: string;
     };
   };
+  isMain?: boolean;
   className?: string;
 }
 
-export function PackageCard({ package: pkg, className }: PackageCardProps) {
+export function PackageCard({ package: pkg, className, isMain }: PackageCardProps) {
   const TypeIcon = pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
 
   return (
-    <Card className={cn("overflow-hidden flex flex-col lg:max-h-[480px]", className)}>
+    <Card className={cn("overflow-hidden flex flex-col lg:max-h-[480px]", isMain && "relative border-yellow-500 border-2", className)}>
       <div className="relative aspect-[16/9] flex-none">
         <Image
           src={pkg.imageUrl}
@@ -87,6 +88,9 @@ export function PackageCard({ package: pkg, className }: PackageCardProps) {
           <Button className="w-full">Ver Detalhes</Button>
         </Link>
       </CardFooter>
+      {isMain && <div className="absolute top-4 right-4">
+        <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+      </div>}
     </Card>
   );
 }
