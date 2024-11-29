@@ -21,7 +21,7 @@ const slideSchema = z.object({
   title: z.string().min(1, "Título é obrigatório"),
   subtitle: z.string().optional(),
   videoUrl: z.string().url().optional().or(z.literal("")),
-  linkUrl: z.string().url().optional().or(z.literal("")),
+  linkUrl: z.string().optional().or(z.literal("")),
   linkText: z.string().optional(),
   isActive: z.boolean().optional().default(true),
   order: z.number().int().min(0),
@@ -238,8 +238,7 @@ export function HeroSlideForm({ slideToEdit }: HeroSlideFormProps) {
               <Label htmlFor="linkUrl">URL do Link</Label>
               <Input
                 id="linkUrl"
-                type="url"
-                placeholder="https://..."
+                placeholder="URL do link ou rota interna, ex: /pacotes"
                 {...register("linkUrl")}
               />
               {errors.linkUrl && (

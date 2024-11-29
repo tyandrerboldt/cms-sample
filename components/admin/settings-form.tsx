@@ -11,7 +11,7 @@ import { SiteSettings } from "@prisma/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -30,7 +30,7 @@ const settingsSchema = z.object({
   ctaText: z.string().nullable().optional(),
   whatsappNumber: z.string().nullable().optional(),
   smtpHost: z.string().nullable().optional(),
-  smtpPort: z.string().transform(val => val ? parseInt(val) : null).nullable().optional(),
+  smtpPort: z.number().nullable().optional(),
   smtpUser: z.string().nullable().optional(),
   smtpPass: z.string().nullable().optional(),
   smtpFrom: z.string().email().nullable().optional(),
@@ -327,7 +327,19 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="smtpPort">SMTP Port</Label>
-                <Input id="smtpPort" type="number" {...register("smtpPort")} />
+                <Input
+                  type="number"
+                  id="smtpPort"
+                  {...register("smtpPort", {
+                    valueAsNumber: true, // Converte automaticamente para número
+                    setValueAs: (value) =>
+                      value === "" ? null : Number(value), // Trata valores vazios
+                  })}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setValue("smtpPort", value === "" ? null : Number(value));
+                  }}
+                />
               </div>
             </div>
 

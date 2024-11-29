@@ -27,7 +27,7 @@ const packageSchema = z.object({
   location: z.string().min(1, "Localização é obrigatória"),
   maxGuests: z.string().min(1, "Máximo de hóspedes é obrigatório"),
   typeId: z.string().min(1, "Tipo de pacote é obrigatório"),
-  numberOfDays: z.string().transform(val => parseInt(val)),
+  numberOfDays: z.string().min(1, "Número de diárias é obrigatório"),
   status: z.enum(["DRAFT", "ACTIVE", "INACTIVE", "UNAVAILABLE"]),
   highlight: z.enum(["NORMAL", "FEATURED", "MAIN"]),
 });
@@ -63,13 +63,13 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
       ? {
           ...packageToEdit,
           maxGuests: packageToEdit.maxGuests.toString(),
-          numberOfDays: packageToEdit.numberOfDays,
+          numberOfDays: `${packageToEdit.numberOfDays}`,
           content: content,
           highlight: packageToEdit.highlight || "NORMAL",
         }
       : {
           status: "DRAFT",
-          numberOfDays: 1,
+          numberOfDays: "1",
           highlight: "NORMAL",
         },
   });
