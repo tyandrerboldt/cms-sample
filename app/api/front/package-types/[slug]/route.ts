@@ -42,9 +42,6 @@ export async function GET(
         { location: { contains: search, mode: "insensitive" } },
       ];
     }
-    console.log("where");
-    console.log(where);
-    
 
     // Get packages with pagination
     const packages = await prisma.travelPackage.findMany({
