@@ -51,7 +51,7 @@ export function PackageCard({ package: pkg, className, isMain }: PackageCardProp
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center text-muted-foreground">
             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="truncate max-w-[200px]">{pkg.location}</span>
+            <span className="truncate max-w-[150px]">{pkg.location}</span>
           </div>
           <div className="flex items-center text-muted-foreground">
             <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
