@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1");
-    const perPage = parseInt(searchParams.get("perPage") || "4");
+    const perPage = parseInt(searchParams.get("perPage") || "8");
     const search = searchParams.get("search");
 
     // Get package type

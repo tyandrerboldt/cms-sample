@@ -58,7 +58,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
 
       const params = new URLSearchParams();
       params.set("page", pageNum.toString());
-      params.set("perPage", "4");
+      params.set("perPage", "8");
       if (debouncedSearch) params.set("search", debouncedSearch);
 
       const response = await fetch(
@@ -74,7 +74,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
         setPackages((prev) => [...prev, ...data.packages]);
       }
 
-      setHasMore(data.packages.length === 4);
+      setHasMore(data.packages.length === 8);
     } catch (error) {
       console.error("Error fetching packages:", error);
     } finally {
