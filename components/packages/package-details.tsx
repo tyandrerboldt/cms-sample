@@ -88,7 +88,7 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
                 </span>
               </div>
               <div className="flex items-center text-muted-foreground mb-2">
-                {pkg?.packageType.slug === "barcos" ? (
+                {pkg?.packageType.slug === "barcos-hoteis" ? (
                   <Anchor className="h-5 w-5 mr-2" />
                 ) : (
                   <Building2 className="h-5 w-5 mr-2" />
