@@ -12,11 +12,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
   
   return {
-    title: "Agência especializada em pesca esportiva",
+    title: "Pesca & Mordomia - Agência especializada em pesca esportiva",
     description: "Experiência em pacotes de pesca com toda a infraestrutura necessária para garantir segurança, conforto e excelentes pescarias",
     openGraph: {
       ...baseMetadata.openGraph,
-      title: "Agência especializada em pesca esportiva",
+      title: "Pesca & Mordomia - Agência especializada em pesca esportiva",
       description: "Experiência em pacotes de pesca com toda a infraestrutura necessária para garantir segurança, conforto e excelentes pescarias",
     },
   };
