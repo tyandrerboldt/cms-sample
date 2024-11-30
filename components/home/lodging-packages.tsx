@@ -64,7 +64,7 @@ export function LodgingPackages() {
               Pousadas
             </motion.h2>
             <motion.div variants={itemVariants}>
-              <Link href="/pacotes?type=pousadas">
+              <Link href="/pacotes/pousadas">
                 <Button variant="ghost">
                   Ver Todas
                   <ArrowRight className="ml-2 h-4 w-4" />

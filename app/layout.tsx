@@ -1,18 +1,18 @@
 import { Toaster } from "@/components/ui/toaster";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteStatusAlert } from "@/components/site-status-alert";
 import AuthProvider from "@/components/auth-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PublicThemeProvider } from "@/components/theme/public-theme-provider";
+import { SiteSettingsProvider } from "@/contexts/site-settings";
+import { getBaseMetadata } from "@/lib/metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Travel Portal",
-  description: "Discover amazing travel destinations",
-};
+export async function generateMetadata() {
+  return getBaseMetadata();
+}
 
 export default function RootLayout({
   children,
@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
@@ -30,9 +30,11 @@ export default function RootLayout({
         >
           <PublicThemeProvider />
           <AuthProvider>
-            <SiteStatusAlert />
-            {children}
-            <Toaster />
+            <SiteSettingsProvider>
+              <SiteStatusAlert />
+              {children}
+              <Toaster />
+            </SiteSettingsProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

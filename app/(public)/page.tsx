@@ -1,19 +1,33 @@
-"use client";
-
+import { PageTransition } from "@/components/page-transition";
 import { HeroCarousel } from "@/components/hero-carousel";
-import { AboutSection } from "@/components/home/about-section";
-import { BoatPackages } from "@/components/home/boat-packages";
-import { CTASection } from "@/components/home/cta-section";
 import { FeaturedPackages } from "@/components/home/featured-packages";
 import { LodgingPackages } from "@/components/home/lodging-packages";
-import { PageTransition } from "@/components/page-transition";
+import { AboutSection } from "@/components/home/about-section";
+import { CTASection } from "@/components/home/cta-section";
+import { Metadata } from "next";
+import { getBaseMetadata } from "@/lib/metadata";
+import { BoatPackages } from "@/components/home/boat-packages";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const baseMetadata = await getBaseMetadata();
+  
+  return {
+    title: "Agência especializada em pesca esportiva",
+    description: "Experiência em pacotes de pesca com toda a infraestrutura necessária para garantir segurança, conforto e excelentes pescarias",
+    openGraph: {
+      ...baseMetadata.openGraph,
+      title: "Agência especializada em pesca esportiva",
+      description: "Experiência em pacotes de pesca com toda a infraestrutura necessária para garantir segurança, conforto e excelentes pescarias",
+    },
+  };
+}
 
 export default function Home() {
   return (
     <PageTransition>
       <HeroCarousel />
-      <FeaturedPackages />
       <AboutSection />
+      <FeaturedPackages />
       <BoatPackages />
       <CTASection />
       <LodgingPackages />

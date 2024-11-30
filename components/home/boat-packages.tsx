@@ -64,7 +64,7 @@ export function BoatPackages() {
               Barcos
             </motion.h2>
             <motion.div variants={itemVariants}>
-              <Link href="/pacotes?type=barcos">
+              <Link href="/pacotes/barcos-hoteis">
                 <Button variant="ghost">
                   Ver Todos
                   <ArrowRight className="ml-2 h-4 w-4" />
