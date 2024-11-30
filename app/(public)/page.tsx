@@ -26,8 +26,8 @@ export default function Home() {
   return (
     <PageTransition>
       <HeroCarousel />
-      <AboutSection />
       <FeaturedPackages />
+      <AboutSection />
       <BoatPackages />
       <CTASection />
       <LodgingPackages />
