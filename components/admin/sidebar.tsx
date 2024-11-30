@@ -61,7 +61,7 @@ const getMenuItems = (role: string) => {
         roles: ["EDITOR", "ADMIN"],
       },
       {
-        title: "Destaques",
+        title: "Slides",
         href: "/admin/hero-slides",
         icon: PictureInPicture2,
         roles: ["EDITOR", "ADMIN"],
