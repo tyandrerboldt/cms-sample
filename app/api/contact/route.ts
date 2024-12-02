@@ -5,7 +5,25 @@ import nodemailer from "nodemailer";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const settings = await prisma.siteSettings.findFirst();
+
+    
+    const transaction: any[] = [
+      prisma.siteSettings.findFirst()
+    ]
+
+    if(data.packageContactId){
+      const packageId = `${data.packageContactId}`
+      transaction.push(
+        prisma.travelPackage.update({
+          where: { id: packageId },
+          data: { contactCount: { increment: 1 } }
+        })
+      )
+    }
+
+    const transactionRes = await prisma.$transaction(transaction)
+
+    const settings = transactionRes[0]
 
     if (!settings) {
       return NextResponse.json(

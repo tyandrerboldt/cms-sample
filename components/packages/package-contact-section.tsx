@@ -27,6 +27,7 @@ export function PackageContactSection({ package: pkg }: PackageContactSectionPro
       message: formData.get("message"),
       location: pkg.location,
       source: `${pkg.code} - ${pkg.title}`,
+      packageContactId: pkg.id
     };
 
     try {
