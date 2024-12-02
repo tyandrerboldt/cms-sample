@@ -5,9 +5,7 @@ import { PackageCard } from "@/components/packages/package-card";
 import { PackageType, TravelPackage } from "@prisma/client";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/hooks/use-debounce";
-import { notFound } from "next/navigation";
 
 interface PackageWithType extends TravelPackage {
   packageType: PackageType;
@@ -66,7 +64,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
         `/api/front/package-types/${packageTypeSlug}?${params.toString()}`
       );
       if (!response.ok) {
-        notFound();
+        throw new Error("Failed to fetch packages");
       }
       const data: PackageTypeResponse = await response.json();
 
@@ -109,10 +107,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
         <div className="h-[60px] bg-muted animate-pulse rounded-lg mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="h-[400px] bg-muted animate-pulse rounded-lg"
-            />
+            <div key={i} className="h-[400px] bg-muted animate-pulse rounded-lg" />
           ))}
         </div>
       </div>
