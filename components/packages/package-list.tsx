@@ -143,7 +143,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
             key={pkg.id}
             ref={index === packages.length - 1 ? lastPackageRef : undefined}
           >
-            <PackageCard key={pkg.code} package={pkg} />
+            <PackageCard key={pkg.code} package={pkg} className="lg:max-h-[800px]" />
           </div>
         ))}
       </div>
