@@ -1,7 +1,7 @@
 import { TravelPackage } from "@prisma/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
+import { Anchor, Building2, Calendar, MapPin, Star, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -15,14 +15,15 @@ interface PackageCardVerticalProps {
       slug: string;
     };
   };
+  isMain?: boolean;
   className?: string;
 }
 
-export function PackageCardVertical({ package: pkg, className }: PackageCardVerticalProps) {
+export function PackageCardVertical({ package: pkg, className, isMain }: PackageCardVerticalProps) {
   const TypeIcon = pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
 
   return (
-    <Card className={cn("overflow-hidden h-[220px]", className)}>
+    <Card className={cn("overflow-hidden h-[220px] relative", className)}>
       <div className="flex flex-col lg:flex-row h-full">
         <div className="relative aspect-[16/9] lg:w-[300px] flex-none">
           <Image
@@ -37,10 +38,7 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
         <CardContent className="flex-1 p-4 flex flex-col">
           <div className="flex-1">
             <div className="flex justify-between items-start gap-2 mb-2">
-              <h3 className="text-lg font-semibold line-clamp-1">{pkg.title}</h3>
-              <Badge variant="outline" className="shrink-0">
-                Código: {pkg.code}
-              </Badge>
+              <h3 className="text-sm font-semibold line-clamp-1">{pkg.title}</h3>
             </div>
             <div className="flex items-center justify-between mb-2 text-sm">
               <div className="flex items-center text-muted-foreground">
@@ -70,6 +68,12 @@ export function PackageCardVertical({ package: pkg, className }: PackageCardVert
             </Link>
           </div>
         </CardContent>
+      </div>
+      <div className="absolute top-0 left-0 p-2 flex justify-between w-full">
+        <Badge variant="default">
+          Código: {pkg.code}
+        </Badge>
+        {isMain && <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />}
       </div>
     </Card>
   );

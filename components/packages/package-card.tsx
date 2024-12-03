@@ -24,11 +24,22 @@ interface PackageCardProps {
   className?: string;
 }
 
-export function PackageCard({ package: pkg, className, isMain }: PackageCardProps) {
-  const TypeIcon = pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
+export function PackageCard({
+  package: pkg,
+  className,
+  isMain,
+}: PackageCardProps) {
+  const TypeIcon =
+    pkg.packageType.slug === "barcos-hoteis" ? Anchor : Building2;
 
   return (
-    <Card className={cn("overflow-hidden flex flex-col lg:max-h-[480px]", isMain && "relative border-yellow-500 border-2", className)}>
+    <Card
+      className={cn(
+        "relative overflow-hidden flex flex-col lg:max-h-[480px]",
+        isMain && "border-yellow-500 border-2",
+        className
+      )}
+    >
       <div className="relative aspect-[16/9] flex-none">
         <Image
           src={pkg.imageUrl}
@@ -41,23 +52,18 @@ export function PackageCard({ package: pkg, className, isMain }: PackageCardProp
       </div>
       <CardHeader className="flex-none space-y-2">
         <div className="flex justify-between items-start gap-2">
-          <h3 className="text-xl font-semibold line-clamp-1 flex-1">
+          <h3 className="text-sm md:text-lg font-semibold line-clamp-1 flex-1">
             {pkg.title}
           </h3>
-          <Badge variant="outline" className="shrink-0">
-            Código: {pkg.code}
-          </Badge>
         </div>
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center text-muted-foreground">
             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="truncate max-w-[150px]">{pkg.location}</span>
+            <span className="line-clamp-1">{pkg.location}</span>
           </div>
           <div className="flex items-center text-muted-foreground">
             <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span className="truncate max-w-[100px]">
-              {pkg.packageType.name}
-            </span>
+            <span className="line-clamp-1">{pkg.packageType.name}</span>
           </div>
         </div>
       </CardHeader>
@@ -88,9 +94,13 @@ export function PackageCard({ package: pkg, className, isMain }: PackageCardProp
           <Button className="w-full">Ver Detalhes</Button>
         </Link>
       </CardFooter>
-      {isMain && <div className="absolute top-4 right-4">
-        <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-      </div>}
+
+      <div className="absolute top-0 left-0 p-2 flex justify-between w-full">
+        <Badge variant="default">
+          Código: {pkg.code}
+        </Badge>
+        {isMain && <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />}
+      </div>
     </Card>
   );
 }
