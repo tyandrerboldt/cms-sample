@@ -43,7 +43,7 @@ export function PackageCardVertical({ package: pkg, className, isMain }: Package
             <div className="flex items-center justify-between mb-2 text-sm">
               <div className="flex items-center text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                <span className="truncate max-w-[150px]">{pkg.location}</span>
+                <span className="line-clamp-1">{pkg.location}</span>
               </div>
               <div className="flex items-center text-muted-foreground">
                 <TypeIcon className="h-4 w-4 mr-1 flex-shrink-0" />
