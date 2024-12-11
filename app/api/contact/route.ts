@@ -25,11 +25,11 @@ export async function POST(request: Request) {
 
 
     const settings = {
-      smtpHost: process.env.SMTP_HOST,
+      smtpHost: `${process.env.SMTP_HOST}`,
       smtpPort: Number(process.env.SMTP_PORT),
-      smtpUser: process.env.SMTP_USER,
-      smtpPass: process.env.SMTP_PASS,
-      smtpFrom: process.env.SMTP_MAIL,
+      smtpUser: `${process.env.SMTP_USER}`,
+      smtpPass: `${process.env.SMTP_PASS}`,
+      smtpFrom: `${process.env.SMTP_MAIL}`,
     }
 
     if (!settings) {
