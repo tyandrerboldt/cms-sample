@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { SiteSettings } from "@prisma/client";
 
-const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -12,7 +11,7 @@ export function useSiteSettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch(new URL("/api/config", baseUrl));
+        const response = await fetch("/api/config");
         if (!response.ok) throw new Error("Failed to fetch settings");
         const data = await response.json();
         setSettings(data);
