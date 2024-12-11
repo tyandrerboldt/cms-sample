@@ -2,9 +2,11 @@ import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api", "/auth/signin"];
+const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api/front", "/api/auth", "/api/contact", "/api/config", "/auth/signin"];
 const ADMIN_PATHS = ["/admin/users", "/admin/package-types","/admin/article-categories", "/admin/settings"];
-const EDITOR_PATHS = ["/admin/packages", "/admin/articles"];
+const EDITOR_PATHS = ["/admin/packages", "/admin/articles", "/api"];
+const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -43,7 +45,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Check site configuration
-    const response = await fetch(new URL("/api/config", request.url));
+    const response = await fetch(new URL("/api/config", baseUrl));
     if (!response.ok) {
       throw new Error("Failed to fetch site config");
     }

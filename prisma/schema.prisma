@@ -145,11 +145,6 @@ model SiteSettings {
   allowRegistration Boolean  @default(true)
   aboutText         String?  @db.Text
   ctaText           String?  @db.Text
-  smtpHost          String?
-  smtpPort          Int?
-  smtpUser          String?
-  smtpPass          String?
-  smtpFrom          String?
   whatsappNumber    String?
   facebookUrl       String?
   instagramUrl      String?

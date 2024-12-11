@@ -43,6 +43,8 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
   }, [packageSlug]);
 
   const handleWhatsAppContact = () => {
+    console.log(settings);
+    
     if (!pkg || !settings?.whatsappNumber) return;
 
     const message = encodeURIComponent(

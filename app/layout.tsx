@@ -7,8 +7,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { PublicThemeProvider } from "@/components/theme/public-theme-provider";
 import { SiteSettingsProvider } from "@/contexts/site-settings";
 import { getBaseMetadata } from "@/lib/metadata";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ["latin"] });
+const gaId = `${process.env.GOOGLE_GTAG_ID}`
 
 export async function generateMetadata() {
   return getBaseMetadata();
@@ -38,6 +40,7 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
       </body>
+      <GoogleAnalytics gaId={gaId} />
     </html>
   );
 }

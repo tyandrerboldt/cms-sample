@@ -6,12 +6,12 @@ export async function POST(request: Request) {
   try {
     const data = await request.json();
 
-    
+
     const transaction: any[] = [
       prisma.siteSettings.findFirst()
     ]
 
-    if(data.packageContactId){
+    if (data.packageContactId) {
       const packageId = `${data.packageContactId}`
       transaction.push(
         prisma.travelPackage.update({
@@ -23,7 +23,14 @@ export async function POST(request: Request) {
 
     const transactionRes = await prisma.$transaction(transaction)
 
-    const settings = transactionRes[0]
+
+    const settings = {
+      smtpHost: process.env.SMTP_HOST,
+      smtpPort: Number(process.env.SMTP_PORT),
+      smtpUser: process.env.SMTP_USER,
+      smtpPass: process.env.SMTP_PASS,
+      smtpFrom: process.env.SMTP_MAIL,
+    }
 
     if (!settings) {
       return NextResponse.json(

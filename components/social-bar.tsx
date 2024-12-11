@@ -30,7 +30,7 @@ export function SocialBar({ className }: SocialBarProps) {
     { href: settings.youtubeUrl, icon: Youtube },
   ].filter((link) => link.href);
 
-  const hasEmail = settings.smtpFrom;
+  const hasEmail = process.env.SMTP_MAIL;
   const hasWhatsApp = settings.whatsappNumber;
   const hasSocialLinks = socialLinks.length > 0;
 

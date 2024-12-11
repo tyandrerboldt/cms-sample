@@ -24,7 +24,7 @@ export function SiteSettingsProvider({
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch("/api/settings");
+        const response = await fetch("/api/config");
         if (!response.ok) throw new Error("Failed to fetch settings");
         const data = await response.json();
         setSettings(data);
