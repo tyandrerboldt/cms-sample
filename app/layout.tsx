@@ -11,6 +11,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 
 const inter = Inter({ subsets: ["latin"] });
 const gaId = `${process.env.GOOGLE_GTAG_ID}`
+const isProduction = process.env.NODE_ENV == "production"
 
 export async function generateMetadata() {
   return getBaseMetadata();
@@ -40,7 +41,7 @@ export default function RootLayout({
           </AuthProvider>
         </ThemeProvider>
       </body>
-      <GoogleAnalytics gaId={gaId} />
+      {isProduction && <GoogleAnalytics gaId={gaId} />}
     </html>
   );
 }
