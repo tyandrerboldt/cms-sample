@@ -2,7 +2,7 @@ import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api/front", "/api/auth", "/api/contact", "/api/config", "/auth/signin"];
+const PUBLIC_PATHS = ["/uploads", "/maintenance", "/api/front", "/api/auth", "/api/package-types", "/api/contact", "/api/config", "/auth/signin"];
 const ADMIN_PATHS = ["/admin/users", "/admin/package-types","/admin/article-categories", "/admin/settings"];
 const EDITOR_PATHS = ["/admin/packages", "/admin/articles", "/api"];
 const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
