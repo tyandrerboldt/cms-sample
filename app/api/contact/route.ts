@@ -32,10 +32,6 @@ export async function POST(request: Request) {
       smtpFrom: `${process.env.SMTP_MAIL}`,
     }
 
-    console.log("settings", settings);
-    console.log("465", settings.smtpPort == 465);
-    
-
     if (!settings) {
       return NextResponse.json(
         { error: "Site settings not found" },
