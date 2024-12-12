@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PackageType } from "@prisma/client";
 import { PackageTypeCard } from "@/components/packages/package-type-card";
-import { Loader2 } from "lucide-react";
+import { PackageType } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 interface PackageTypeWithCount extends PackageType {
   _count: {

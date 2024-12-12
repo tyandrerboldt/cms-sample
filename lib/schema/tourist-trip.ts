@@ -44,7 +44,7 @@ export function generateTouristTripSchema(
     offers: {
       "@type": "Offer",
       availability: pkg.status === "ACTIVE" ? "http://schema.org/InStock" : "http://schema.org/OutOfStock",
-      validFrom: pkg.createdAt.toISOString(),
+      validFrom: new Date(pkg.createdAt).toISOString(),
     }
   } as any;
 }

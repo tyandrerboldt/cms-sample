@@ -5,10 +5,7 @@ import { CTASection } from "@/components/home/cta-section";
 import { FeaturedPackages } from "@/components/home/featured-packages";
 import { LodgingPackages } from "@/components/home/lodging-packages";
 import { getBaseMetadata } from "@/lib/metadata";
-import { prisma } from "@/lib/prisma";
-import { generateHomePageSchema } from "@/lib/schema/home-page";
 import { Metadata } from "next";
-import Script from "next/script";
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
@@ -27,31 +24,31 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, featuredPackages] = await Promise.all([
-    prisma.siteSettings.findFirst(),
-    prisma.travelPackage.findMany({
-      where: {
-        status: "ACTIVE",
-        highlight: { in: ["FEATURED", "MAIN"] },
-      },
-      include: { packageType: true },
-      take: 5,
-    }),
-  ]);
+  // const [settings, featuredPackages] = await Promise.all([
+  //   prisma.siteSettings.findFirst(),
+  //   prisma.travelPackage.findMany({
+  //     where: {
+  //       status: "ACTIVE",
+  //       highlight: { in: ["FEATURED", "MAIN"] },
+  //     },
+  //     include: { packageType: true },
+  //     take: 5,
+  //   }),
+  // ]);
 
-  const jsonLd = settings
-    ? generateHomePageSchema(settings, featuredPackages)
-    : null;
+  // const jsonLd = settings
+  //   ? generateHomePageSchema(settings, featuredPackages)
+  //   : null;
 
   return (
     <>
-      {jsonLd && (
+      {/* {jsonLd && (
         <Script
           id="homepage-jsonld"
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      )}
+      )} */}
       <HeroCarousel />
       <FeaturedPackages />
       <AboutSection />
