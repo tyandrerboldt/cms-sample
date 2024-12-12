@@ -31,5 +31,5 @@ export function generateAboutPageSchema(settings: SiteSettings): WithContext<Abo
         availableLanguage: ["Portuguese"]
       } : undefined
     }
-  };
+  } as any;
 }

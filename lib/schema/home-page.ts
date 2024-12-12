@@ -38,5 +38,5 @@ export function generateHomePageSchema(
       target: `${baseUrl}/pacotes?search={search_term_string}`,
       "query-input": "required name=search_term_string"
     }
-  };
+  } as any;
 }

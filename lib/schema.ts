@@ -15,7 +15,7 @@ export function generateOrganizationSchema(settings: SiteSettings): WithContext<
       settings.twitterUrl,
       settings.linkedinUrl,
       settings.youtubeUrl,
-    ].filter(Boolean),
+    ].filter(Boolean) as any,
     contactPoint: settings.whatsappNumber ? {
       "@type": "ContactPoint",
       telephone: settings.whatsappNumber,
@@ -72,8 +72,8 @@ export function generateTouristTripSchema(
     url: `${baseUrl}/pacotes/${pkg.packageType.slug}/${pkg.slug}`,
     offers: {
       "@type": "Offer",
-      availability: pkg.status === "ACTIVE" ? "http://schema.org/InStock" : "http://schema.org/OutOfStock",
+      availability: (pkg.status === "ACTIVE" ? "http://schema.org/InStock" : "http://schema.org/OutOfStock"),
       validFrom: new Date(pkg.createdAt).toISOString(),
     }
-  };
+  } as any;
 }
