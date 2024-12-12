@@ -2,6 +2,8 @@ import { getPageSchemas } from "@/app/(public)/actions";
 import { headers } from "next/headers";
 import Script from "next/script";
 
+export const dynamic = "force-dynamic";
+
 export async function JsonLdSchema() {
   const headersList = headers();
   const pathname = headersList.get('next-url') || ""
