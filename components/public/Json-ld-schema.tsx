@@ -1,22 +1,15 @@
-"use client";
-
 import { getPageSchemas } from "@/app/(public)/actions";
-import { usePathname } from "next/navigation";
+import { headers } from "next/headers";
 import Script from "next/script";
-import { useEffect, useState } from "react";
 
-export function JsonLdSchema() {
-  const pathname = usePathname();
-  const [schemas, setSchemas] = useState<any[]>([]);
+export async function JsonLdSchema() {
+  const headersList = headers();
+  
+  const domain = headersList.get("host") || "";
+  const fullUrl = headersList.get("referer") || "";
+  const pathname = fullUrl.split("//")[1].replace(domain, "");
 
-  const fetchSchemas = async () => {
-    const data = await getPageSchemas(pathname);
-    data && setSchemas(data);
-  };
-
-  useEffect(() => {
-    fetchSchemas();
-  }, []);
+  const schemas = await getPageSchemas(pathname);
 
   return (
     <>
