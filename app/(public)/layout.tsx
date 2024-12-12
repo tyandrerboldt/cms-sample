@@ -13,7 +13,9 @@ export default async function PublicLayout({
   children: React.ReactNode;
 }) {
   const settings = await prisma.siteSettings.findFirst();
-  const organizationSchema = settings ? generateOrganizationSchema(settings) : null;
+  const organizationSchema = settings
+    ? generateOrganizationSchema(settings)
+    : null;
 
   return (
     <>
@@ -21,17 +23,17 @@ export default async function PublicLayout({
         <Script
           id="organization-jsonld"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
         />
       )}
-      
+
       <SiteSettingsProvider>
         <Header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm" />
         <main className="min-h-screen mt-24">
           <PublicBreadcrumbs />
-          <Suspense fallback={<div></div>}>
-            {children}
-          </Suspense>
+          {children}
         </main>
         <Footer />
       </SiteSettingsProvider>
