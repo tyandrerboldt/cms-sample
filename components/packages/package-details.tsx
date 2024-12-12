@@ -7,8 +7,10 @@ import { ShareButton } from "@/components/share-button";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSiteSettings } from "@/contexts/site-settings";
+import { generateTouristTripSchema } from "@/lib/schema";
 import { PackageImage, PackageType, TravelPackage } from "@prisma/client";
 import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
+import Script from "next/script";
 import { useEffect, useState } from "react";
 
 interface PackageWithDetails extends TravelPackage {
@@ -70,15 +72,15 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
 
   if (!pkg || !settings) return null;
 
-  // const jsonLd = generateTouristTripSchema(pkg, settings);
+  const jsonLd = generateTouristTripSchema(pkg, settings);
 
   return (
     <>
-      {/* <Script
+      <Script
         id="package-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      /> */}
+      />
 
       <div className="container mx-auto py-4 md:py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
