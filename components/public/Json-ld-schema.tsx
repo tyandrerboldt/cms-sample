@@ -4,18 +4,10 @@ import Script from "next/script";
 
 export async function JsonLdSchema() {
   const headersList = headers();
-
-  const domain = headersList.get("host") || "";
-  const fullUrl = headersList.get("referer") || "";
-
-  console.log("domain", domain);
-  console.log("fullUrl", fullUrl);
-  
-  
-  const pathname = fullUrl.split("//")[1].replace(domain, "");
-  console.log("pathname", pathname);
-
+  const pathname = headersList.get('next-url') || ""
   const schemas = await getPageSchemas(pathname);
+
+  console.log("pathname", pathname);
 
   return (
     <>
