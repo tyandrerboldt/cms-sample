@@ -1,12 +1,21 @@
 import { PackageList } from "@/components/packages/package-list";
-import { PageTransition } from "@/components/page-transition";
 import { getPackageTypeMetadata } from "@/lib/metadata";
+import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 
 interface PackageTypePageProps {
   params: {
     packageTypeSlug: string;
   };
+}
+
+// Gera os parâmetros estáticos para todas as páginas de tipos de pacotes
+export async function generateStaticParams() {
+  const packageTypes = await prisma.packageType.findMany();
+
+  return packageTypes.map((type) => ({
+    packageTypeSlug: type.slug,
+  }));
 }
 
 export async function generateMetadata({
@@ -39,13 +48,13 @@ export default async function PackageTypePage({
   // const jsonLd = generatePackageListSchema(packages, packageType || undefined);
 
   return (
-    <PageTransition>
+    <>
       {/* <Script
         id="package-list-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       /> */}
       <PackageList packageTypeSlug={params.packageTypeSlug} />
-    </PageTransition>
+    </>
   );
 }
