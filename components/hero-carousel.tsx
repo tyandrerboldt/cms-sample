@@ -54,10 +54,10 @@ export function HeroCarousel() {
 
   return (
     <div className="relative h-[600px]">
-      <div className="overflow-hidden h-full" ref={emblaRef}>
+      <section className="overflow-hidden h-full" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide, index) => (
-            <div
+            <article
               key={slide.id}
               className="flex-[0_0_100%] min-w-0 relative h-full"
             >
@@ -131,10 +131,10 @@ export function HeroCarousel() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
       <button
         className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 text-gray-800 rounded-full bg-white/80 hover:bg-white flex items-center justify-center"
         onClick={() => emblaApi?.scrollPrev()}

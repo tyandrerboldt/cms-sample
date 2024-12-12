@@ -7,6 +7,9 @@ import { CTASection } from "@/components/home/cta-section";
 import { Metadata } from "next";
 import { getBaseMetadata } from "@/lib/metadata";
 import { BoatPackages } from "@/components/home/boat-packages";
+import { generateHomePageSchema } from "@/lib/schema/home-page";
+import { prisma } from "@/lib/prisma";
+import Script from "next/script";
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
@@ -22,9 +25,30 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function Home() {
+export default async function Home() {
+  const [settings, featuredPackages] = await Promise.all([
+    prisma.siteSettings.findFirst(),
+    prisma.travelPackage.findMany({
+      where: {
+        status: "ACTIVE",
+        highlight: { in: ["FEATURED", "MAIN"] }
+      },
+      include: { packageType: true },
+      take: 5
+    })
+  ]);
+
+  const jsonLd = settings ? generateHomePageSchema(settings, featuredPackages) : null;
+
   return (
     <PageTransition>
+      {jsonLd && (
+        <Script
+          id="homepage-jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <HeroCarousel />
       <FeaturedPackages />
       <AboutSection />

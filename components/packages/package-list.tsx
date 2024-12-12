@@ -117,7 +117,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
   if (!packageType) return null;
 
   return (
-    <div className="container mx-auto px-4 pt-12 py-4 md:py-8">
+    <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">{packageType.name}</h1>
       </div>
@@ -139,12 +139,12 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {packages.map((pkg, index) => (
-          <div
+          <article
             key={pkg.id}
             ref={index === packages.length - 1 ? lastPackageRef : undefined}
           >
             <PackageCard key={pkg.code} package={pkg} className="lg:max-h-[800px]" />
-          </div>
+          </article>
         ))}
       </div>
 
@@ -161,6 +161,6 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
           </p>
         </div>
       )}
-    </div>
+    </section>
   );
 }

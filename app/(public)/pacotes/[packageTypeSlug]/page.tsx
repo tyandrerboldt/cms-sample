@@ -2,6 +2,9 @@ import { PageTransition } from "@/components/page-transition";
 import { PackageList } from "@/components/packages/package-list";
 import { Metadata } from "next";
 import { getPackageTypeMetadata } from "@/lib/metadata";
+import { generatePackageListSchema } from "@/lib/schema/package-list";
+import { prisma } from "@/lib/prisma";
+import Script from "next/script";
 
 interface PackageTypePageProps {
   params: {
@@ -15,9 +18,34 @@ export async function generateMetadata({
   return getPackageTypeMetadata(params.packageTypeSlug);
 }
 
-export default function PackageTypePage({ params }: PackageTypePageProps) {
+export default async function PackageTypePage({ params }: PackageTypePageProps) {
+  const [packageType, packages] = await Promise.all([
+    prisma.packageType.findFirst({
+      where: { slug: params.packageTypeSlug }
+    }),
+    prisma.travelPackage.findMany({
+      where: {
+        status: "ACTIVE",
+        packageType: {
+          slug: params.packageTypeSlug
+        }
+      },
+      include: {
+        packageType: true
+      },
+      take: 10
+    })
+  ]);
+
+  const jsonLd = generatePackageListSchema(packages, packageType || undefined);
+
   return (
     <PageTransition>
+      <Script
+        id="package-list-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <PackageList packageTypeSlug={params.packageTypeSlug} />
     </PageTransition>
   );

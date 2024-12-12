@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PackageType, TravelPackage, PackageImage } from "@prisma/client";
+import { PackageType, TravelPackage, PackageImage, SiteSettings } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp";
@@ -10,6 +10,8 @@ import { PackageGallery } from "@/components/packages/package-gallery";
 import { PackageContactSection } from "@/components/packages/package-contact-section";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShareButton } from "@/components/share-button";
+import { generateTouristTripSchema } from "@/lib/schema";
+import Script from "next/script";
 
 interface PackageWithDetails extends TravelPackage {
   packageType: PackageType;
@@ -43,8 +45,6 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
   }, [packageSlug]);
 
   const handleWhatsAppContact = () => {
-    console.log(settings);
-    
     if (!pkg || !settings?.whatsappNumber) return;
 
     const message = encodeURIComponent(
@@ -70,10 +70,19 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
     );
   }
 
-  if (!pkg) return null;
+  if (!pkg || !settings) return null;
+
+  const jsonLd = generateTouristTripSchema(pkg, settings);
 
   return (
-    <div className="container mx-auto py-4 md:py-8 px-4">
+    <>
+      <Script
+        id="package-jsonld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      <div className="container mx-auto py-4 md:py-8 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <PackageGallery
           mainImage={pkg.imageUrl}
@@ -81,7 +90,7 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
           title={pkg.title}
         />
 
-        <div className="space-y-6">
+        <article className="space-y-6">
           <div className="flex flex-col gap-4">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex-1">
@@ -133,10 +142,11 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
             )}
             <div dangerouslySetInnerHTML={{ __html: pkg.content }} />
           </div>
-        </div>
+        </article>
       </div>
 
       <PackageContactSection package={pkg} />
     </div>
+    </>
   );
 }
