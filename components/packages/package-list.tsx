@@ -6,6 +6,7 @@ import { PackageType, TravelPackage } from "@prisma/client";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "@/hooks/use-debounce";
+import { notFound } from "next/navigation";
 
 interface PackageWithType extends TravelPackage {
   packageType: PackageType;
@@ -114,7 +115,7 @@ export function PackageList({ packageTypeSlug }: PackageListProps) {
     );
   }
 
-  if (!packageType) return null;
+  if (!packageType) return notFound();
 
   return (
     <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
