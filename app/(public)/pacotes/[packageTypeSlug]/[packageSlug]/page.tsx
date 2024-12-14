@@ -3,6 +3,7 @@ import { getPackageMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
 import { generateTouristTripSchema } from "@/lib/schema";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import Script from "next/script";
 
 interface PackageDetailsPageProps {
@@ -29,30 +30,40 @@ export async function generateStaticParams() {
   }));
 }
 
+// Adiciona metadados estáticos para melhorar o SEO
 export async function generateMetadata({
   params,
 }: PackageDetailsPageProps): Promise<Metadata> {
   return getPackageMetadata(params.packageSlug);
 }
 
+// Declaração explícita que essa página é estática
+export const dynamicParams = false;
+
 export default async function PackageDetailsPage({
   params,
 }: PackageDetailsPageProps) {
+  // Busca dados necessários no momento da geração estática
   const [pkg, settings] = await Promise.all([
     prisma.travelPackage.findFirst({
       where: {
         slug: params.packageSlug,
         packageType: {
-          slug: params.packageTypeSlug
-        }
+          slug: params.packageTypeSlug,
+        },
       },
       include: {
         packageType: true,
-        images: true
-      }
+        images: true,
+      },
     }),
-    prisma.siteSettings.findFirst()
+    prisma.siteSettings.findFirst(),
   ]);
+
+  if (!pkg) {
+    // Trate o caso de pacotes inválidos para melhorar a experiência de SEO e evitar erros
+    return notFound();
+  }
 
   const jsonLd = pkg && settings ? generateTouristTripSchema(pkg, settings) : null;
 

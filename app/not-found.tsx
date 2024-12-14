@@ -1,20 +1,19 @@
-import { FeaturedPackages } from "@/components/home/featured-packages";
 import { ContactModal } from "@/components/contact-modal";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { FeaturedPackages } from "@/components/home/featured-packages";
+import { PublicBreadcrumbs } from "@/components/public/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
 import { Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getSiteConfig } from "@/lib/site-config";
-import { Footer } from "@/components/footer";
-import { SiteSettingsProvider } from "@/contexts/site-settings";
-import { PublicBreadcrumbs } from "@/components/public/breadcrumbs";
-import { Header } from "@/components/header";
 
 export default async function NotFoundPage() {
-  const config = await getSiteConfig();
+  const config = await prisma.siteSettings.findFirst();
 
   return (
-    <SiteSettingsProvider>
+    <>
       <Header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm" />
       <main className="min-h-screen mt-24">
         <PublicBreadcrumbs />
@@ -79,6 +78,6 @@ export default async function NotFoundPage() {
         </div>
       </main>
       <Footer />
-    </SiteSettingsProvider>
+    </>
   );
 }
