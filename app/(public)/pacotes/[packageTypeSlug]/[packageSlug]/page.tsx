@@ -65,7 +65,7 @@ export default async function PackageDetailsPage({
     return notFound();
   }
 
-  const jsonLd = pkg && settings ? generateTouristTripSchema(pkg, settings) : null;
+  const jsonLd = pkg && settings ? generateTouristTripSchema(pkg) : null;
 
   return (
     <>

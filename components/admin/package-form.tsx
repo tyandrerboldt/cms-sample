@@ -1,18 +1,11 @@
 "use client";
 
+import { ImageUpload } from "@/components/admin/image-upload";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { PackageImage, TravelPackage, PackageType } from "@prisma/client";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { ImageUpload } from "@/components/admin/image-upload";
-import { useState } from "react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -20,10 +13,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import slugify from "slugify";
-import { RichTextEditor } from "./rich-text-editor";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PackageImage, PackageType, TravelPackage } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { RichTextEditor } from "./rich-text-editor";
 
 const packageSchema = z.object({
   code: z.string().min(1, "Código é obrigatório"),
@@ -123,23 +122,6 @@ export function PackageForm({
         title: packageToEdit ? "Pacote Atualizado" : "Pacote Criado",
         description: "O pacote de viagem foi salvo com sucesso.",
       });
-
-      //Revalidate render
-      if (packageToEdit) {
-        const packageType = packageTypes.find(
-          (pkgType) => pkgType.id == packageToEdit.typeId
-        );
-        const revalidateRes = await fetch("/api/revalidate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            secret: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
-            route: `/pacotes/${packageType?.slug}/${packageToEdit.slug}`,
-          }),
-        });
-
-        if (!revalidateRes.ok) throw new Error("Falha ao renderizar pacote");
-      }
 
       router.push("/admin/packages");
       router.refresh();

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PageTransition } from "@/components/page-transition";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import ForceRevalidationButton from "@/components/admin/force-relavidation-button";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -87,6 +88,7 @@ export default async function AdminPackages({
       <div>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Pacotes de Viagem</h1>
+          <ForceRevalidationButton label="Forçar atualização" route="(public)/pacotes/[packageTypeSlug]/[packageSlug]" />
           <Link href="/admin/packages/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />

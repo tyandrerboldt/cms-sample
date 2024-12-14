@@ -5,11 +5,6 @@ export async function POST(request: Request) {
   try {
     const { secret, route } = await request.json();
 
-    console.log(secret);
-    console.log(route);
-
-
-
     if (secret !== process.env.NEXT_PUBLIC_REVALIDATE_SECRET) {
       return NextResponse.json(
         { message: "Invalid access" },
@@ -17,7 +12,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await revalidatePath(`${route}`);
+    await revalidatePath(`${route}`, 'page');
     return NextResponse.json(
       { message: "Revalidated successfully" },
       { status: 200 }

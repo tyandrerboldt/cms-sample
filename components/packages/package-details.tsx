@@ -1,10 +1,8 @@
 import { PackageContactSection } from "@/components/packages/package-contact-section";
 import { PackageGallery } from "@/components/packages/package-gallery";
 import { ShareButton } from "@/components/share-button";
-import { generateTouristTripSchema } from "@/lib/schema";
 import { PackageImage, PackageType, TravelPackage } from "@prisma/client";
 import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
-import Script from "next/script";
 import ContactButtons from "../public/contact-buttons";
 
 interface PackageWithDetails extends TravelPackage {
@@ -18,16 +16,8 @@ interface PackageDetailsProps {
 }
 
 export default function PackageDetails({ pkg, settings }: PackageDetailsProps) {
-  const jsonLd = generateTouristTripSchema(pkg, settings);
-
   return (
     <>
-      <Script
-        id="package-jsonld"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-
       <div className="container mx-auto py-4 md:py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <PackageGallery

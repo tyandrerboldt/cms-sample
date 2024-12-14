@@ -42,7 +42,7 @@ export async function getPageSchemas(pathname: string) {
     });
 
     if (pkg) {
-      schemas.push(generateTouristTripSchema(pkg, settings));
+      schemas.push(generateTouristTripSchema(pkg));
     }
   }
   // Handle package type pages

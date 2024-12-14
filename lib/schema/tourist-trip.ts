@@ -1,9 +1,8 @@
-import { TravelPackage, PackageType, SiteSettings } from "@prisma/client";
+import { PackageType, TravelPackage } from "@prisma/client";
 import { TouristTrip, WithContext } from "schema-dts";
 
 export function generateTouristTripSchema(
-  pkg: TravelPackage & { packageType: PackageType },
-  settings: SiteSettings
+  pkg: TravelPackage & { packageType: PackageType }
 ): WithContext<TouristTrip> {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
 
