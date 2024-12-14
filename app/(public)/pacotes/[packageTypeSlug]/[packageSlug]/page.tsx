@@ -1,4 +1,4 @@
-import { PackageDetails } from "@/components/packages/package-details";
+import PackageDetails from "@/components/packages/package-details";
 import { getPackageMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
 import { generateTouristTripSchema } from "@/lib/schema";
@@ -76,7 +76,7 @@ export default async function PackageDetailsPage({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <PackageDetails packageSlug={params.packageSlug} />
+      <PackageDetails pkg={pkg} settings={settings} />
     </>
   );
 }

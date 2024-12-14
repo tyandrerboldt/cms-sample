@@ -1,17 +1,11 @@
-"use client";
-
-import { WhatsappIcon } from "@/components/icons/whatsapp";
 import { PackageContactSection } from "@/components/packages/package-contact-section";
 import { PackageGallery } from "@/components/packages/package-gallery";
 import { ShareButton } from "@/components/share-button";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useSiteSettings } from "@/contexts/site-settings";
 import { generateTouristTripSchema } from "@/lib/schema";
 import { PackageImage, PackageType, TravelPackage } from "@prisma/client";
 import { Anchor, Building2, Calendar, MapPin, Users } from "lucide-react";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import ContactButtons from "../public/contact-buttons";
 
 interface PackageWithDetails extends TravelPackage {
   packageType: PackageType;
@@ -19,59 +13,11 @@ interface PackageWithDetails extends TravelPackage {
 }
 
 interface PackageDetailsProps {
-  packageSlug: string;
+  pkg: PackageWithDetails;
+  settings: any;
 }
 
-export function PackageDetails({ packageSlug }: PackageDetailsProps) {
-  const [pkg, setPkg] = useState<PackageWithDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { settings } = useSiteSettings();
-
-  useEffect(() => {
-    const fetchPackage = async () => {
-      try {
-        const response = await fetch(`/api/front/packages/${packageSlug}`);
-        if (!response.ok) throw new Error("Failed to fetch package");
-        const data = await response.json();
-        setPkg(data);
-      } catch (error) {
-        console.error("Error fetching package:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackage();
-  }, [packageSlug]);
-
-  const handleWhatsAppContact = () => {
-    if (!pkg || !settings?.whatsappNumber) return;
-
-    const message = encodeURIComponent(
-      `Olá! Gostaria de mais informações sobre o pacote ${pkg.code} - ${pkg.title}`
-    );
-    const whatsappNumber = settings.whatsappNumber.replace(/\D/g, "");
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, "_blank");
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto py-4 md:py-8 px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Skeleton className="aspect-[4/3] rounded-lg" />
-          <div className="space-y-4">
-            <Skeleton className="h-10 w-3/4" />
-            <Skeleton className="h-6 w-1/2" />
-            <Skeleton className="h-24" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!pkg || !settings) return null;
-
+export default function PackageDetails({ pkg, settings }: PackageDetailsProps) {
   const jsonLd = generateTouristTripSchema(pkg, settings);
 
   return (
@@ -131,14 +77,10 @@ export function PackageDetails({ packageSlug }: PackageDetailsProps) {
             <div className="flex flex-col gap-6">
               <p className="text-lg">{pkg.description}</p>
               {settings?.whatsappNumber && (
-                <Button
-                  size="lg"
-                  className="w-full"
-                  onClick={handleWhatsAppContact}
-                >
-                  <WhatsappIcon className="h-5 w-5 mr-2" />
-                  Entrar em Contato via WhatsApp
-                </Button>
+                <ContactButtons
+                  pkg={pkg}
+                  whatsappNumber={settings.whatsappNumber}
+                />
               )}
               <div dangerouslySetInnerHTML={{ __html: pkg.content }} />
             </div>
