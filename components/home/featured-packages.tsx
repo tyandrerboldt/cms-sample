@@ -28,9 +28,9 @@ interface FeaturedPackagesProps {
 }
 
 export function FeaturedPackages({ packages }: FeaturedPackagesProps) {
-  const mainPackage = packages?.find((pkg) => pkg.highlight === "MAIN");
+  const mainPackage = packages?.find((pkg) => pkg.highlight == "MAIN");
   const featuredPackages = packages?.filter(
-    (pkg) => pkg.highlight === "FEATURED"
+    (pkg) => pkg.highlight == "FEATURED"
   );
 
   return (

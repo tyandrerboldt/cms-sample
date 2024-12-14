@@ -34,6 +34,9 @@ export default async function Home() {
         status: "ACTIVE",
         highlight: { in: ["MAIN", "FEATURED"] },
       },
+      orderBy: [
+        { highlight: 'desc' },
+      ],
       include: { packageType: true },
       take: 5,
     }),
