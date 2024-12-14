@@ -1,2 +1,5 @@
 components/ui/*
 hooks/use-toast.ts
+
+components/admin/*
+app/(admin)/*
