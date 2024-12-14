@@ -1,7 +1,7 @@
 "use client";
 
-import { useSiteSettings } from "@/hooks/use-site-settings";
 import { motion } from "framer-motion";
+import { SiteSettings } from "@prisma/client";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -18,10 +18,12 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-export function AboutSection() {
-  const { settings, loading } = useSiteSettings();
+interface AboutSectionProps {
+  settings: SiteSettings | null;
+}
 
-  if (loading || !settings?.aboutText) return null;
+export function AboutSection({ settings }: AboutSectionProps) {
+  if (!settings?.aboutText) return null;
 
   return (
     <section className="py-16 px-4 bg-primary text-muted">

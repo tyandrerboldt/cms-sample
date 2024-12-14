@@ -6,7 +6,6 @@ import { PackageType, TravelPackage } from "@prisma/client";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,30 +22,15 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-export function LodgingPackages() {
-  const [packages, setPackages] = useState<
-    (TravelPackage & { packageType: PackageType })[]
-  >([]);
-  const [loading, setLoading] = useState(true);
+interface LodgingPackagesProps {
+  packages: (TravelPackage & { 
+    packageType: PackageType;
+    images: { id: string; url: string; isMain: boolean }[];
+  })[];
+}
 
-  useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const response = await fetch("/api/front/lodging-packages");
-        if (!response.ok) throw new Error("Failed to fetch packages");
-        const data = await response.json();
-        setPackages(data);
-      } catch (error) {
-        console.error("Error fetching packages:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
-
-  if (packages.length === 0 && !loading) {
+export function LodgingPackages({ packages }: LodgingPackagesProps) {
+  if (packages.length === 0) {
     return null;
   }
 
@@ -72,22 +56,11 @@ export function LodgingPackages() {
               </Link>
             </motion.div>
           </div>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-[400px] rounded-lg bg-muted animate-pulse"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {packages.map((pkg, index) => (
-                <PackageCard key={pkg.code} package={pkg} className="lg:max-h-[800px]" />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {packages.map((pkg) => (
+              <PackageCard key={pkg.code} package={pkg} className="lg:max-h-[800px]" />
+            ))}
+          </div>
         </motion.div>
       </div>
     </section>

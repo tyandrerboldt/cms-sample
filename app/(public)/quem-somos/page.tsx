@@ -2,9 +2,9 @@ import { AboutContent } from "@/components/about/about-content";
 import { PageTransition } from "@/components/page-transition";
 import { getBaseMetadata } from "@/lib/metadata";
 import { generateAboutPageSchema } from "@/lib/schema";
+import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import Script from "next/script";
-import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
@@ -33,7 +33,7 @@ export default async function AboutPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <AboutContent />
+      <AboutContent settings={settings} />
     </PageTransition>
   );
 }

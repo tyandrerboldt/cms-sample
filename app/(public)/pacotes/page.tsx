@@ -1,7 +1,7 @@
-import { PageTransition } from "@/components/page-transition";
 import { PackageTypeList } from "@/components/packages/package-type-list";
-import { Metadata } from "next";
 import { getBaseMetadata } from "@/lib/metadata";
+import { prisma } from "@/lib/prisma";
+import { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
@@ -17,10 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PackagesPage() {
-  return (
-    <PageTransition>
-      <PackageTypeList />
-    </PageTransition>
-  );
+export default async function PackagesPage() {
+  const packageTypes = await prisma.packageType.findMany({
+    orderBy: { name: "asc" },
+    include: {
+      _count: {
+        select: { packages: true }
+      }
+    }
+  });
+
+  return <PackageTypeList packageTypes={packageTypes} />;
 }

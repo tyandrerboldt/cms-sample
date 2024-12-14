@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, featuredPackages] = await Promise.all([
+  const [settings, featuredPackages, slides, boatPackages, lodgingPackages] = await Promise.all([
     prisma.siteSettings.findFirst(),
     prisma.travelPackage.findMany({
       where: {
@@ -37,6 +37,49 @@ export default async function Home() {
       include: { packageType: true },
       take: 5,
     }),
+    prisma.heroSlide.findMany({
+      where: {
+        isActive: true,
+      },
+      orderBy: [
+        { order: 'asc' },
+        { createdAt: 'desc' }
+      ],
+    }),
+    prisma.travelPackage.findMany({
+      where: {
+        status: "ACTIVE",
+        packageType: {
+          slug: 'barcos-hoteis'
+        }
+      },
+      take: 3,
+      orderBy: [
+        { contactCount: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      include: {
+        packageType: true,
+        images: true,
+      },
+    }),
+    prisma.travelPackage.findMany({
+      where: {
+        status: "ACTIVE",
+        packageType: {
+          slug: 'pousadas'
+        }
+      },
+      take: 3,
+      orderBy: [
+        { contactCount: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      include: {
+        packageType: true,
+        images: true,
+      },
+    })
   ]);
 
   const jsonLd = settings
@@ -52,12 +95,12 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <HeroCarousel />
-      <FeaturedPackages />
-      <AboutSection />
-      <BoatPackages />
-      <CTASection />
-      <LodgingPackages />
+      <HeroCarousel slides={slides} />
+      <FeaturedPackages packages={featuredPackages} />
+      <AboutSection settings={settings} />
+      <BoatPackages packages={boatPackages} />
+      <CTASection settings={settings} />
+      <LodgingPackages packages={lodgingPackages} />
     </>
   );
 }

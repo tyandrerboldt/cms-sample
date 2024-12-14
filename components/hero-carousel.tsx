@@ -10,29 +10,13 @@ import { useEffect, useState } from "react";
 import Autoplay from "embla-carousel-autoplay";
 import useEmblaCarousel from "embla-carousel-react";
 
-export function HeroCarousel() {
-  const [slides, setSlides] = useState<HeroSlide[]>([]);
-  const [loading, setLoading] = useState(true);
+interface HeroCarouselProps {
+  slides: HeroSlide[];
+}
+
+export function HeroCarousel({ slides }: HeroCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
-
-  useEffect(() => {
-    const fetchSlides = async () => {
-      try {
-        const response = await fetch("/api/front/hero-slides");
-        if (!response.ok) throw new Error("Failed to fetch slides");
-        const data = await response.json();
-        setSlides(data);
-      } catch (error) {
-        console.error("Error fetching slides:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSlides();
-  }, []);
 
   useEffect(() => {
     if (emblaApi) {
@@ -41,12 +25,6 @@ export function HeroCarousel() {
       });
     }
   }, [emblaApi]);
-
-  if (loading) {
-    return (
-      <div className="relative h-[600px] bg-muted animate-pulse" />
-    );
-  }
 
   if (slides.length === 0) {
     return null;

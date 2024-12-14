@@ -31,11 +31,11 @@ export async function generateStaticParams() {
 }
 
 // Adiciona metadados estáticos para melhorar o SEO
-export async function generateMetadata({
-  params,
-}: PackageDetailsPageProps): Promise<Metadata> {
-  return getPackageMetadata(params.packageSlug);
-}
+// export async function generateMetadata({
+//   params,
+// }: PackageDetailsPageProps): Promise<Metadata> {
+//   return getPackageMetadata(params.packageSlug);
+// }
 
 // Declaração explícita que essa página é estática
 export const dynamicParams = false;
@@ -44,7 +44,7 @@ export default async function PackageDetailsPage({
   params,
 }: PackageDetailsPageProps) {
   // Busca dados necessários no momento da geração estática
-  const [pkg, settings] = await Promise.all([
+  const [pkg, settings] = await prisma.$transaction([
     prisma.travelPackage.findFirst({
       where: {
         slug: params.packageSlug,

@@ -1,12 +1,13 @@
 "use client";
 
-import { useSiteSettings } from "@/contexts/site-settings";
+import { SiteSettings } from "@prisma/client";
+import { AboutContact } from "./about-contact";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { ContactModal } from "@/components/contact-modal";
-import { Button } from "@/components/ui/button";
-import { Phone } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+
+interface AboutContentProps {
+  settings: SiteSettings | null;
+}
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -23,21 +24,8 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-export function AboutContent() {
-  const { settings, loading } = useSiteSettings();
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-64" />
-          <Skeleton className="h-10 w-48" />
-        </div>
-      </div>
-    );
-  }
-
+export function AboutContent({ settings }: AboutContentProps) {
   if (!settings?.aboutText) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -52,58 +40,43 @@ export function AboutContent() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
       <section className="bg-muted py-8">
-        <div className="container mx-auto px-4">
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="max-w-4xl mx-auto text-center"
+      <div className="container mx-auto px-4">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="max-w-4xl mx-auto text-center"
+        >
+          <motion.h1
+            variants={itemVariants}
+            className="text-4xl md:text-5xl font-bold mb-6"
           >
-            <motion.h1
-              variants={itemVariants}
-              className="text-4xl md:text-5xl font-bold mb-6"
-            >
-              {settings.name}
-            </motion.h1>
-            <p className="text-center">{settings.description}</p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Content Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
+            {settings.name}
+          </motion.h1>
+          <motion.p variants={itemVariants} className="text-center">
+            {settings.description}
+          </motion.p>
+        </motion.div>
+      </div>
+    </section>
+    <section className="py-16">
+      <div className="container mx-auto px-4">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="max-w-4xl mx-auto"
+        >
           <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="max-w-4xl mx-auto"
-          >
-            <motion.div
-              variants={itemVariants}
-              className="prose prose-lg dark:prose-invert mx-auto text-center md:text-justify leading-7"
-              dangerouslySetInnerHTML={{ __html: settings.aboutText.replace("||intro||", "") }}
-            />
-
-            <motion.div
-              variants={itemVariants}
-              className="mt-12 flex justify-center"
-            >
-              <ContactModal
-                source="Página Quem Somos"
-                trigger={
-                  <Button size="lg">
-                    <Phone className="mr-2 h-5 w-5" />
-                    Entre em Contato
-                  </Button>
-                }
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
+            variants={itemVariants}
+            className="prose prose-lg dark:prose-invert mx-auto text-center md:text-justify leading-7"
+            dangerouslySetInnerHTML={{ __html: settings.aboutText.replace("||intro||", "") }}
+          />
+        </motion.div>
+      </div>
+    </section>
+      <AboutContact />
     </div>
   );
 }

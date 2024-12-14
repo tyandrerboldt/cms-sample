@@ -1,10 +1,10 @@
 "use client";
 
-import { useSiteSettings } from "@/hooks/use-site-settings";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import { ContactModal } from "@/components/contact-modal";
+import { SiteSettings } from "@prisma/client";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -21,10 +21,12 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-export function CTASection() {
-  const { settings, loading } = useSiteSettings();
+interface CTASectionProps {
+  settings: SiteSettings | null;
+}
 
-  if (loading || !settings?.ctaText) return null;
+export function CTASection({ settings }: CTASectionProps) {
+  if (!settings?.ctaText) return null;
 
   return (
     <section className="py-16 px-4 bg-slate-800">
@@ -52,7 +54,6 @@ export function CTASection() {
             </div>
 
             <div className="space-y-4">
-
               <ContactModal
                 source="Página Inicial"
                 trigger={

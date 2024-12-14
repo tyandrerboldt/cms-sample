@@ -1,23 +1,18 @@
 import { PackageList } from "@/components/packages/package-list";
 import { getPackageTypeMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
-import { generatePackageListSchema } from "@/lib/schema";
+import { PackageStatus } from "@prisma/client";
 import { Metadata } from "next";
-import Script from "next/script";
+import { notFound } from "next/navigation";
 
 interface PackageTypePageProps {
   params: {
     packageTypeSlug: string;
   };
-}
-
-// Gera os parâmetros estáticos para todas as páginas de tipos de pacotes
-export async function generateStaticParams() {
-  const packageTypes = await prisma.packageType.findMany();
-
-  return packageTypes.map((type) => ({
-    packageTypeSlug: type.slug,
-  }));
+  searchParams: {
+    page?: string;
+    search?: string;
+  };
 }
 
 export async function generateMetadata({
@@ -28,35 +23,58 @@ export async function generateMetadata({
 
 export default async function PackageTypePage({
   params,
+  searchParams,
 }: PackageTypePageProps) {
-  const [packageType, packages] = await Promise.all([
-    prisma.packageType.findFirst({
-      where: { slug: params.packageTypeSlug }
+  const page = Number(searchParams.page) || 1;
+  const search = searchParams.search || "";
+  const perPage = 8;
+
+  // Get package type
+  const packageType = await prisma.packageType.findFirst({
+    where: { slug: params.packageTypeSlug },
+  });
+
+  if (!packageType) {
+    return notFound();
+  }
+
+  // Build where clause
+  const where = {
+    status: PackageStatus.ACTIVE,
+    packageType: {
+      slug: params.packageTypeSlug,
+    },
+    ...(search && {
+      OR: [
+        { code: { equals: search } },
+        { title: { contains: search } },
+        { description: { contains: search } },
+        { location: { contains: search } },
+      ],
     }),
+  };
+
+  // Get packages with pagination
+  const [packages, totalCount] = await Promise.all([
     prisma.travelPackage.findMany({
-      where: {
-        status: "ACTIVE",
-        packageType: {
-          slug: params.packageTypeSlug
-        }
-      },
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * perPage,
+      take: perPage,
       include: {
-        packageType: true
+        packageType: true,
       },
-      take: 10
-    })
+    }),
+    prisma.travelPackage.count({ where }),
   ]);
 
-  const jsonLd = generatePackageListSchema(packages, packageType || undefined);
-
   return (
-    <>
-      <Script
-        id="package-list-jsonld"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <PackageList packageTypeSlug={params.packageTypeSlug} />
-    </>
+    <PackageList
+      packageType={packageType}
+      initialPackages={packages}
+      totalCount={totalCount}
+      currentPage={page}
+      perPage={perPage}
+    />
   );
 }

@@ -1,13 +1,12 @@
 "use client";
 
-import { TravelPackage, PackageType } from "@prisma/client";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Star, Sparkles } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
 import { PackageCard } from "@/components/packages/package-card";
+import { Button } from "@/components/ui/button";
+import { PackageType, TravelPackage } from "@prisma/client";
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { PackageCardVertical } from "@/components/packages/package-card-vertical";
-import { useEffect, useState } from "react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -24,31 +23,13 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
-export function FeaturedPackages() {
-  const [packages, setPackages] = useState<
-    (TravelPackage & { packageType: PackageType })[]
-  >([]);
-  const [loading, setLoading] = useState(true);
+interface FeaturedPackagesProps {
+  packages: (TravelPackage & { packageType: PackageType })[];
+}
 
-  useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const response = await fetch("/api/front/featured-packages");
-        if (!response.ok) throw new Error("Failed to fetch packages");
-        const data = await response.json();
-        setPackages(data);
-      } catch (error) {
-        console.error("Error fetching packages:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
-
-  const mainPackage = packages.find((pkg) => pkg.highlight === "MAIN");
-  const featuredPackages = packages.filter(
+export function FeaturedPackages({ packages }: FeaturedPackagesProps) {
+  const mainPackage = packages?.find((pkg) => pkg.highlight === "MAIN");
+  const featuredPackages = packages?.filter(
     (pkg) => pkg.highlight === "FEATURED"
   );
 
@@ -79,16 +60,7 @@ export function FeaturedPackages() {
             </motion.div>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="h-[400px] rounded-lg bg-muted animate-pulse"
-                />
-              ))}
-            </div>
-          ) : packages.length > 0 ? (
+          {packages?.length > 0 ? (
             mainPackage ? (
               <div className="grid lg:grid-cols-2 gap-6">
                 <PackageCard

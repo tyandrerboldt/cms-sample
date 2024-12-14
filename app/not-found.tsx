@@ -11,6 +11,14 @@ import Link from "next/link";
 
 export default async function NotFoundPage() {
   const config = await prisma.siteSettings.findFirst();
+  const featuredPackages = await prisma.travelPackage.findMany({
+    where: {
+      status: "ACTIVE",
+      highlight: { in: ["FEATURED", "MAIN"] },
+    },
+    include: { packageType: true },
+    take: 5,
+  })
 
   return (
     <>
@@ -72,7 +80,7 @@ export default async function NotFoundPage() {
                   Talvez você se interesse por algumas dessas opções
                 </p>
               </div>
-              <FeaturedPackages />
+              <FeaturedPackages packages={featuredPackages} />
             </div>
           </div>
         </div>
