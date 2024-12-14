@@ -13,7 +13,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { ImageUpload } from "@/components/admin/image-upload";
 import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import slugify from "slugify";
 import { RichTextEditor } from "./rich-text-editor";
 import { Loader2 } from "lucide-react";
@@ -39,12 +45,17 @@ interface PackageFormProps {
   packageTypes?: PackageType[];
 }
 
-export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormProps) {
+export function PackageForm({
+  packageToEdit,
+  packageTypes = [],
+}: PackageFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<{ file?: File; url: string; isMain: boolean }[]>(
-    packageToEdit?.images?.map(img => ({
+  const [images, setImages] = useState<
+    { file?: File; url: string; isMain: boolean }[]
+  >(
+    packageToEdit?.images?.map((img) => ({
       url: img.url,
       isMain: img.isMain,
     })) || []
@@ -78,7 +89,7 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
     try {
       setLoading(true);
       const formData = new FormData();
-      
+
       // Handle images
       images.forEach((image, index) => {
         if (image.file) {
@@ -86,7 +97,10 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
           formData.append(`imageIsMain${index}`, image.isMain.toString());
         } else {
           formData.append("existingImages", image.url);
-          formData.append(`existingImageIsMain${image.url}`, image.isMain.toString());
+          formData.append(
+            `existingImageIsMain${image.url}`,
+            image.isMain.toString()
+          );
         }
       });
 
@@ -109,6 +123,23 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
         title: packageToEdit ? "Pacote Atualizado" : "Pacote Criado",
         description: "O pacote de viagem foi salvo com sucesso.",
       });
+
+      //Revalidate render
+      if (packageToEdit) {
+        const packageType = packageTypes.find(
+          (pkgType) => pkgType.id == packageToEdit.typeId
+        );
+        const revalidateRes = await fetch("/api/revalidate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            secret: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
+            route: `/pacotes/${packageType?.slug}/${packageToEdit.slug}`,
+          }),
+        });
+
+        if (!revalidateRes.ok) throw new Error("Falha ao renderizar pacote");
+      }
 
       router.push("/admin/packages");
       router.refresh();
@@ -168,7 +199,9 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
               <Label htmlFor="location">Localização</Label>
               <Input id="location" {...register("location")} />
               {errors.location && (
-                <p className="text-sm text-red-500">{errors.location.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.location.message}
+                </p>
               )}
             </div>
           </div>
@@ -199,7 +232,9 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             <Label>Destaque</Label>
             <RadioGroup
               defaultValue={packageToEdit?.highlight || "NORMAL"}
-              onValueChange={(value) => setValue("highlight", value as "NORMAL" | "FEATURED" | "MAIN")}
+              onValueChange={(value) =>
+                setValue("highlight", value as "NORMAL" | "FEATURED" | "MAIN")
+              }
               className="flex space-x-4"
             >
               <div className="flex items-center space-x-2">
@@ -226,7 +261,9 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
             <Label htmlFor="description">Descrição Curta</Label>
             <Textarea id="description" {...register("description")} />
             {errors.description && (
-              <p className="text-sm text-red-500">{errors.description.message}</p>
+              <p className="text-sm text-red-500">
+                {errors.description.message}
+              </p>
             )}
           </div>
 
@@ -256,19 +293,19 @@ export function PackageForm({ packageToEdit, packageTypes = [] }: PackageFormPro
                 {...register("numberOfDays")}
               />
               {errors.numberOfDays && (
-                <p className="text-sm text-red-500">{errors.numberOfDays.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.numberOfDays.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="maxGuests">Máximo de Hóspedes</Label>
-              <Input
-                id="maxGuests"
-                type="number"
-                {...register("maxGuests")}
-              />
+              <Input id="maxGuests" type="number" {...register("maxGuests")} />
               {errors.maxGuests && (
-                <p className="text-sm text-red-500">{errors.maxGuests.message}</p>
+                <p className="text-sm text-red-500">
+                  {errors.maxGuests.message}
+                </p>
               )}
             </div>
           </div>
