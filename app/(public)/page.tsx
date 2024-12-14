@@ -32,7 +32,7 @@ export default async function Home() {
     prisma.travelPackage.findMany({
       where: {
         status: "ACTIVE",
-        highlight: { in: ["FEATURED", "MAIN"] },
+        highlight: { in: ["MAIN", "FEATURED"] },
       },
       include: { packageType: true },
       take: 5,

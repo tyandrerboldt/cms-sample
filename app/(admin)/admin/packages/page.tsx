@@ -1,14 +1,13 @@
-import { prisma } from "@/lib/prisma";
 import { PackageList } from "@/components/admin/package-list";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { PageTransition } from "@/components/page-transition";
-import { getServerSession } from "next-auth";
+import { Button } from "@/components/ui/button";
 import { authOptions } from "@/lib/auth";
-import ForceRevalidationButton from "@/components/admin/force-relavidation-button";
+import { prisma } from "@/lib/prisma";
+import { Plus } from "lucide-react";
+import { getServerSession } from "next-auth";
+import Link from "next/link";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 interface SearchParams {
@@ -38,16 +37,16 @@ export default async function AdminPackages({
 
   const session = await getServerSession(authOptions);
   const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email || "" }
+    where: { email: session?.user?.email || "" },
   });
-  
+
   const where: any = user?.role === "ADMIN" ? {} : { userId: user?.id };
 
   if (search) {
     where.OR = [
-      { title: { contains: search, mode: 'insensitive' } },
-      { location: { contains: search, mode: 'insensitive' } },
-      { code: { contains: search, mode: 'insensitive' } },
+      { title: { contains: search, mode: "insensitive" } },
+      { location: { contains: search, mode: "insensitive" } },
+      { code: { contains: search, mode: "insensitive" } },
     ];
   }
 
@@ -60,10 +59,7 @@ export default async function AdminPackages({
   }
 
   if (highlighted) {
-    where.OR = [
-      { highlight: "FEATURED" },
-      { highlight: "MAIN" }
-    ];
+    where.OR = [{ highlight: "FEATURED" }, { highlight: "MAIN" }];
   }
 
   const total = await prisma.travelPackage.count({ where });
@@ -79,8 +75,8 @@ export default async function AdminPackages({
       },
     }),
     prisma.packageType.findMany({
-      orderBy: { name: 'asc' }
-    })
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   return (
@@ -88,7 +84,7 @@ export default async function AdminPackages({
       <div>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Pacotes de Viagem</h1>
-          <ForceRevalidationButton label="Forçar atualização" route="(public)/pacotes/[packageTypeSlug]/[packageSlug]" />
+          {/* <ForceRevalidationButton label="Forçar atualização" route="(public)/pacotes/[packageTypeSlug]/[packageSlug]" /> */}
           <Link href="/admin/packages/new">
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -96,7 +92,7 @@ export default async function AdminPackages({
             </Button>
           </Link>
         </div>
-        <PackageList 
+        <PackageList
           packages={packages}
           packageTypes={packageTypes}
           currentPage={page}
