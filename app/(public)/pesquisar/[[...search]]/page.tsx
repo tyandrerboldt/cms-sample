@@ -47,6 +47,7 @@ export default async function SearchPage({ params, searchParams }: PackagePagePr
     }),
     ...(searchParams.search && {
       OR: [
+        { slug: { contains: searchParams.search } },
         { title: { contains: searchParams.search } },
         { description: { contains: searchParams.search } },
         { location: { contains: searchParams.search } },
