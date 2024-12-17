@@ -49,7 +49,7 @@ export default async function PackagePage({ params }: PackagePageProps) {
     <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
       <PackageFilter
         packageTypes={packageTypes}
-        search={adaptiveSearch?.join(" ")}
+        search={adaptiveSearch?.join("-")}
       />
     </section>
   );
