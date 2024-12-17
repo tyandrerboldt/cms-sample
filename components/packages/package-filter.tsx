@@ -28,7 +28,7 @@ export function PackageFilter({ packageTypes, search, onSearch }: PackageFilterP
 
   const code = searchParams.get("code") || "";
   const typeSlug = searchParams.get("typeSlug") || "";
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") || search || "");
+  const [searchInput, setSearchInput] = useState(search || searchParams.get("search") || "");
   const debouncedSearch = useDebounce(searchInput, 400);
 
   const handleFilter = (key: string, value: string) => {

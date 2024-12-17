@@ -1,18 +1,11 @@
-import { PackageSearch } from "@/components/packages/package-search";
+import { PackageFilter } from "@/components/packages/package-filter";
 import { getBaseMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
-import { PackageStatus } from "@prisma/client";
 
 interface PackagePageProps {
   params: {
-    search?: string[];
-  };
-  searchParams: {
-    code?: string;
-    typeSlug?: string;
-    search?: string;
-    page?: string;
+    search: string;
   };
 }
 
@@ -30,9 +23,15 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PackagePage({ params, searchParams }: PackagePageProps) {
-  const page = Number(searchParams.page) || 1;
-  const perPage = 8;
+export default async function PackagePage({ params }: PackagePageProps) {
+  const packageTypes = await prisma.packageType.findMany({
+    orderBy: { name: "asc" },
+    include: {
+      _count: {
+        select: { packages: true },
+      },
+    },
+  });
 
   const search = new String(params?.search) || ""
   let adaptiveSearch = search
@@ -46,51 +45,12 @@ export default async function PackagePage({ params, searchParams }: PackagePageP
     adaptiveSearch = adaptiveSearch.slice(0, 2);
   }
 
-  // Build where clause for filtering
-  const where = {
-    status: PackageStatus.ACTIVE,
-    ...(searchParams.typeSlug && {
-      packageType: {
-        slug: searchParams.typeSlug,
-      },
-    }),
-    ...(searchParams.code && {
-      code: { equals: searchParams.code },
-    }),
-    ...(searchParams.search && {
-      OR: [
-        { slug: { contains: adaptiveSearch.join("-").trim() } },
-        { title: { contains: adaptiveSearch.join(" ").trim() } },
-        { description: { contains: adaptiveSearch.join(" ").trim() } },
-        { location: { contains: adaptiveSearch.join(" ").trim() } },
-      ],
-    }),
-  };
-
-  const [packageTypes, packages, totalCount] = await Promise.all([
-    prisma.packageType.findMany({
-      orderBy: { name: "asc" },
-    }),
-    prisma.travelPackage.findMany({
-      where,
-      include: {
-        packageType: true,
-      },
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * perPage,
-      take: perPage,
-    }),
-    prisma.travelPackage.count({ where }),
-  ]);
-
   return (
-    <PackageSearch
-      initialPackages={packages}
-      packageTypes={packageTypes}
-      searchParams={searchParams}
-      totalCount={totalCount}
-      currentPage={page}
-      perPage={perPage}
-    />
+    <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
+      <PackageFilter
+        packageTypes={packageTypes}
+        search={adaptiveSearch?.join("-").trim()}
+      />
+    </section>
   );
 }
