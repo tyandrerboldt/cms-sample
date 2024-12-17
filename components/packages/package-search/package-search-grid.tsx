@@ -25,18 +25,17 @@ interface PackageSearchGridProps {
     packageType: PackageType;
   })[];
   loading?: boolean;
+  lastPackageRef?: (node: HTMLDivElement) => void;
+  hasMore?: boolean;
 }
 
-export function PackageSearchGrid({ packages, loading }: PackageSearchGridProps) {
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (packages.length === 0) {
+export function PackageSearchGrid({
+  packages,
+  loading,
+  lastPackageRef,
+  hasMore,
+}: PackageSearchGridProps) {
+  if (packages.length === 0 && !loading) {
     return (
       <div className="text-center py-12">
         <p className="text-lg text-muted-foreground">
@@ -47,17 +46,35 @@ export function PackageSearchGrid({ packages, loading }: PackageSearchGridProps)
   }
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-    >
-      {packages.map((pkg) => (
-        <motion.div key={pkg.id} variants={itemVariants}>
-          <PackageCard package={pkg} />
-        </motion.div>
-      ))}
-    </motion.div>
+    <>
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      >
+        {packages.map((pkg, index) => (
+          <motion.div
+            key={pkg.id}
+            variants={itemVariants}
+            ref={index === packages.length - 1 ? lastPackageRef : undefined}
+          >
+            <PackageCard package={pkg} />
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {loading && (
+        <div className="flex justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
+
+      {!hasMore && packages.length > 0 && (
+        <div className="text-center py-8 text-muted-foreground">
+          Não há mais pacotes para carregar.
+        </div>
+      )}
+    </>
   );
 }
