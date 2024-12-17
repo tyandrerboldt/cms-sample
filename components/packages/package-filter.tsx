@@ -12,21 +12,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PackageType } from "@prisma/client";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useState, useEffect } from "react";
+import { PackageType } from "@prisma/client";
 
 interface PackageFilterProps {
-  packageTypes: PackageType[];
+  packageTypes: PackageType[]
+  search?: string;
 }
 
-export function PackageFilter({ packageTypes }: PackageFilterProps) {
+export function PackageFilter({ packageTypes, search }: PackageFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const code = searchParams.get("code") || "";
   const typeSlug = searchParams.get("typeSlug") || "";
-  const [searchInput, setSearchInput] = useState(searchParams.get("search") || "");
+  const [searchInput, setSearchInput] = useState(searchParams.get("search") || search || "");
   const debouncedSearch = useDebounce(searchInput, 400);
 
   const handleFilter = (key: string, value: string) => {
@@ -42,12 +43,12 @@ export function PackageFilter({ packageTypes }: PackageFilterProps) {
       params.delete(key);
     }
 
-    router.push(`/pacotes?${params.toString()}`);
+    router.push(`/pesquisar?${params.toString()}`);
   };
 
   const clearFilters = () => {
     setSearchInput("");
-    router.push("/pacotes");
+    router.push("/pesquisar");
   };
 
   useEffect(() => {

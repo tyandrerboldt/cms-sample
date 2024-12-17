@@ -36,8 +36,8 @@ export function Header({ className }: HeaderProps) {
     { href: "/pacotes/barcos-hoteis", label: "Barcos Hotéis" },
     { href: "/pacotes/pousadas", label: "Pousadas" },
     { href: "/quem-somos", label: "Quem Somos" },
-    // { href: "/pacotes", label: "Todos" },
-    // { href: "/blog", label: "Artigos" },
+    { href: "/pesquisar", label: "Pesquisar" },
+    { href: "/blog", label: "Blog" },
     ...(session?.user ? [{ href: "/admin", label: "Admin" }] : []),
   ];
 
