@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PackagePage({ params, searchParams }: PackagePageProps) {
+export default async function SearchPage({ params, searchParams }: PackagePageProps) {
   const page = Number(searchParams.page) || 1;
   const perPage = 8;
 
