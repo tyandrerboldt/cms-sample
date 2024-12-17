@@ -12,16 +12,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
+import { PackageType } from "@prisma/client";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useState, useEffect } from "react";
-import { PackageType } from "@prisma/client";
 
 interface PackageFilterProps {
-  packageTypes: PackageType[]
+  packageTypes: PackageType[];
   search?: string;
+  onSearch?: (params: URLSearchParams) => void;
 }
 
-export function PackageFilter({ packageTypes, search }: PackageFilterProps) {
+export function PackageFilter({ packageTypes, search, onSearch }: PackageFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -39,16 +40,18 @@ export function PackageFilter({ packageTypes, search }: PackageFilterProps) {
       params.delete(key);
     }
     
-    if(key === "typeSlug" && value === "ALL"){
+    if (key === "typeSlug" && value === "ALL") {
       params.delete(key);
     }
 
     router.push(`/pesquisar?${params.toString()}`);
+    if (onSearch) onSearch(params);
   };
 
   const clearFilters = () => {
     setSearchInput("");
     router.push("/pesquisar");
+    if (onSearch) onSearch(new URLSearchParams());
   };
 
   useEffect(() => {
@@ -58,7 +61,7 @@ export function PackageFilter({ packageTypes, search }: PackageFilterProps) {
   }, [debouncedSearch]);
 
   return (
-    <div className="bg-background rounded-lg shadow-md p-6 space-y-6 border">
+    <div className="bg-background rounded-lg shadow-md p-6 space-y-6 border mb-8">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Filtrar Pacotes</h2>
         <Button variant="ghost" onClick={clearFilters}>

@@ -1,14 +1,18 @@
-import { PackageFilter } from "@/components/packages/package-filter";
+import { PackageSearch } from "@/components/packages/package-search";
 import { getBaseMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 
 interface PackagePageProps {
   params: {
-    search: string;
+    search?: string[];
+  };
+  searchParams: {
+    code?: string;
+    typeSlug?: string;
+    search?: string;
   };
 }
-
 
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
@@ -24,19 +28,42 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function PackagePage({params}: PackagePageProps) {
-  const packageTypes = await prisma.packageType.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      _count: {
-        select: { packages: true },
+export default async function PackagePage({ params, searchParams }: PackagePageProps) {
+  const [packageTypes, packages] = await Promise.all([
+    prisma.packageType.findMany({
+      orderBy: { name: "asc" },
+    }),
+    prisma.travelPackage.findMany({
+      where: {
+        status: "ACTIVE",
+        ...(searchParams.typeSlug && {
+          packageType: {
+            slug: searchParams.typeSlug,
+          },
+        }),
+        ...(searchParams.code && {
+          code: { equals: searchParams.code },
+        }),
+        ...(searchParams.search && {
+          OR: [
+            { title: { contains: searchParams.search } },
+            { description: { contains: searchParams.search } },
+            { location: { contains: searchParams.search } },
+          ],
+        }),
       },
-    },
-  });
+      include: {
+        packageType: true,
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   return (
-    <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
-      <PackageFilter packageTypes={packageTypes} search={params?.search || ""} />
-    </section>
+    <PackageSearch
+      initialPackages={packages}
+      packageTypes={packageTypes}
+      searchParams={searchParams}
+    />
   );
 }
