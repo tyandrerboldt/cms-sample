@@ -84,13 +84,14 @@ export default async function AdminPackages({
       <div>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Pacotes de Viagem</h1>
-          {/* <ForceRevalidationButton label="Forçar atualização" route="(public)/pacotes/[packageTypeSlug]/[packageSlug]" /> */}
-          <Link href="/admin/packages/new">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Adicionar Pacote
-            </Button>
-          </Link>
+          <div className="flex gap-4">
+            <Link href="/admin/packages/new">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Adicionar Pacote
+              </Button>
+            </Link>
+          </div>
         </div>
         <PackageList
           packages={packages}

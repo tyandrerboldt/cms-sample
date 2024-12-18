@@ -4,6 +4,7 @@ import { SettingsForm } from "@/components/admin/settings-form";
 import { PageTransition } from "@/components/page-transition";
 import { useEffect, useState } from "react";
 import { SiteSettings } from "@prisma/client";
+import ForceRevalidationButton from "@/components/admin/force-relavidation-button";
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState<SiteSettings | null>(null);
@@ -12,12 +13,12 @@ export default function AdminSettings() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings');
-        if (!response.ok) throw new Error('Failed to fetch settings');
+        const response = await fetch("/api/settings");
+        if (!response.ok) throw new Error("Failed to fetch settings");
         const data = await response.json();
         setSettings(data);
       } catch (error) {
-        console.error('Error fetching settings:', error);
+        console.error("Error fetching settings:", error);
       } finally {
         setLoading(false);
       }
@@ -37,7 +38,10 @@ export default function AdminSettings() {
   return (
     <PageTransition>
       <div>
-        <h1 className="text-3xl font-bold mb-6">Configurações</h1>
+        <div className="flex gap-4">
+          <h1 className="text-3xl font-bold mb-6">Configurações</h1>
+          <ForceRevalidationButton />
+        </div>
         <SettingsForm settings={settings} />
       </div>
     </PageTransition>

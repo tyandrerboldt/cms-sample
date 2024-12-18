@@ -1,14 +1,19 @@
 "use client";
 
-import { prisma } from "@/lib/prisma";
 import { DashboardStats } from "@/components/admin/dashboard-stats";
-import { RecentPackages } from "@/components/admin/recent-packages";
-import { RecentArticles } from "@/components/admin/recent-articles";
-import { TrendingPackages } from "@/components/admin/trending-packages";
+import ForceRevalidationButton from "@/components/admin/force-relavidation-button";
 import { PackageTypeChart } from "@/components/admin/package-type-chart";
+import { RecentArticles } from "@/components/admin/recent-articles";
+import { RecentPackages } from "@/components/admin/recent-packages";
+import { TrendingPackages } from "@/components/admin/trending-packages";
 import { PageTransition } from "@/components/page-transition";
+import {
+  Article,
+  ArticleCategory,
+  PackageType,
+  TravelPackage,
+} from "@prisma/client";
 import { useEffect, useState } from "react";
-import { Article, ArticleCategory, PackageType, TravelPackage } from "@prisma/client";
 
 interface DashboardData {
   recentPackages: (TravelPackage & { packageType: PackageType })[];
@@ -33,12 +38,12 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('/api/admin/dashboard');
-        if (!response.ok) throw new Error('Failed to fetch dashboard data');
+        const response = await fetch("/api/admin/dashboard");
+        if (!response.ok) throw new Error("Failed to fetch dashboard data");
         const dashboardData = await response.json();
         setData(dashboardData);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error fetching dashboard data:", error);
       } finally {
         setLoading(false);
       }

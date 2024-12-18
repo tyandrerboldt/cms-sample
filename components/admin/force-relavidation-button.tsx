@@ -2,31 +2,63 @@
 
 import { RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 
-type ContactButtonsProps = {
-  label: string;
-  route: string;
-};
+const ForceRevalidationButton = () => {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-const ForceRevalidationButton = ({ label, route }: ContactButtonsProps) => {
   const revalidate = async () => {
-    const revalidateRes = await fetch("/api/revalidate", {
+    setLoading(true);
+    fetch("/api/admin/trigger-build", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        secret: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
-        route,
+        key: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
       }),
-    });
-
-    if (!revalidateRes.ok) throw new Error("Falha ao renderizar pacote");
+    })
+      .then((res) => {
+        toast({
+          title: "Site atualizado!",
+          description: "O site foi renderizado com sucesso.",
+        });
+      })
+      .catch((err) => {
+        toast({
+          title: "Falha ao renderizar",
+          description: "Não foi possível renderizar o site.",
+          variant: "destructive",
+        });
+      });
+    setLoading(false);
   };
 
   return (
-    <Button className="w-full" onClick={revalidate}>
-      <RefreshCw className="h-5 w-5 mr-2" />
-      {label}
-    </Button>
+    <HoverCard>
+      <HoverCardTrigger>
+        <Button
+          title=""
+          variant={"destructive"}
+          disabled={loading}
+          onClick={revalidate}
+        >
+          <RefreshCw
+            className={cn("h-5 w-5 mr-2", loading && "animate-spin")}
+          />
+          {loading ? "...Aguardando" : "Forçar atualização"}
+        </Button>
+      </HoverCardTrigger>
+      <HoverCardContent>
+        <p>Força a atualização das páginas do site com base nos dados atuais.</p>
+      </HoverCardContent>
+    </HoverCard>
   );
 };
 
