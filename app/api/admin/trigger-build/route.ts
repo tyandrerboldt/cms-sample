@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   // Executa o comando de build no servidor
   try {
     await new Promise((resolve, reject) => {
-      exec("yarn deploy", (error, stdout, stderr) => {
+      exec("yarn rebuild", (error, stdout, stderr) => {
         if (error) {
           console.error(`Erro ao executar a build: ${stderr}`);
           reject(stderr);
