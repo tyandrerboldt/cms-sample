@@ -25,19 +25,20 @@ const ForceRevalidationButton = () => {
       }),
     })
       .then((res) => {
+        setLoading(false);
         toast({
           title: "Site atualizado!",
           description: "O site foi renderizado com sucesso.",
         });
       })
       .catch((err) => {
+        setLoading(false);
         toast({
           title: "Falha ao renderizar",
           description: "Não foi possível renderizar o site.",
           variant: "destructive",
         });
       });
-    setLoading(false);
   };
 
   return (
