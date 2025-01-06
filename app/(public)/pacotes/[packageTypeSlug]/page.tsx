@@ -46,7 +46,7 @@ export default async function PackageTypePage({
       },
     },
     orderBy: { createdAt: "desc" },
-    take: 10,
+    take: 12,
   });
 
   return (
