@@ -31,11 +31,11 @@ export async function generateStaticParams() {
 }
 
 // Adiciona metadados estáticos para melhorar o SEO
-// export async function generateMetadata({
-//   params,
-// }: PackageDetailsPageProps): Promise<Metadata> {
-//   return getPackageMetadata(params.packageSlug);
-// }
+export async function generateMetadata({
+  params,
+}: PackageDetailsPageProps): Promise<Metadata> {
+  return getPackageMetadata(params.packageSlug);
+}
 
 // Declaração explícita que essa página é estática
 export const dynamicParams = false;
