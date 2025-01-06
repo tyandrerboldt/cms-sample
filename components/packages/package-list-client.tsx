@@ -108,14 +108,17 @@ export function PackageListClient({ packageTypeSlug }: PackageListProps) {
         <div className="h-[60px] bg-muted animate-pulse rounded-lg mb-8" />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
-            <div key={i} className="h-[400px] bg-muted animate-pulse rounded-lg" />
+            <div
+              key={i}
+              className="h-[400px] bg-muted animate-pulse rounded-lg"
+            />
           ))}
         </div>
       </div>
     );
   }
 
-  if (!packageType) return notFound();
+  if (!packageType) return <></>;
 
   return (
     <section className="container mx-auto px-4 pt-12 py-4 md:py-8">
@@ -144,7 +147,11 @@ export function PackageListClient({ packageTypeSlug }: PackageListProps) {
             key={pkg.id}
             ref={index === packages.length - 1 ? lastPackageRef : undefined}
           >
-            <PackageCard key={pkg.code} package={pkg} className="lg:max-h-[800px]" />
+            <PackageCard
+              key={pkg.code}
+              package={pkg}
+              className="lg:max-h-[800px]"
+            />
           </article>
         ))}
       </div>

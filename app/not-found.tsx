@@ -14,11 +14,12 @@ export default async function NotFoundPage() {
   const featuredPackages = await prisma.travelPackage.findMany({
     where: {
       status: "ACTIVE",
-      highlight: { in: ["FEATURED", "MAIN"] },
+      highlight: { in: ["MAIN", "FEATURED"] },
     },
+    orderBy: [{ highlight: "desc" }],
     include: { packageType: true },
     take: 5,
-  })
+  });
 
   return (
     <>
