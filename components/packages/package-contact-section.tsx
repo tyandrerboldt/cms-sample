@@ -7,32 +7,93 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Mail, MapPin, Phone, Users } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void;
+      execute: (siteKey: string, options: { action: string }) => Promise<string>;
+    };
+  }
+}
 
 interface PackageContactSectionProps {
   package: TravelPackage;
 }
 
+const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || "";
+
 export function PackageContactSection({ package: pkg }: PackageContactSectionProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const recaptchaLoaded = useRef(false);
+
+  // Lazy load reCAPTCHA script only when needed
+  const loadRecaptchaScript = useCallback((): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      if (recaptchaLoaded.current && window.grecaptcha) {
+        resolve();
+        return;
+      }
+
+      // Check if script already exists
+      const existingScript = document.querySelector(`script[src*="recaptcha"]`);
+      if (existingScript) {
+        window.grecaptcha.ready(() => {
+          recaptchaLoaded.current = true;
+          resolve();
+        });
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src = `https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`;
+      script.async = true;
+      script.defer = true;
+
+      script.onload = () => {
+        window.grecaptcha.ready(() => {
+          recaptchaLoaded.current = true;
+          resolve();
+        });
+      };
+
+      script.onerror = () => reject(new Error("Failed to load reCAPTCHA"));
+      document.head.appendChild(script);
+    });
+  }, []);
+
+  // Get reCAPTCHA token
+  const getRecaptchaToken = useCallback(async (): Promise<string> => {
+    await loadRecaptchaScript();
+    return window.grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "contact_form" });
+  }, [loadRecaptchaScript]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Capture form reference before any async operations
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      message: formData.get("message"),
-      location: pkg.location,
-      source: `${pkg.code} - ${pkg.title}`,
-      packageContactId: pkg.id
-    };
-
     try {
+      // Get reCAPTCHA token before submitting
+      const recaptchaToken = RECAPTCHA_SITE_KEY ? await getRecaptchaToken() : null;
+
+      const data = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        message: formData.get("message"),
+        location: pkg.location,
+        source: `${pkg.code} - ${pkg.title}`,
+        packageContactId: pkg.id,
+        recaptchaToken,
+      };
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
@@ -41,18 +102,21 @@ export function PackageContactSection({ package: pkg }: PackageContactSectionPro
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error("Falha ao enviar mensagem");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Falha ao enviar mensagem");
+      }
 
       toast({
         title: "Mensagem Enviada",
         description: "Sua mensagem foi enviada com sucesso. Entraremos em contato em breve.",
       });
 
-      (e.target as HTMLFormElement).reset();
+      form.reset();
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Houve um erro ao enviar sua mensagem. Tente novamente mais tarde.",
+        description: error instanceof Error ? error.message : "Houve um erro ao enviar sua mensagem. Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
