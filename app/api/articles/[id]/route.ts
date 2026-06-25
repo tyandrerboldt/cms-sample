@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import slugify from "slugify";
 import { saveImage, deleteImage } from "@/lib/image-upload";
+import { revalidateArticle } from "@/lib/revalidate-public-pages";
 
 export async function PUT(
   request: Request,
@@ -14,7 +15,8 @@ export async function PUT(
     
     // Get current article to check for image changes
     const currentArticle = await prisma.article.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
+      include: { category: true },
     });
 
     if (!currentArticle) {
@@ -52,8 +54,24 @@ export async function PUT(
         imageUrl,
         published: formData.get('published') === 'true',
         categoryId: formData.get('categoryId') as string,
-      }
+      },
+      include: { category: true },
     });
+
+    await revalidateArticle({
+      categorySlug: currentArticle.category.slug,
+      articleSlug: currentArticle.slug,
+    });
+
+    if (
+      currentArticle.category.slug !== article.category.slug ||
+      currentArticle.slug !== article.slug
+    ) {
+      await revalidateArticle({
+        categorySlug: article.category.slug,
+        articleSlug: article.slug,
+      });
+    }
     
     return NextResponse.json(article);
   } catch (error) {
@@ -71,7 +89,8 @@ export async function DELETE(
   try {
     // Get the article to delete its image
     const article = await prisma.article.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
+      include: { category: true },
     });
 
     if (article?.imageUrl) {
@@ -81,6 +100,13 @@ export async function DELETE(
     await prisma.article.delete({
       where: { id: params.id },
     });
+
+    if (article) {
+      await revalidateArticle({
+        categorySlug: article.category.slug,
+        articleSlug: article.slug,
+      });
+    }
     
     return NextResponse.json({ success: true });
   } catch (error) {

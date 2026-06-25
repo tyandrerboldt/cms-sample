@@ -1,13 +1,16 @@
-import { exec } from "child_process";
+import { spawn } from "child_process";
+import { appendFileSync, openSync } from "fs";
 import { NextRequest, NextResponse } from "next/server";
 
 const SECRET_KEY = process.env.NEXT_PUBLIC_REVALIDATE_SECRET;
+const REBUILD_SCRIPT_PATH =
+  process.env.REBUILD_SCRIPT_PATH ?? "/root/project/scripts/rebuild-site.sh";
+const REBUILD_LOG_FILE =
+  process.env.REBUILD_LOG_FILE ?? "/var/log/pescaemordomia-rebuild.log";
 
-// Função principal para o endpoint
 export async function POST(req: NextRequest) {
-  const { key } = await req.json()
+  const { key } = await req.json();
 
-  // Verifica a chave secreta para segurança
   if (key !== SECRET_KEY) {
     return NextResponse.json(
       { message: "Acesso não autorizado" },
@@ -15,26 +18,29 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Executa o comando de build no servidor
   try {
-    await new Promise((resolve, reject) => {
-      exec("yarn rebuild", (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Erro ao executar a build: ${stderr}`);
-          reject(stderr);
-        }
-        console.log(`Build concluída: ${stdout}`);
-        resolve(stdout);
-      });
+    const logFd = openSync(REBUILD_LOG_FILE, "a");
+    appendFileSync(
+      logFd,
+      `\n[${new Date().toISOString()}] Build acionada via API\n`
+    );
+
+    const child = spawn("bash", [REBUILD_SCRIPT_PATH], {
+      detached: true,
+      stdio: ["ignore", logFd, logFd],
+      env: process.env,
     });
 
+    child.unref();
+
     return NextResponse.json(
-      { message: "Build acionada com sucesso" },
-      { status: 200 }
+      { message: "Build iniciada. Aguarde alguns minutos para conclusão." },
+      { status: 202 }
     );
   } catch (error) {
+    console.error("Erro ao iniciar a build:", error);
     return NextResponse.json(
-      { message: "Falha ao executar a build", error },
+      { message: "Falha ao iniciar a build", error: String(error) },
       { status: 500 }
     );
   }

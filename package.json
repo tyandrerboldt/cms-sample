@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
-    "deploy": "git pull && yarn && yarn prisma migrate deploy && yarn build && pm2 restart pesca",
-    "rebuild": "yarn build && pm2 restart pesca"
+    "deploy": "git pull && yarn && yarn prisma migrate deploy && bash ../scripts/rebuild-site.sh",
+    "rebuild": "bash ../scripts/rebuild-site.sh"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

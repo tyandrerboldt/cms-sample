@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { revalidateArticleCategory } from "@/lib/revalidate-public-pages";
 
 export async function GET() {
   try {
@@ -26,6 +27,9 @@ export async function POST(request: Request) {
     const category = await prisma.articleCategory.create({
       data
     });
+
+    await revalidateArticleCategory(category.slug);
+
     return NextResponse.json(category);
   } catch (error) {
     return NextResponse.json(

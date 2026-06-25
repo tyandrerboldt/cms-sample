@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage, deleteImage } from "@/lib/image-upload";
+import { revalidateSettings } from "@/lib/revalidate-public-pages";
 
 export async function GET() {
   try {
@@ -74,6 +75,8 @@ export async function POST(request: Request) {
         ...data
       }
     });
+
+    await revalidateSettings();
 
     return NextResponse.json(settings);
   } catch (error) {

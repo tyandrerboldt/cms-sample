@@ -7,7 +7,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'vmi2293141.contaboserver.net',
+        hostname: 'pescaemordomia.com',
         pathname: '**',
       },
     ],

@@ -37,8 +37,8 @@ export async function generateMetadata({
   return getPackageMetadata(params.packageSlug);
 }
 
-// Declaração explícita que essa página é estática
-export const dynamicParams = false;
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 export default async function PackageDetailsPage({
   params,

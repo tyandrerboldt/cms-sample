@@ -17,28 +17,34 @@ const ForceRevalidationButton = () => {
 
   const revalidate = async () => {
     setLoading(true);
-    fetch("/api/admin/trigger-build", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        key: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
-      }),
-    })
-      .then((res) => {
-        setLoading(false);
-        toast({
-          title: "Site atualizado!",
-          description: "O site foi renderizado com sucesso.",
-        });
-      })
-      .catch((err) => {
-        setLoading(false);
-        toast({
-          title: "Falha ao renderizar",
-          description: "Não foi possível renderizar o site.",
-          variant: "destructive",
-        });
+    try {
+      const res = await fetch("/api/admin/trigger-build", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          key: `${process.env.NEXT_PUBLIC_REVALIDATE_SECRET}`,
+        }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.message ?? "Falha ao iniciar a renderização");
+      }
+
+      toast({
+        title: "Rebuild completo iniciado",
+        description:
+          "Use apenas se as alterações não aparecerem automaticamente após salvar. Aguarde alguns minutos para o site refletir as mudanças.",
+      });
+    } catch {
+      toast({
+        title: "Falha ao renderizar",
+        description: "Não foi possível iniciar a renderização do site.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +63,10 @@ const ForceRevalidationButton = () => {
         </Button>
       </HoverCardTrigger>
       <HoverCardContent>
-        <p>Força a atualização das páginas do site com base nos dados atuais.</p>
+        <p>
+          Use apenas se as alterações não aparecerem automaticamente após salvar.
+          Isso dispara um rebuild completo do site (pode levar alguns minutos).
+        </p>
       </HoverCardContent>
     </HoverCard>
   );

@@ -4,6 +4,7 @@ import { saveImage } from "@/lib/image-upload";
 import slugify from "slugify";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidatePackage } from "@/lib/revalidate-public-pages";
 
 export async function GET(request: Request) {
   try {
@@ -68,12 +69,15 @@ export async function POST(request: Request) {
 
     // Check if there's already a main package when this one is set as main
     const highlight = formData.get('highlight') as 'NORMAL' | 'FEATURED' | 'MAIN';
+    let demotedMain: { slug: string; packageType: { slug: string } } | null = null;
     if (highlight === 'MAIN') {
       const existingMain = await prisma.travelPackage.findFirst({
-        where: { highlight: 'MAIN' }
+        where: { highlight: 'MAIN' },
+        include: { packageType: true },
       });
 
       if (existingMain) {
+        demotedMain = existingMain;
         await prisma.travelPackage.update({
           where: { id: existingMain.id },
           data: { highlight: 'FEATURED' }
@@ -109,6 +113,18 @@ export async function POST(request: Request) {
         packageType: true
       }
     });
+
+    await revalidatePackage({
+      packageTypeSlug: packageData.packageType.slug,
+      packageSlug: packageData.slug,
+    });
+
+    if (demotedMain) {
+      await revalidatePackage({
+        packageTypeSlug: demotedMain.packageType.slug,
+        packageSlug: demotedMain.slug,
+      });
+    }
 
     return NextResponse.json(packageData);
   } catch (error) {

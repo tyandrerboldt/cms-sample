@@ -5,6 +5,8 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { PageTransition } from "@/components/page-transition";
 
+export const revalidate = 3600;
+
 export default async function ArticlePage({
   params,
 }: {

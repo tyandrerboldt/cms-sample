@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { revalidatePackageType } from "@/lib/revalidate-public-pages";
 
 export async function GET() {
   try {
@@ -26,6 +27,9 @@ export async function POST(request: Request) {
     const packageType = await prisma.packageType.create({
       data
     });
+
+    await revalidatePackageType(packageType.slug);
+
     return NextResponse.json(packageType);
   } catch (error) {
     return NextResponse.json(

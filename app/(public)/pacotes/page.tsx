@@ -3,6 +3,8 @@ import { getBaseMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
   

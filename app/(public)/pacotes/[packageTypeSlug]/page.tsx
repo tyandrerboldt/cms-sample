@@ -13,6 +13,8 @@ interface PackageTypePageProps {
   };
 }
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
   const packageTypes = await prisma.packageType.findMany({});
 

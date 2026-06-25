@@ -10,6 +10,8 @@ import { generateHomePageSchema } from "@/lib/schema";
 import { Metadata } from "next";
 import Script from "next/script";
 
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
 

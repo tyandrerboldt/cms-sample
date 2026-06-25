@@ -4,6 +4,7 @@ import slugify from "slugify";
 import { saveImage } from "@/lib/image-upload";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { revalidateArticle } from "@/lib/revalidate-public-pages";
 
 export async function GET() {
   try {
@@ -58,6 +59,17 @@ export async function POST(request: Request) {
         categoryId: formData.get('categoryId') as string,
       }
     });
+
+    const category = await prisma.articleCategory.findUnique({
+      where: { id: article.categoryId },
+    });
+
+    if (category) {
+      await revalidateArticle({
+        categorySlug: category.slug,
+        articleSlug: article.slug,
+      });
+    }
     
     return NextResponse.json(article);
   } catch (error) {

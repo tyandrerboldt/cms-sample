@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { saveImage, deleteImage } from "@/lib/image-upload";
 import slugify from "slugify";
+import { revalidatePackage } from "@/lib/revalidate-public-pages";
 
 export async function PUT(
   request: Request,
@@ -13,7 +14,7 @@ export async function PUT(
     // Get current package to check for image changes
     const currentPackage = await prisma.travelPackage.findUnique({
       where: { id },
-      include: { images: true },
+      include: { images: true, packageType: true },
     });
 
     if (!currentPackage) {
@@ -27,15 +28,18 @@ export async function PUT(
 
     // Check if there's already a main package when this one is set as main
     const highlight = formData.get('highlight') as 'NORMAL' | 'FEATURED' | 'MAIN';
+    let demotedMain: { slug: string; packageType: { slug: string } } | null = null;
     if (highlight === 'MAIN' && currentPackage.highlight !== 'MAIN') {
       const existingMain = await prisma.travelPackage.findFirst({
         where: { 
           highlight: 'MAIN',
           id: { not: id }
-        }
+        },
+        include: { packageType: true },
       });
 
       if (existingMain) {
+        demotedMain = existingMain;
         await prisma.travelPackage.update({
           where: { id: existingMain.id },
           data: { highlight: 'FEATURED' }
@@ -112,6 +116,28 @@ export async function PUT(
       },
     });
 
+    await revalidatePackage({
+      packageTypeSlug: currentPackage.packageType.slug,
+      packageSlug: currentPackage.slug,
+    });
+
+    if (
+      currentPackage.packageType.slug !== updatedPackage.packageType.slug ||
+      currentPackage.slug !== updatedPackage.slug
+    ) {
+      await revalidatePackage({
+        packageTypeSlug: updatedPackage.packageType.slug,
+        packageSlug: updatedPackage.slug,
+      });
+    }
+
+    if (demotedMain) {
+      await revalidatePackage({
+        packageTypeSlug: demotedMain.packageType.slug,
+        packageSlug: demotedMain.slug,
+      });
+    }
+
     return NextResponse.json(updatedPackage);
   } catch (error) {
     console.error("Failed to update package:", error);
@@ -132,7 +158,7 @@ export async function DELETE(
     // Get the package to delete its images
     const packageToDelete = await prisma.travelPackage.findUnique({
       where: { id },
-      include: { images: true }
+      include: { images: true, packageType: true },
     });
 
     if (packageToDelete) {
@@ -146,6 +172,13 @@ export async function DELETE(
     await prisma.travelPackage.delete({
       where: { id },
     });
+
+    if (packageToDelete) {
+      await revalidatePackage({
+        packageTypeSlug: packageToDelete.packageType.slug,
+        packageSlug: packageToDelete.slug,
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

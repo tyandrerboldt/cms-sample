@@ -3,6 +3,8 @@ import { Metadata } from "next";
 import { ArticleList } from "@/components/blog/article-list";
 import { getBaseMetadata } from "@/lib/metadata";
 
+export const revalidate = 3600;
+
 export async function generateMetadata(): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
   

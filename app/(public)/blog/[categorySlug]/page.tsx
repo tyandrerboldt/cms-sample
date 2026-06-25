@@ -10,6 +10,8 @@ interface CategoryPageProps {
   };
 }
 
+export const revalidate = 3600;
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const baseMetadata = await getBaseMetadata();
   const category = await prisma.articleCategory.findUnique({
