@@ -7,13 +7,26 @@ const ADMIN_PATHS = ["/admin/users", "/admin/package-types","/admin/article-cate
 const EDITOR_PATHS = ["/admin/packages", "/admin/articles", "/api"];
 const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
+function withPublicHtmlCacheHeaders(
+  response: NextResponse,
+  pathname: string
+) {
+  if (pathname.startsWith("/pacotes") || pathname.startsWith("/blog")) {
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=0, s-maxage=0, must-revalidate"
+    );
+  }
+  return response;
+}
+
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Always allow access to public routes
   if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
-    return NextResponse.next();
+    return withPublicHtmlCacheHeaders(NextResponse.next(), pathname);
   }
 
   // Check if it's an admin path
@@ -58,10 +71,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // Site active, allow normal access
-    return NextResponse.next();
+    return withPublicHtmlCacheHeaders(NextResponse.next(), pathname);
   } catch (error) {
     console.error("Error checking site status:", error);
-    return NextResponse.next();
+    return withPublicHtmlCacheHeaders(NextResponse.next(), pathname);
   }
 }
 

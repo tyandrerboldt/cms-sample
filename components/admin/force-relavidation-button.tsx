@@ -11,11 +11,64 @@ import {
   HoverCardTrigger,
 } from "../ui/hover-card";
 
+const POLL_INTERVAL_MS = 3000;
+const POLL_TIMEOUT_MS = 10 * 60 * 1000;
+
+type RebuildStatus = "idle" | "running" | "success" | "failed" | "unknown";
+
+async function fetchRebuildStatus(): Promise<{
+  status: RebuildStatus;
+  message?: string;
+}> {
+  const res = await fetch("/api/admin/trigger-build", { method: "GET" });
+  if (!res.ok) {
+    throw new Error("Não foi possível verificar o status do rebuild");
+  }
+  return res.json();
+}
+
+async function waitForRebuildCompletion(): Promise<{
+  ok: boolean;
+  message: string;
+}> {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < POLL_TIMEOUT_MS) {
+    try {
+      const current = await fetchRebuildStatus();
+
+      if (current.status === "success") {
+        return { ok: true, message: "Rebuild concluído com sucesso." };
+      }
+
+      if (current.status === "failed") {
+        return {
+          ok: false,
+          message:
+            current.message ??
+            "Rebuild falhou. Verifique o log do servidor.",
+        };
+      }
+    } catch {
+      // PM2 reinicia durante o rebuild — continua polling
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  }
+
+  return {
+    ok: false,
+    message: "Rebuild excedeu o tempo limite de 10 minutos.",
+  };
+}
+
 const ForceRevalidationButton = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const revalidate = async () => {
+    if (loading) return;
+
     setLoading(true);
     try {
       const res = await fetch("/api/admin/trigger-build", {
@@ -26,20 +79,37 @@ const ForceRevalidationButton = () => {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        throw new Error(data?.message ?? "Falha ao iniciar a renderização");
+      const data = await res.json().catch(() => null);
+
+      if (res.status === 409) {
+        toast({
+          title: "Rebuild em andamento",
+          description: data?.message ?? "Aguarde o rebuild atual terminar.",
+        });
+        return;
       }
 
+      if (!res.ok) {
+        throw new Error(data?.message ?? "Falha ao iniciar o rebuild");
+      }
+
+      const result = await waitForRebuildCompletion();
+
+      if (result.ok) {
+        toast({
+          title: "Rebuild concluído",
+          description: result.message,
+        });
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
       toast({
-        title: "Rebuild completo iniciado",
+        title: "Falha no rebuild",
         description:
-          "Use apenas se as alterações não aparecerem automaticamente após salvar. Aguarde alguns minutos para o site refletir as mudanças.",
-      });
-    } catch {
-      toast({
-        title: "Falha ao renderizar",
-        description: "Não foi possível iniciar a renderização do site.",
+          error instanceof Error
+            ? error.message
+            : "Não foi possível concluir o rebuild do site.",
         variant: "destructive",
       });
     } finally {
@@ -59,7 +129,7 @@ const ForceRevalidationButton = () => {
           <RefreshCw
             className={cn("h-5 w-5 mr-2", loading && "animate-spin")}
           />
-          {loading ? "...Aguardando" : "Forçar atualização"}
+          {loading ? "Rebuild em andamento..." : "Forçar atualização"}
         </Button>
       </HoverCardTrigger>
       <HoverCardContent>
